@@ -1,0 +1,896 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_3D_PRINTS - PG13",
+      "label": "3D Prints - PG13",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "postgres",
+      "pluginName": "PostgreSQL"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.5.1"
+    },
+    {
+      "type": "panel",
+      "id": "nline-plotlyjs-panel",
+      "name": "Plotly",
+      "version": "1.3.0"
+    },
+    {
+      "type": "datasource",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Bambu Bed Mesh Visualizer by WolfwithSword",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "config": {
+          "displayModeBar": false
+        },
+        "data": [
+          {
+            "type": "surface"
+          }
+        ],
+        "layout": {
+          "autosize": true,
+          "margin": {
+            "b": 0,
+            "l": 0,
+            "r": 0,
+            "t": 0
+          },
+          "paper_bgcolor": "rgba(0,0,0,0)",
+          "plot_bgcolor": "rgba(0,0,0,0)",
+          "scene": {
+            "aspectmode": "auto",
+            "aspectratio": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "camera": {
+              "center": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "eye": {
+                "x": 0.2021555175109616,
+                "y": -1.3424494378951832,
+                "z": 0.9326699254185563
+              },
+              "projection": {
+                "type": "perspective"
+              },
+              "up": {
+                "x": 0,
+                "y": 0,
+                "z": 1
+              }
+            },
+            "zaxis": {
+              "autorange": false,
+              "range": [
+                -1,
+                1
+              ],
+              "type": "linear"
+            }
+          },
+          "yaxis": {
+            "automargin": true,
+            "autorange": true,
+            "range": [
+              -1,
+              4
+            ]
+          }
+        },
+        "onclick": "// console.log(data);\n// window.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "script": "let d = data.series[0].fields[0].values.buffer[0];\nd = d.replaceAll(\"{\",\"[\");\nd = d.replaceAll(\"}\",\"]\");\nd = JSON.parse(d)\nreturn { data: [{\"z\": d}] };\n",
+        "yaml_mode": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT data as \"values\" FROM bed_mesh WHERE printer = '$printer' and id = $all_ids",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "bed_mesh"
+        }
+      ],
+      "title": "Selected Bed Mesh - Scan Id $all_ids -  $printer",
+      "transparent": true,
+      "type": "nline-plotlyjs-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "config": {
+          "displayModeBar": false
+        },
+        "data": [
+          {
+            "type": "surface"
+          }
+        ],
+        "layout": {
+          "autosize": true,
+          "margin": {
+            "b": 0,
+            "l": 0,
+            "r": 0,
+            "t": 0
+          },
+          "paper_bgcolor": "rgba(0,0,0,0)",
+          "plot_bgcolor": "rgba(0,0,0,0)",
+          "scene": {
+            "aspectmode": "auto",
+            "aspectratio": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "camera": {
+              "center": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "eye": {
+                "x": -0.040907366729228144,
+                "y": -1.7598726300950254,
+                "z": 1.0425154975387902
+              },
+              "projection": {
+                "type": "perspective"
+              },
+              "up": {
+                "x": 0,
+                "y": 0,
+                "z": 1
+              }
+            },
+            "zaxis": {
+              "autorange": false,
+              "range": [
+                -1,
+                1
+              ],
+              "type": "linear"
+            }
+          },
+          "yaxis": {
+            "automargin": true,
+            "autorange": true,
+            "range": [
+              -1,
+              4
+            ]
+          }
+        },
+        "onclick": "// console.log(data);\n// window.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "script": "let d = data.series[0].fields[0].values.buffer[0];\nd = d.replaceAll(\"{\",\"[\");\nd = d.replaceAll(\"}\",\"]\");\nd = JSON.parse(d)\nreturn { data: [{\"z\": d}] };\n",
+        "yaml_mode": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT data as \"values\" FROM bed_mesh WHERE printer = '$printer' and id = $latest_id",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "bed_mesh"
+        }
+      ],
+      "title": "Most Recent Bed Mesh - Scan Id $latest_id    -  $printer",
+      "transparent": true,
+      "type": "nline-plotlyjs-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": -9.999999999
+              },
+              {
+                "color": "yellow",
+                "value": -0.999
+              },
+              {
+                "color": "orange",
+                "value": -0.1999
+              },
+              {
+                "color": "green",
+                "value": -0.074999
+              },
+              {
+                "color": "yellow",
+                "value": 0.075
+              },
+              {
+                "color": "orange",
+                "value": 0.1
+              },
+              {
+                "color": "red",
+                "value": 0.2
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 10,
+        "x": 1,
+        "y": 20
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT unnest(data) FROM bed_mesh WHERE id = '$all_ids'",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "9a988a99-0123-4456-b89a-b187f20a89b9",
+                  "properties": {
+                    "field": "id",
+                    "operator": "equal",
+                    "value": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "number"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a999bb99-89ab-4cde-b012-3187f1f61b44",
+              "type": "group"
+            },
+            "whereString": "id = NaN"
+          },
+          "table": "bed_mesh"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "max",
+              "min",
+              "variance",
+              "range"
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Field": true
+            },
+            "indexByName": {
+              "Field": 0,
+              "Max": 1,
+              "Min": 2,
+              "Range": 3,
+              "Variance": 4
+            },
+            "renameByName": {
+              "Field": "",
+              "Max": "Max",
+              "Min": "Min",
+              "Range": "Low-High Difference",
+              "Variance": "Average Variance"
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": -9.999999999
+              },
+              {
+                "color": "yellow",
+                "value": -0.999
+              },
+              {
+                "color": "orange",
+                "value": -0.1999
+              },
+              {
+                "color": "green",
+                "value": -0.074999
+              },
+              {
+                "color": "yellow",
+                "value": 0.075
+              },
+              {
+                "color": "orange",
+                "value": 0.1
+              },
+              {
+                "color": "red",
+                "value": 0.2
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 10,
+        "x": 13,
+        "y": 20
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT unnest(data) FROM bed_mesh WHERE id = '$latest_id'",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "9a988a99-0123-4456-b89a-b187f20a89b9",
+                  "properties": {
+                    "field": "id",
+                    "operator": "equal",
+                    "value": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "number"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a999bb99-89ab-4cde-b012-3187f1f61b44",
+              "type": "group"
+            },
+            "whereString": "id = NaN"
+          },
+          "table": "bed_mesh"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": [
+              "max",
+              "min",
+              "variance",
+              "range"
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Field": true
+            },
+            "indexByName": {
+              "Field": 0,
+              "Max": 1,
+              "Min": 2,
+              "Range": 3,
+              "Variance": 4
+            },
+            "renameByName": {
+              "Field": "",
+              "Max": "Max",
+              "Min": "Min",
+              "Range": "Low-High Difference",
+              "Variance": "Average Variance"
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Scan ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Select",
+                    "url": "/d/${__dashboard.uid}/${__dashboard}/?var-all_ids=${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "builder",
+          "format": "table",
+          "rawSql": "SELECT id, printer, scan_timestamp, data FROM bed_mesh ORDER BY scan_timestamp DESC LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "id",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "printer",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "scan_timestamp",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "data",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "orderBy": {
+              "property": {
+                "name": [
+                  "scan_timestamp"
+                ],
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderByDirection": "DESC"
+          },
+          "table": "bed_mesh"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "data": 3,
+              "id": 1,
+              "printer": 2,
+              "scan_timestamp": 0
+            },
+            "renameByName": {
+              "data": "Raw",
+              "id": "Scan ID",
+              "printer": "Printer Name",
+              "scan_timestamp": "Time of Scan"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_3D_PRINTS - PG13}"
+        },
+        "definition": "select distinct printer from bed_mesh",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Printer",
+        "multi": false,
+        "name": "printer",
+        "options": [],
+        "query": "select distinct printer from bed_mesh",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_3D_PRINTS - PG13}"
+        },
+        "definition": "select id from bed_mesh where printer = '$printer' order by scan_timestamp asc",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Selected Bed Scan Id",
+        "multi": false,
+        "name": "all_ids",
+        "options": [],
+        "query": "select id from bed_mesh where printer = '$printer' order by scan_timestamp asc",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_3D_PRINTS - PG13}"
+        },
+        "definition": "select id from bed_mesh where printer = '$printer' order by scan_timestamp desc limit 1",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "latest_id",
+        "options": [],
+        "query": "select id from bed_mesh where printer = '$printer' order by scan_timestamp desc limit 1",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1y",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Bambu Bed Mesh Visualizer",
+  "uid": "a8d3979b-b78c-447d-9b9e-67cc8e627db8",
+  "version": 20,
+  "weekStart": ""
+}
