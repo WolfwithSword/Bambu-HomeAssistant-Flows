@@ -75,7 +75,7 @@
         "type": "link in",
         "z": "fbda6ab16491b918",
         "g": "7258bcda05ea8b85",
-        "name": "Printer - General - {PRINTER_MODEL} {PRINTER_NAME},
+        "name": "Printer - General - {PRINTER_MODEL} {PRINTER_NAME}",
         "links": [],
         "x": 1065,
         "y": 400,
@@ -755,7 +755,7 @@
         "type": "link in",
         "z": "fbda6ab16491b918",
         "g": "447d3cc9dac791a2",
-        "name": "Printer - Printer Parse - {PRINTER_MODEL} {PRINTER_NAME},
+        "name": "Printer - Printer Parse - {PRINTER_MODEL} {PRINTER_NAME}",
         "links": [],
         "x": 125,
         "y": 580,
@@ -869,7 +869,7 @@
         "type": "mqtt out",
         "z": "fbda6ab16491b918",
         "g": "21f4e96b26230c30",
-        "name": "bambu-mqtt-out {PRINTER_NAME},
+        "name": "bambu-mqtt-out {PRINTER_NAME}",
         "topic": "",
         "qos": "1",
         "retain": "false",
@@ -908,7 +908,7 @@
     {
         "id": "{GENERATED_PRINTER_MQTT_ID}",
         "type": "mqtt-broker",
-        "name": "Bambu {PRINTER_MODEL} MQTT {PRINTER_NAME},
+        "name": "Bambu {PRINTER_MODEL} MQTT {PRINTER_NAME}",
         "broker": "{PRINTER_IP}",
         "port": "8883",
         "tls": "",
@@ -1085,7 +1085,7 @@
                 "t": "set",
                 "p": "printer_name",
                 "pt": "flow",
-                "to": "{PRINTER_NAME},
+                "to": "{PRINTER_NAME}",
                 "tot": "str"
             },
             {
@@ -4211,7 +4211,7 @@
         "type": "mqtt in",
         "z": "fbda6ab16491b918",
         "g": "14f23434a23cdae7",
-        "name": "Bambu {PRINTER_MODEL} {PRINTER_NAME},
+        "name": "Bambu {PRINTER_MODEL} {PRINTER_NAME}",
         "topic": "",
         "qos": "2",
         "datatype": "json",
@@ -4324,7 +4324,7 @@
         "type": "inject",
         "z": "fbda6ab16491b918",
         "g": "14f23434a23cdae7",
-        "name": "Inject OFFLINE {PRINTER_NAME},
+        "name": "Inject OFFLINE {PRINTER_NAME}",
         "props": [
             {
                 "p": "payload"
