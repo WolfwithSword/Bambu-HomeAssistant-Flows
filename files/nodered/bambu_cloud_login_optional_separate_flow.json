@@ -1,0 +1,251 @@
+[
+    {
+        "id": "a8bb36f4c96539fb",
+        "type": "tab",
+        "label": "Bambu Labs Login",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "513f7a6c71b056d2",
+        "type": "http request",
+        "z": "a8bb36f4c96539fb",
+        "name": "sign in",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.bambulab.com/v1/user-service/user/login",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 610,
+        "y": 80,
+        "wires": [
+            [
+                "2926dee3ddcfdc55"
+            ]
+        ]
+    },
+    {
+        "id": "e2d0cff94bf02e27",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "name": "Build header and payload",
+        "func": "msg.headers = {\n  'Content-Type' : 'application/json'\n};\n\n\nmsg.payload = {\n  \"account\": flow.get(\"BAMBU_EMAIL\"),\n  \"password\": flow.get(\"BAMBU_PASSWORD\")\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 80,
+        "wires": [
+            [
+                "513f7a6c71b056d2"
+            ]
+        ]
+    },
+    {
+        "id": "2926dee3ddcfdc55",
+        "type": "json",
+        "z": "a8bb36f4c96539fb",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 390,
+        "y": 120,
+        "wires": [
+            [
+                "3470ef99be2e6022",
+                "d85c73e5dbb9cf5b"
+            ]
+        ]
+    },
+    {
+        "id": "5f3335d6cd76a63f",
+        "type": "inject",
+        "z": "a8bb36f4c96539fb",
+        "name": "Init",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "86400",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "955f493ad09c081d"
+            ]
+        ]
+    },
+    {
+        "id": "955f493ad09c081d",
+        "type": "change",
+        "z": "a8bb36f4c96539fb",
+        "name": "Bambu Account Config",
+        "rules": [
+            {
+                "t": "set",
+                "p": "BAMBU_EMAIL",
+                "pt": "flow",
+                "to": "{BAMBU_ACCOUNT_EMAIL}",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "BAMBU_PASSWORD",
+                "pt": "flow",
+                "to": "{BAMBU_ACCOUNT_PASSWORD}",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "BAMBU_REGION",
+                "pt": "global",
+                "to": "us.mqtt.bambulab.com",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "e2d0cff94bf02e27"
+            ]
+        ]
+    },
+    {
+        "id": "7a0cfe215e0a7604",
+        "type": "comment",
+        "z": "a8bb36f4c96539fb",
+        "name": "NOTES",
+        "info": "Change the following in *Bambu Account Config*\n\nBAMBU_EMAIL: Your bambu account email\nBAMBU_PASSWORD: Your bambu account password\nBAMBU_REGION: \n    If in China, use:     cn.mqtt.bambulab.com\n    Anywhere else, use:   us.mqtt.bambulab.com\n\nIf you signed up with a third party such as google, do the following:\n\n1) Go to bambulab website and log out if you are signed in\n2) In sign in page, click on Forgot (Forgot password)\n3) Complete the reset password flow\n\nYou now will have a password for your bambu account \nusing the same email from the third party.\n\nBonus: The third party login STILL WORKS!\n\n",
+        "x": 90,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "3470ef99be2e6022",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "name": "Set Access Token Global",
+        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b42f23c0c54390bc",
+        "type": "inject",
+        "z": "a8bb36f4c96539fb",
+        "name": "Trigger Token Delete",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 150,
+        "y": 220,
+        "wires": [
+            [
+                "ca527d3979a0003e"
+            ]
+        ]
+    },
+    {
+        "id": "ca527d3979a0003e",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "name": "Delete Access Token",
+        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", null);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d85c73e5dbb9cf5b",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "name": "Get jwt half",
+        "func": "msg.payload.jwthalf = msg.payload.accessToken.split(\".\")[1]\n\nlet pad = \"=\".repeat(((4 - (msg.payload.jwthalf).length % 4) % 4));\nmsg.payload.jwthalf = msg.payload.jwthalf + pad;\n\nvar payload = Buffer.from(msg.payload.jwthalf, 'base64')\nmsg = {\n    \"payload\": payload.toString()\n}\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 160,
+        "wires": [
+            [
+                "a6fdcf9dea19d6e8"
+            ]
+        ]
+    },
+    {
+        "id": "a6fdcf9dea19d6e8",
+        "type": "json",
+        "z": "a8bb36f4c96539fb",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 670,
+        "y": 160,
+        "wires": [
+            [
+                "74b588f633523219"
+            ]
+        ]
+    },
+    {
+        "id": "74b588f633523219",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "name": "Set Bambu MQTT Username Global",
+        "func": "global.set(\"BAMBU_MQTT_USER\", msg.payload.username);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    }
+]

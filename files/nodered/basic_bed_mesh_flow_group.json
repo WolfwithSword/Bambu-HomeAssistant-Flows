@@ -1,0 +1,833 @@
+[
+    {
+        "id": "40b2e704eefd62e1",
+        "type": "group",
+        "z": "fbda6ab16491b918",
+        "name": "Bed Mesh Parser - {PRINTER_MODEL} {PRINTER_NAME}",
+        "style": {
+            "stroke": "#92d04f",
+            "fill": "#9363b7",
+            "fill-opacity": "0.16",
+            "label": true,
+            "color": "#92d04f"
+        },
+        "nodes": [
+            "8cbcc2518bb88578",
+            "88c5fd6ecd7e759c",
+            "8f497caa1a935bbc",
+            "b13c20fc7ba936ff",
+            "cca119c7dfb496a6",
+            "7de5e9abab4d8338",
+            "3283e43cad3529ae",
+            "fc971be971f64ba7",
+            "e72d7015e57c20f8",
+            "05622166b0ca0330",
+            "b360255a177cd67a",
+            "ac916f22c82df203",
+            "24cc9339f7d7c497",
+            "320a9e3ba5045959",
+            "80f87bc2b2de479b",
+            "9049759452122840",
+            "37a495c063566b97",
+            "91a9f3a785e5167e",
+            "36fdeabb54b38c86",
+            "8c3888bbf1ce213c",
+            "b605d208757fde56",
+            "cc539923f0b07cb5",
+            "1e2b1247f1d0c0e1",
+            "c154af220552f516",
+            "29b479f5aa4d6618",
+            "4a5fb4819bb0abdd",
+            "6c9219a2f8830bd1",
+            "ef36e20e390ac4a3",
+            "85ecc7055cbdd1bd",
+            "eb5ddb19cdc36f91",
+            "0a0fb72bd4a876a4",
+            "1e5f1f148d3e556a",
+            "efb2ad2681ab781f",
+            "180dad9e5e162827",
+            "4469ca6a1831a575"
+        ],
+        "x": 2514,
+        "y": 59,
+        "w": 992,
+        "h": 482
+    },
+    {
+        "id": "8cbcc2518bb88578",
+        "type": "mqtt out",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "MQTT Out",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "489094618c340eef",
+        "x": 3410,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "88c5fd6ecd7e759c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Printer State",
+        "func": "\nmsg.machine_name = flow.get(\"model\")+\"_\" + flow.get(\"printer_name\"); \nlet old = msg.topic;\nif(msg.raw == []) {\n    msg.payload = \"None\";\n}\nlet root_topic = flow.get(\"root_topic\");\nlet payload = msg.payload;\nif(msg.payload == undefined || msg.payload == \"\") {\n    return;\n}\nif (!flow.get(\"can_bedmesh\")) {\n    msg.payload = false;\n    msg.topic = root_topic + \"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n    msg.payload = { \"Reason\": \"Your firmware does not support bed-mesh / mc_print messages\" };\n    msg.topic = root_topic + \"/sensor/\" + msg.machine_name + \"/\" + old + \"/attr\";\n    node.send(msg);\n    return;\n}\nif (msg.payload != \"None\" && !msg.payload.includes(\"MQTT\")) {\n    msg.payload = \"Ready\";\n    msg.topic = root_topic+\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n}\nelse {\n    msg.topic = root_topic+\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n}\n\nmsg.payload = { \"Visualizer\": \"https://www.wolfwithsword.com/bambu-printer-bed-visualizer/\" };\nmsg.topic = root_topic+\"/sensor/\" + msg.machine_name + \"/\" + old + \"/attr\";\n\nif (payload != \"None\") {\n    msg.payload[\"Data\"] = payload;\n    if (payload.includes(\"MQTT\")) {\n        msg.payload['Data'] = root_topic+\"/sensor/\" + msg.machine_name + \"/\" + old + \"/raw\";\n    }\n}\nnode.send(msg);\n\n\nmsg.topic = root_topic+\"/sensor/\" + msg.machine_name + \"/\" + old + \"/raw\";\nmsg.payload = msg.raw;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3370,
+        "y": 380,
+        "wires": [
+            [
+                "1e2b1247f1d0c0e1"
+            ]
+        ]
+    },
+    {
+        "id": "8f497caa1a935bbc",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Printer Config",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\nmsg.machine_name = flow.get(\"model\")+\"_\" + flow.get(\"printer_name\");\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.model = flow.get(\"model\");\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\ndata.payload = payload\n\ndata.qos = 1;\ndata.retain = true;\nnode.send(data);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3360,
+        "y": 340,
+        "wires": [
+            [
+                "1e2b1247f1d0c0e1"
+            ]
+        ]
+    },
+    {
+        "id": "b13c20fc7ba936ff",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Bambu {PRINTER_MODEL} {PRINTER_NAME}",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "84f61d394ba2ab34",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2710,
+        "y": 420,
+        "wires": [
+            [
+                "cca119c7dfb496a6"
+            ]
+        ]
+    },
+    {
+        "id": "cca119c7dfb496a6",
+        "type": "json",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "property": "payload.print",
+        "action": "obj",
+        "pretty": false,
+        "x": 2890,
+        "y": 420,
+        "wires": [
+            [
+                "7de5e9abab4d8338"
+            ]
+        ]
+    },
+    {
+        "id": "7de5e9abab4d8338",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Inject Machine Details",
+        "func": "let machine_name = flow.get(\"printer_name\");\nlet machine_serial = flow.get(\"printer_serial\");\nlet manufacturer = \"Bambu Labs\";\nlet model = flow.get(\"model\");\n\n\nif(msg.payload.mc_print != undefined) {\n    msg.payload.mc_print.machine_name = machine_name;\n    msg.payload.mc_print.machine_serial = machine_serial;\n    msg.payload.mc_print.manufacturer = manufacturer;\n    if(msg.payload.mc_print.param.includes(\"[AMS]\")) {\n        msg.payload.mc_print.model = \"AMS\";\n    }\n    else {\n        msg.payload.mc_print.model = model;\n        node.send(msg);\n    }\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2700,
+        "y": 460,
+        "wires": [
+            [
+                "3283e43cad3529ae"
+            ]
+        ]
+    },
+    {
+        "id": "3283e43cad3529ae",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Cull Fail Msg",
+        "func": "if(msg.payload != undefined && Object.keys(msg.payload).length > 0){\n    node.send(msg);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2890,
+        "y": 460,
+        "wires": [
+            [
+                "fc971be971f64ba7"
+            ]
+        ]
+    },
+    {
+        "id": "fc971be971f64ba7",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "property": "payload.mc_print.param",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "\\[BMC\\] X\\d+\\.\\d+ Y\\d+\\.\\d+,z_c=",
+                "vt": "str",
+                "case": false
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2650,
+        "y": 500,
+        "wires": [
+            [
+                "e72d7015e57c20f8"
+            ]
+        ]
+    },
+    {
+        "id": "e72d7015e57c20f8",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Parse coord",
+        "func": "let param = msg.payload.mc_print.param;\nlet x = param.match(/X(\\d+\\.\\d+)/)[1];\nlet y = param.match(/Y(\\d+\\.\\d+)/)[1];\nlet z = param.match(/z_c=\\s+(-?\\d+\\.\\d+)/)[1];\nlet coords = [x, y, z];\nmsg.payload = {\"coord\": {\"x\": parseFloat(x), \"y\":parseFloat(y), \"z\":parseFloat(z)}};\n\nlet abl = flow.get('abl');\nabl.push(msg.payload);\nnode.send(msg);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2790,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "05622166b0ca0330",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2700,
+        "y": 260,
+        "wires": [
+            [
+                "ac916f22c82df203"
+            ]
+        ]
+    },
+    {
+        "id": "b360255a177cd67a",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Auto bed leveling",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Offline",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Idle",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Printing",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 2870,
+        "y": 240,
+        "wires": [
+            [
+                "24cc9339f7d7c497",
+                "8c3888bbf1ce213c"
+            ],
+            [
+                "24cc9339f7d7c497",
+                "8c3888bbf1ce213c"
+            ],
+            [
+                "29b479f5aa4d6618"
+            ],
+            [
+                "29b479f5aa4d6618"
+            ]
+        ]
+    },
+    {
+        "id": "ac916f22c82df203",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 2850,
+        "y": 180,
+        "wires": [
+            [
+                "b360255a177cd67a"
+            ]
+        ]
+    },
+    {
+        "id": "24cc9339f7d7c497",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "abl",
+                "pt": "flow",
+                "to": "[]",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3150,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "320a9e3ba5045959",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3100,
+        "y": 300,
+        "wires": [
+            [
+                "9049759452122840"
+            ]
+        ]
+    },
+    {
+        "id": "80f87bc2b2de479b",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Init",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.2",
+        "topic": "bed_mesh_data",
+        "payload": "None",
+        "payloadType": "str",
+        "x": 2610,
+        "y": 140,
+        "wires": [
+            [
+                "ef36e20e390ac4a3",
+                "0a0fb72bd4a876a4"
+            ]
+        ]
+    },
+    {
+        "id": "9049759452122840",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Create Matrix",
+        "func": "let abl = flow.get('abl');\nif(abl.length > 0) {\n    let setX = new Set();\n    let setY = new Set();\n    for (let c of abl) {\n        setX.add(c.coord.x);\n        setY.add(c.coord.y);\n    }\n    let xs = Array.from(setX).sort(function (a, b) {\n        return a - b;\n    });\n    let ys = Array.from(setY).sort(function (a, b) {\n        return a - b;\n    });\n\n\n    let data = new Array(ys.length).fill(0).map(() => new Array(xs.length).fill(0));\n    for (var c of abl) {\n        let coord = c.coord;\n        let x = xs.indexOf(coord.x);\n        let y = ys.indexOf(coord.y);\n        data[y][x] = coord.z;\n    }\n    msg.payload = data;\n    msg.raw = data;\n    node.send(msg);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3100,
+        "y": 340,
+        "wires": [
+            [
+                "37a495c063566b97"
+            ]
+        ]
+    },
+    {
+        "id": "37a495c063566b97",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Format Pastebin Call",
+        "func": "\nlet payload = {\n    \"api_paste_code\": encodeURIComponent(JSON.stringify(msg.payload)),\n    \"api_paste_name\": encodeURIComponent(\"bambu_\"+flow.get(\"printer_name\")+\"_bedmesh.txt\"),\n    \"api_paste_expire_date\": \"1M\",\n    \"api_option\":\"paste\",\n    \"api_paste_private\":\"1\"\n};\n\nlet url = \"https://pastebin.com/api/api_post.php\"\nlet data = \"\";\n\nfor(var key of Object.keys(payload)) {\n    data = data + \"&\" + key +\"=\"+payload[key];\n}\ndata += \"&api_dev_key=\" + \"{PASTEBIN_KEY}\";\nmsg.payload = data;\nmsg.url = url;\n\nnode.send(msg);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3120,
+        "y": 380,
+        "wires": [
+            [
+                "91a9f3a785e5167e"
+            ]
+        ]
+    },
+    {
+        "id": "91a9f3a785e5167e",
+        "type": "http request",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "Content-type",
+                "valueType": "other",
+                "valueValue": "application/x-www-form-urlencoded"
+            }
+        ],
+        "x": 3110,
+        "y": 420,
+        "wires": [
+            [
+                "36fdeabb54b38c86"
+            ]
+        ]
+    },
+    {
+        "id": "36fdeabb54b38c86",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Handle Response",
+        "func": "if (msg.payload != undefined) {\n    if (msg.payload.includes(\"Bad API\")) {\n        msg.payload = \"Check MQTT\";\n    }\n    msg.payload = msg.payload.replace(\".com\", \".com/raw\")\n    msg.topic = \"bed_mesh_data\";\n    node.send(msg);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3150,
+        "y": 460,
+        "wires": [
+            [
+                "6c9219a2f8830bd1"
+            ]
+        ]
+    },
+    {
+        "id": "8c3888bbf1ce213c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Set None",
+        "func": "msg.topic = \"bed_mesh_data\";\nmsg.payload = \"None\";\nmsg.raw = [];\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3020,
+        "y": 140,
+        "wires": [
+            [
+                "b605d208757fde56"
+            ]
+        ]
+    },
+    {
+        "id": "b605d208757fde56",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3140,
+        "y": 100,
+        "wires": [
+            [
+                "cc539923f0b07cb5"
+            ]
+        ]
+    },
+    {
+        "id": "cc539923f0b07cb5",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "x": 3280,
+        "y": 140,
+        "wires": [
+            [
+                "88c5fd6ecd7e759c",
+                "8f497caa1a935bbc"
+            ]
+        ]
+    },
+    {
+        "id": "1e2b1247f1d0c0e1",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "x": 3480,
+        "y": 420,
+        "wires": [
+            [
+                "8cbcc2518bb88578"
+            ]
+        ]
+    },
+    {
+        "id": "c154af220552f516",
+        "type": "comment",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Bed Mesh Flow: Version 2.0.0",
+        "info": "Version 2.0.0: 2024-??-??\n- Rebase version with new repo\n\n===\nRev 49: 2023-05-05\n- Initial Creation",
+        "x": 2660,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "29b479f5aa4d6618",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "property": "abl",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "[]",
+                "vt": "jsonata"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 3030,
+        "y": 260,
+        "wires": [
+            [
+                "320a9e3ba5045959"
+            ]
+        ]
+    },
+    {
+        "id": "4a5fb4819bb0abdd",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3160,
+        "y": 180,
+        "wires": [
+            [
+                "24cc9339f7d7c497"
+            ]
+        ]
+    },
+    {
+        "id": "6c9219a2f8830bd1",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "x": 3260,
+        "y": 160,
+        "wires": [
+            [
+                "cc539923f0b07cb5",
+                "4a5fb4819bb0abdd"
+            ]
+        ]
+    },
+    {
+        "id": "ef36e20e390ac4a3",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "property": "has_basic_flow",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2850,
+        "y": 140,
+        "wires": [
+            [
+                "8c3888bbf1ce213c",
+                "24cc9339f7d7c497"
+            ]
+        ]
+    },
+    {
+        "id": "85ecc7055cbdd1bd",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2700,
+        "y": 300,
+        "wires": [
+            [
+                "180dad9e5e162827"
+            ]
+        ]
+    },
+    {
+        "id": "eb5ddb19cdc36f91",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Subscribe",
+        "func": "",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/stage/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "finalize": "",
+        "libs": [],
+        "x": 2700,
+        "y": 180,
+        "wires": [
+            [
+                "4469ca6a1831a575"
+            ]
+        ]
+    },
+    {
+        "id": "0a0fb72bd4a876a4",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "x": 2560,
+        "y": 200,
+        "wires": [
+            [
+                "85ecc7055cbdd1bd"
+            ]
+        ]
+    },
+    {
+        "id": "1e5f1f148d3e556a",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Subscribe",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": \"device/\"+flow.get(\"printer_serial\")+\"/report\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2660,
+        "y": 380,
+        "wires": [
+            [
+                "efb2ad2681ab781f"
+            ]
+        ]
+    },
+    {
+        "id": "efb2ad2681ab781f",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2800,
+        "y": 380,
+        "wires": [
+            [
+                "b13c20fc7ba936ff"
+            ]
+        ]
+    },
+    {
+        "id": "180dad9e5e162827",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "Check Values Error",
+        "func": "flow.set(\"has_bedmesh_flow\", true);\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"Bed Mesh Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (testValue(flow.get(\"printer_ip\"))) {\n    node.error(\"Printer IP is not set in flow properties\");\n}\nif (testValue(flow.get(\"access_code\"))) {\n    node.error(\"Printer LAN Access Code is not set in flow properties\")\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\n\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2750,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4469ca6a1831a575",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "40b2e704eefd62e1",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2690,
+        "y": 220,
+        "wires": [
+            [
+                "05622166b0ca0330"
+            ]
+        ]
+    }
+]

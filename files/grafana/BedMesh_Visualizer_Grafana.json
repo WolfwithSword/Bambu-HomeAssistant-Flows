@@ -15,13 +15,13 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.5.1"
+      "version": "10.0.2"
     },
     {
       "type": "panel",
       "id": "nline-plotlyjs-panel",
       "name": "Plotly",
-      "version": "1.3.0"
+      "version": "1.5.0"
     },
     {
       "type": "datasource",
@@ -79,6 +79,9 @@
       },
       "id": 1,
       "options": {
+        "allData": {
+          "opacity": 1
+        },
         "config": {
           "displayModeBar": false
         },
@@ -89,6 +92,13 @@
         ],
         "layout": {
           "autosize": true,
+          "font": {
+            "color": "rgb(25,27,31)",
+            "family": "Inter, Helvetica, Arial, sans-serif"
+          },
+          "hoverlabel": {
+            "bgcolor": "white"
+          },
           "margin": {
             "b": 0,
             "l": 0,
@@ -133,6 +143,11 @@
               "type": "linear"
             }
           },
+          "xaxis": {
+            "automargin": true,
+            "autorange": true,
+            "type": "date"
+          },
           "yaxis": {
             "automargin": true,
             "autorange": true,
@@ -143,7 +158,9 @@
           }
         },
         "onclick": "// console.log(data);\n// window.updateVariables({query:{'var-project':'test'}, partial: true})",
-        "script": "let d = data.series[0].fields[0].values.buffer[0];\nd = d.replaceAll(\"{\",\"[\");\nd = d.replaceAll(\"}\",\"]\");\nd = JSON.parse(d)\nreturn { data: [{\"z\": d}] };\n",
+        "resScale": 2,
+        "script": "let d = {};\nif(data.series[0].fields[0].values.buffer != undefined) {\n  d = data.series[0].fields[0].values.buffer[0];\n\n  d = d.replaceAll(\"{\",\"[\");\n  d = d.replaceAll(\"}\",\"]\");\n  d = JSON.parse(d)\n\n}\nelse {\n  d = data.series[0].fields[0].values;\n  d = String(d).replaceAll(\"{\",\"[\");\n  d = String(d).replaceAll(\"}\",\"]\");\n  d = JSON.parse(d)\n}\nreturn { data: [{\"z\": d}] };",
+        "yamlMode": false,
         "yaml_mode": false
       },
       "targets": [
@@ -199,6 +216,9 @@
       },
       "id": 2,
       "options": {
+        "allData": {
+          "opacity": 1
+        },
         "config": {
           "displayModeBar": false
         },
@@ -209,6 +229,13 @@
         ],
         "layout": {
           "autosize": true,
+          "font": {
+            "color": "rgb(25,27,31)",
+            "family": "Inter, Helvetica, Arial, sans-serif"
+          },
+          "hoverlabel": {
+            "bgcolor": "white"
+          },
           "margin": {
             "b": 0,
             "l": 0,
@@ -253,6 +280,11 @@
               "type": "linear"
             }
           },
+          "xaxis": {
+            "automargin": true,
+            "autorange": true,
+            "type": "date"
+          },
           "yaxis": {
             "automargin": true,
             "autorange": true,
@@ -263,7 +295,9 @@
           }
         },
         "onclick": "// console.log(data);\n// window.updateVariables({query:{'var-project':'test'}, partial: true})",
-        "script": "let d = data.series[0].fields[0].values.buffer[0];\nd = d.replaceAll(\"{\",\"[\");\nd = d.replaceAll(\"}\",\"]\");\nd = JSON.parse(d)\nreturn { data: [{\"z\": d}] };\n",
+        "resScale": 2,
+        "script": "let d = {};\nif(data.series[0].fields[0].values.buffer != undefined) {\n  d = data.series[0].fields[0].values.buffer[0];\n\n  d = d.replaceAll(\"{\",\"[\");\n  d = d.replaceAll(\"}\",\"]\");\n  d = JSON.parse(d)\n\n}\nelse {\n  d = data.series[0].fields[0].values;\n  d = String(d).replaceAll(\"{\",\"[\");\n  d = String(d).replaceAll(\"}\",\"]\");\n  d = JSON.parse(d)\n}\nreturn { data: [{\"z\": d}] };",
+        "yamlMode": false,
         "yaml_mode": false
       },
       "targets": [
@@ -378,7 +412,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
@@ -549,7 +583,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
@@ -720,7 +754,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
@@ -891,6 +925,6 @@
   "timezone": "",
   "title": "Bambu Bed Mesh Visualizer",
   "uid": "a8d3979b-b78c-447d-9b9e-67cc8e627db8",
-  "version": 20,
+  "version": 23,
   "weekStart": ""
 }

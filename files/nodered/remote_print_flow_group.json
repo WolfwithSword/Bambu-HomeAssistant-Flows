@@ -1,0 +1,1329 @@
+[
+    {
+        "id": "bb9dffae323b6310",
+        "type": "group",
+        "z": "fbda6ab16491b918",
+        "name": "Print File Selector - {PRINTER_MODEL} {PRINTER_NAME}",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "d944cafd5681f32b",
+            "03587c53b099b76c",
+            "728d5c9bcbc5d97e",
+            "2196bc51b771b671",
+            "2bec4f3a309b7220",
+            "e271d479fb091e51",
+            "a34d8e29aa8729fe",
+            "a8ad6e035dcc2b23",
+            "1dea909495a29f8d",
+            "5f42bd36240b725a",
+            "04a43722d69b7b32",
+            "2b07025e4b6d40c2",
+            "a5d80d8e8c7c7c51",
+            "ec1b76c62de8924a",
+            "b5ad8602cc43dea7",
+            "fb2de4b4ba4298d0",
+            "d6a8ed80650b17a0",
+            "000015e4b0dfbfe6",
+            "ac336f79b12192d2",
+            "1a5c25285389e8ea",
+            "0b77b5da884b35b7",
+            "5a0e7674add44437",
+            "0334752848227d2c",
+            "549c2180bbd85815",
+            "b0e277cec125a10b",
+            "30200abf2a82cb86",
+            "663d4c5f5ed9c210",
+            "5ecfe9b2dc948e5e",
+            "63e1d59cc9f131ca",
+            "a45d4fa5185d9399",
+            "79e01cedc907d8b1",
+            "4c9375ba5a2dd908",
+            "2338d91b8a08edcf",
+            "6169aa51e9351c7f",
+            "2622614e22fc9bd1",
+            "4dd4a3fec882c618",
+            "cc7f156ca0dd0aec",
+            "fe62c98924938374",
+            "3c79028f2fd1aae6",
+            "6423f25972cee0e3",
+            "4e4dfecfb9bf07d0",
+            "c00b19c39e4b97a2",
+            "b54d51ba9776afb0",
+            "e74c2ccb931d8117",
+            "24efc147e5e4325c",
+            "d256effa28784620"
+        ],
+        "x": 2514,
+        "y": 1119,
+        "w": 1132,
+        "h": 682
+    },
+    {
+        "id": "d944cafd5681f32b",
+        "type": "python-function-ps",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "List 3MF Files (Py)",
+        "pythonPathType": "local",
+        "pythonPath": "python3",
+        "globalPythonName": "",
+        "importPathList": [],
+        "fnCodePre": "#comment",
+        "fnCode": "import ftplib\nimport ssl\nimport platform\n\nftplib.ssl_version = ssl.PROTOCOL_TLSv1_2\n\nclass ImplicitFTP_TLS(ftplib.FTP_TLS):\n    \"\"\"FTP_TLS subclass that automatically wraps sockets in SSL to support implicit FTPS.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self._sock = None\n\n    @property\n    def sock(self):\n        \"\"\"Return the socket.\"\"\"\n        return self._sock\n\n    @sock.setter\n    def sock(self, value):\n        \"\"\"When modifying the socket, ensure that it is ssl wrapped.\"\"\"\n        if value is not None and not isinstance(value, ssl.SSLSocket):\n            value = self.context.wrap_socket(value)\n        self._sock = value\n\n    def ntransfercmd(self, cmd, rest=None):\n        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)\n        if self._prot_p:\n            session = self.sock.session\n            if isinstance(self.sock, ssl.SSLSocket):\n                    session = self.sock.session\n            conn = self.context.wrap_socket(conn,\n                                            server_hostname=self.host,\n                                            session=session)  # this is the fix\n        return conn, size\n        \nftps = ImplicitFTP_TLS()\n\nftps.connect(host=msg[\"printer_ip\"], port=990)\n\nftps.login(user=\"bblp\", passwd=msg[\"access_code\"])\nftps.prot_p()\n\nli = ftps.nlst(\"*.3mf\")\nli2 = ftps.nlst(\"/cache\")\n\nli = li + li2\n\nli = [ x for x in li if \".3mf\" in x ]\n\nmsg[\"files\"] = li\n\nftps.close()\nreturn msg\n\n",
+        "fnCodePost": "#comment",
+        "x": 2890,
+        "y": 1240,
+        "wires": [
+            [
+                "728d5c9bcbc5d97e"
+            ]
+        ]
+    },
+    {
+        "id": "03587c53b099b76c",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "List Filtes",
+        "props": [],
+        "repeat": "90",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 2630,
+        "y": 1240,
+        "wires": [
+            [
+                "fe62c98924938374"
+            ]
+        ]
+    },
+    {
+        "id": "728d5c9bcbc5d97e",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "format",
+        "func": "let list = {};\nmsg.count = 0;\nif (msg.files != undefined) {\n    msg.count = msg.files.length\n}\n\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\")+\"_\" + flow.get(\"printer_name\");\n\nmsg.files.push(\"\");\nlet filemsg = {};\nfilemsg.topic = \"files\";\nfilemsg.type = \"select\";\nfilemsg.payload = msg.files;\nfilemsg.model = msg.model;\nfilemsg.machine_name = msg.machine_name;\nnode.send(filemsg);\n\nlet filecountmsg = {};\nfilecountmsg.topic = \"file_count\";\nfilecountmsg.type = \"sensor\";\nfilecountmsg.payload = msg.count;\nfilecountmsg.model = msg.model;\nfilecountmsg.machine_name = msg.machine_name;\nnode.send(filecountmsg);\n\nlet toggle = {};\ntoggle.type = \"switch\";\ntoggle.machine_name = msg.machine_name;\ntoggle.model = msg.model;\n\ntoggle.topic = \"timelapse\";\nnode.send(toggle);\n\ntoggle.topic = \"bed_leveling\";\nnode.send(toggle);\n\ntoggle.topic = \"vibration_calibration\";\nnode.send(toggle);\n\ntoggle.topic = \"flow_calibration\";\nnode.send(toggle);\n\ntoggle.topic = \"first_layer_inspection\";\nnode.send(toggle);\n\ntoggle.topic = \"use_AMS\";\nnode.send(toggle);\n\nlet input = {};\ninput.topic = \"name\";\ninput.type = \"text\";\n\ninput.machine_name = msg.machine_name;\ninput.model = msg.model;\n\nnode.send(input);\n\nlet platenum = {};\nplatenum.topic = \"plate_number\";\nplatenum.type = \"number\";\n\nplatenum.machine_name = msg.machine_name;\nplatenum.model = msg.model;\nnode.send(platenum);\n\nlet print_set = {};\nprint_set.topic=\"print_with_settings\";\nprint_set.type = \"button\";\nprint_set.machine_name = msg.machine_name;\nprint_set.model = msg.model;\nnode.send(print_set);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2810,
+        "y": 1280,
+        "wires": [
+            [
+                "2622614e22fc9bd1"
+            ]
+        ]
+    },
+    {
+        "id": "2196bc51b771b671",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Printer State",
+        "func": "let printer_name = msg.machine_name;\nif(msg.payload == undefined && msg.values == undefined) {\n    return;\n}\nlet root_topic = flow.get(\"root_topic\");\nlet type = \"switch\";\nmsg.machine_name = msg.machine_name + \"_Directory\";\nif (msg.topic == \"file_count\") {\n    msg.topic = root_topic+\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n}\nelse if(msg.values != undefined){\n   if (msg.topic == \"plate_number\" && (msg.values.plate == undefined || isNaN(msg.values.plate))) {\n        msg.payload = 1;\n        msg.topic = root_topic+\"/\" + \"number\" + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/set\";\n        node.send(msg);\n\n        // assume if this is nan, all others have not been initialized\n        msg.topic = root_topic+\"/\" + \"switch\" + \"/\" + msg.machine_name + \"/\" + \"bed_leveling\" + \"/set\";\n        msg.payload = 'off';\n        node.send(msg);\n\n       msg.topic = root_topic+\"/\" + \"switch\" + \"/\" + msg.machine_name + \"/\" + \"timelapse\" + \"/set\";\n       node.send(msg);\n\n       msg.topic = root_topic+\"/\" + \"switch\" + \"/\" + msg.machine_name + \"/\" + \"use_AMS\" + \"/set\";\n       node.send(msg);\n\n       msg.topic = root_topic+\"/\" + \"switch\" + \"/\" + msg.machine_name + \"/\" + \"vibration_calibration\" + \"/set\";\n       node.send(msg);\n\n       msg.topic = root_topic+\"/\" + \"switch\" + \"/\" + msg.machine_name + \"/\" + \"flow_calibration\" + \"/set\";\n       node.send(msg);\n\n       msg.topic = root_topic+\"/\" + \"switch\" + \"/\" + msg.machine_name + \"/\" + \"first_layer_inspection\" + \"/set\";\n       node.send(msg);\n\n\n       msg.topic = root_topic+\"/\" + \"text\" + \"/\" + msg.machine_name + \"/\" + \"name\" + \"/set\";\n       msg.payload = \"\";\n       node.send(msg);\n\n\n       msg.topic = root_topic+\"/\" + \"select\" + \"/\" + msg.machine_name + \"/\" + \"files\" + \"/set\";\n       msg.payload = \"\";\n       node.send(msg);\n\n    }\n    else {\n        return;\n    }\n\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3230,
+        "y": 1360,
+        "wires": [
+            [
+                "0b77b5da884b35b7"
+            ]
+        ]
+    },
+    {
+        "id": "2bec4f3a309b7220",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Printer Config",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\nlet root_topic = flow.get(\"root_topic\");\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet type = \"sensor\";\nif (msg.type != undefined) {\n    type = msg.type;\n}\n\nif (msg.topic == \"files\") {\n    type = \"select\";\n}\nlet printer_name = msg.machine_name;\nmsg.machine_name = msg.machine_name + \"_Directory\";\n\nlet base_topic = root_topic+\"/\" + type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\nif (msg.topic == \"serial_number\") {\n    device.identifiers[1] = msg.payload;\n}\n\npayload.availability_topic = root_topic+\"/\" + \"sensor\" + \"/\" + printer_name + \"/\" + \"status\" + \"/state\";\n\ndata.retain = true;\nif (msg.topic == \"files\") {\n    type = \"select\";\n    payload.command_topic = root_topic+\"/\" + \"select\" + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/set\";\n    payload.state_topic = root_topic+\"/\" + \"select\" + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/set\";\n    payload.options = msg.payload;\n}\n\nelse if (msg.topic == \"file_count\") {\n    payload.state_topic = base_topic + \"/state\";\n}\n\nelse if (type == \"switch\") {\n    payload.command_topic = root_topic+\"/\" + type + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/set\";\n    payload.state_topic = root_topic+\"/\" + type + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/set\";\n    payload.payload_on = 'on';\n    payload.payload_off = 'off';\n    payload.state_on = 'on';\n    payload.state_off = 'off';\n    // I give up on making AMS disabled if you have none selected. MQTT Just doesn't let me set it unavailable consistently\n    /*if (msg.topic == \"use_AMS\") {\n        if (msg.values != undefined && msg.values.ams_count != undefined) {\n            if (isNaN(msg.values.ams_count) || msg.values.ams_count <= 0) {\n                payload.availability_topic = root_topic+\"/\" + \"sensor\" + \"/\" + printer_name + \"/\" + \"status\" + \"/DO_NOT_EXIST\";\n                data.reset = true;\n            }\n        }\n        else {\n            payload.availability_topic = root_topic+\"/\" + \"sensor\" + \"/\" + printer_name + \"/\" + \"status\" + \"/state\";\n            data.reset = true;\n        }\n    }*/\n    /*if (msg.topic == \"use_AMS\") {\n        payload.availability_topic = root_topic+\"/\" + \"sensor\" + \"/\" + printer_name + \"/\" + \"ams_count\" + \"/state\";\n        payload.availability_template = '{{ 1 if (value >= 1) else 0 }}'\n        payload.payload_available = 1;\n        payload.payload_not_available = 0;\n    }*/\n}\n\nelse if (type == \"button\") {\n    payload.command_topic = root_topic+\"/\" + type + \"/\" + msg.machine_name + \"/\" + msg.topic;\n    // payload.state_topic = root_topic+\"/\" + type + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n}\n\nelse {\n    payload.command_topic = root_topic+\"/\" + type + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/set\";\n    payload.state_topic = root_topic+\"/\" + type + \"/\" + msg.machine_name + \"/\" + msg.topic + \"/set\";\n}\nif (type == \"number\") {\n    payload.min = 1;\n    payload.max = 100;\n    payload.mode = \"box\";\n}\nif (type == \"text\") {\n}\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.model = msg.model;\ndevice.name = msg.machine_name;\ndevice.via_device = printer_name;\n\nif (msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\ndata.payload = payload;\n\ndata.qos = 1;\n\nnode.send(data);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3220,
+        "y": 1320,
+        "wires": [
+            [
+                "0b77b5da884b35b7"
+            ]
+        ]
+    },
+    {
+        "id": "e271d479fb091e51",
+        "type": "mqtt out",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "MQTT Out",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "489094618c340eef",
+        "x": 3550,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "a34d8e29aa8729fe",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2640,
+        "y": 1560,
+        "wires": [
+            [
+                "1dea909495a29f8d"
+            ]
+        ]
+    },
+    {
+        "id": "a8ad6e035dcc2b23",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Print File",
+        "func": "if (msg.values.name == undefined || msg.values.name == \"\" || msg.values.name == \"unknown\" || msg.values.name == \"unavailable\") {\n    msg.values.name = msg.values.file;\n    msg.values.name = msg.values.name.replace(\".gcode\", \"\");\n    msg.values.name = msg.values.name.replace(\".3mf\", \"\");\n    msg.values.name = msg.values.name.replace(\"/cache/\", \"\");\n    msg.values.name = msg.values.name.replace(\"cache/\", \"\");\n}\nif(msg.values.plate == undefined || msg.values.plate <=0) {\n    msg.values.plate = 1;\n}\nif(isNaN(msg.values.ams_count) || msg.values.ams_count <= 0) {\n    msg.values.ams = false;\n}\n\nlet template = {\n    \"print\" : {\n        \"command\": \"project_file\",\n        \"param\": `Metadata/plate_${msg.values.plate}.gcode`,\n        \"url\": `ftp://${msg.values.file}`,\n        \"subtask_name\": msg.values.name,\n        \"timelapse\": msg.values.timelapse,\n        \"bed_leveling\": msg.values.bed_level,\n        \"flow_cali\": msg.values.flow_cali,\n        \"vibration_cali\":  msg.values.vibration_cali,\n        \"layer_inspect\": msg.values.inspect,\n        \"use_ams\": msg.values.ams,\n        \"sequence_id\": \"2106\"\n    }\n}\n// ams_mapping: [-1, 1]\nif(msg.values.file == undefined || msg.values.file == \"\") {\n    return;\n}\nmsg.payload = template;\nmsg.topic = `device/${msg.values.printer_serial}/request`;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3120,
+        "y": 1620,
+        "wires": [
+            [
+                "3c79028f2fd1aae6"
+            ]
+        ]
+    },
+    {
+        "id": "1dea909495a29f8d",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Printer State",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
+        "state_type": "str",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.printer_status",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2830,
+        "y": 1560,
+        "wires": [
+            [
+                "000015e4b0dfbfe6"
+            ]
+        ]
+    },
+    {
+        "id": "5f42bd36240b725a",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Enable Bed Levelling",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "switch.{HA_PRINTER_ENTITY_NAME}_directory_bed_leveling",
+        "state_type": "habool",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.bed_level",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2820,
+        "y": 1620,
+        "wires": [
+            [
+                "04a43722d69b7b32"
+            ]
+        ]
+    },
+    {
+        "id": "04a43722d69b7b32",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Enable Timelapse",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "switch.{HA_PRINTER_ENTITY_NAME}_directory_timelapse",
+        "state_type": "habool",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.timelapse",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2690,
+        "y": 1680,
+        "wires": [
+            [
+                "2b07025e4b6d40c2"
+            ]
+        ]
+    },
+    {
+        "id": "2b07025e4b6d40c2",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Enable Flow",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "switch.{HA_PRINTER_ENTITY_NAME}_directory_flow_calibration",
+        "state_type": "habool",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.flow_cali",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2870,
+        "y": 1680,
+        "wires": [
+            [
+                "a5d80d8e8c7c7c51"
+            ]
+        ]
+    },
+    {
+        "id": "a5d80d8e8c7c7c51",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Enable Vibration",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "switch.{HA_PRINTER_ENTITY_NAME}_directory_vibration_calibration",
+        "state_type": "habool",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.vibration_cali",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2680,
+        "y": 1720,
+        "wires": [
+            [
+                "ec1b76c62de8924a"
+            ]
+        ]
+    },
+    {
+        "id": "ec1b76c62de8924a",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Enable Layer Inspect",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "switch.{HA_PRINTER_ENTITY_NAME}_directory_first_layer_inspection",
+        "state_type": "habool",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.inspect",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2880,
+        "y": 1720,
+        "wires": [
+            [
+                "b5ad8602cc43dea7"
+            ]
+        ]
+    },
+    {
+        "id": "b5ad8602cc43dea7",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Enable AMS",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "switch.{HA_PRINTER_ENTITY_NAME}_directory_use_ams",
+        "state_type": "habool",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.ams",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2670,
+        "y": 1760,
+        "wires": [
+            [
+                "fb2de4b4ba4298d0"
+            ]
+        ]
+    },
+    {
+        "id": "fb2de4b4ba4298d0",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Print Name",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "text.{HA_PRINTER_ENTITY_NAME}_directory_name",
+        "state_type": "str",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.name",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2830,
+        "y": 1760,
+        "wires": [
+            [
+                "d6a8ed80650b17a0"
+            ]
+        ]
+    },
+    {
+        "id": "d6a8ed80650b17a0",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Print Plate",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "number.{HA_PRINTER_ENTITY_NAME}_directory_plate_number",
+        "state_type": "num",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.plate",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2990,
+        "y": 1760,
+        "wires": [
+            [
+                "1a5c25285389e8ea"
+            ]
+        ]
+    },
+    {
+        "id": "000015e4b0dfbfe6",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "property": "values.printer_status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "RUNNING",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "OFFLINE",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "PAUSED",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "PAUSE",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 5,
+        "x": 2650,
+        "y": 1620,
+        "wires": [
+            [],
+            [],
+            [],
+            [],
+            [
+                "5f42bd36240b725a"
+            ]
+        ]
+    },
+    {
+        "id": "ac336f79b12192d2",
+        "type": "mqtt out",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "bambu-mqtt-out {PRINTER_NAME}",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "84f61d394ba2ab34",
+        "x": 3210,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "1a5c25285389e8ea",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Print File",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "select.{HA_PRINTER_ENTITY_NAME}_directory_files",
+        "state_type": "str",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.file",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 3140,
+        "y": 1760,
+        "wires": [
+            [
+                "0334752848227d2c"
+            ]
+        ]
+    },
+    {
+        "id": "0b77b5da884b35b7",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "x": 3340,
+        "y": 1360,
+        "wires": [
+            [
+                "63e1d59cc9f131ca"
+            ]
+        ]
+    },
+    {
+        "id": "5a0e7674add44437",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "x": 2860,
+        "y": 1320,
+        "wires": [
+            [
+                "2bec4f3a309b7220",
+                "30200abf2a82cb86"
+            ]
+        ]
+    },
+    {
+        "id": "0334752848227d2c",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Printer Serial",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_serial_number",
+        "state_type": "str",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.printer_serial",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 3110,
+        "y": 1720,
+        "wires": [
+            [
+                "cc7f156ca0dd0aec"
+            ]
+        ]
+    },
+    {
+        "id": "549c2180bbd85815",
+        "type": "comment",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Directory Flow: Version 2.0.0",
+        "info": "Version 2.0.0: 2024-??-??\n- Rebase version with new repo\n\n===\nRev 31: 2023-03-05\n\nINITIAL\n- Added Print File Selector, you can now start a print remotely from home assistant if the file is on your SD card and you know which plate to run\n",
+        "x": 2680,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "b0e277cec125a10b",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Print Plate",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "number.{HA_PRINTER_ENTITY_NAME}_directory_plate_number",
+        "state_type": "num",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.plate",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 2910,
+        "y": 1400,
+        "wires": [
+            [
+                "2196bc51b771b671"
+            ]
+        ]
+    },
+    {
+        "id": "30200abf2a82cb86",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "x": 2860,
+        "y": 1360,
+        "wires": [
+            [
+                "5ecfe9b2dc948e5e",
+                "2196bc51b771b671"
+            ]
+        ]
+    },
+    {
+        "id": "663d4c5f5ed9c210",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2760,
+        "y": 1400,
+        "wires": [
+            [
+                "b0e277cec125a10b"
+            ]
+        ]
+    },
+    {
+        "id": "5ecfe9b2dc948e5e",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "plate_number",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2630,
+        "y": 1400,
+        "wires": [
+            [
+                "663d4c5f5ed9c210"
+            ]
+        ]
+    },
+    {
+        "id": "63e1d59cc9f131ca",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 3430,
+        "y": 1280,
+        "wires": [
+            [
+                "a45d4fa5185d9399"
+            ]
+        ]
+    },
+    {
+        "id": "a45d4fa5185d9399",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "unknown",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 3550,
+        "y": 1280,
+        "wires": [
+            [],
+            [],
+            [
+                "e271d479fb091e51"
+            ]
+        ]
+    },
+    {
+        "id": "79e01cedc907d8b1",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Reset Timer Interval",
+        "props": [
+            {
+                "p": "reset",
+                "v": "true",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 3500,
+        "y": 1180,
+        "wires": [
+            [
+                "4c9375ba5a2dd908"
+            ]
+        ]
+    },
+    {
+        "id": "4c9375ba5a2dd908",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Reset",
+        "rules": [
+            {
+                "t": "set",
+                "p": "reset",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3550,
+        "y": 1220,
+        "wires": [
+            [
+                "63e1d59cc9f131ca"
+            ]
+        ]
+    },
+    {
+        "id": "2338d91b8a08edcf",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Printer AMS Count",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_ams_count",
+        "state_type": "num",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.ams_count",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 3250,
+        "y": 1200,
+        "wires": [
+            [
+                "6169aa51e9351c7f"
+            ]
+        ]
+    },
+    {
+        "id": "6169aa51e9351c7f",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Force_AMS",
+        "func": "if(msg.topic == \"use_AMS\") {\n    if(msg.values != undefined && msg.values.ams_count != undefined) {\n        if(isNaN(msg.values.ams_count) || msg.values.ams_count <= 0) {\n            msg.payload = 'off';\n        }\n    }\n}\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3230,
+        "y": 1240,
+        "wires": [
+            [
+                "4dd4a3fec882c618"
+            ]
+        ]
+    },
+    {
+        "id": "2622614e22fc9bd1",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "AMS",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2970,
+        "y": 1280,
+        "wires": [
+            [
+                "2338d91b8a08edcf"
+            ],
+            [
+                "4dd4a3fec882c618"
+            ]
+        ]
+    },
+    {
+        "id": "4dd4a3fec882c618",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "x": 3160,
+        "y": 1280,
+        "wires": [
+            [
+                "5a0e7674add44437"
+            ]
+        ]
+    },
+    {
+        "id": "cc7f156ca0dd0aec",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Printer AMS Count",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 1,
+        "halt_if": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is_not",
+        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_ams_count",
+        "state_type": "num",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "values.ams_count",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 3130,
+        "y": 1680,
+        "wires": [
+            [
+                "a8ad6e035dcc2b23"
+            ]
+        ]
+    },
+    {
+        "id": "fe62c98924938374",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "property": "has_adv_flow",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2710,
+        "y": 1200,
+        "wires": [
+            [
+                "d256effa28784620"
+            ]
+        ]
+    },
+    {
+        "id": "3c79028f2fd1aae6",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "property": "has_basic_flow",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 3130,
+        "y": 1580,
+        "wires": [
+            [
+                "ac336f79b12192d2"
+            ]
+        ]
+    },
+    {
+        "id": "6423f25972cee0e3",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3060,
+        "y": 1480,
+        "wires": [
+            [
+                "24efc147e5e4325c"
+            ]
+        ]
+    },
+    {
+        "id": "4e4dfecfb9bf07d0",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Init",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.5",
+        "topic": "",
+        "x": 2630,
+        "y": 1460,
+        "wires": [
+            [
+                "e74c2ccb931d8117"
+            ]
+        ]
+    },
+    {
+        "id": "c00b19c39e4b97a2",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": " Values",
+        "rules": [
+            {
+                "t": "set",
+                "p": "printer_ip",
+                "pt": "msg",
+                "to": "printer_ip",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "access_code",
+                "pt": "msg",
+                "to": "access_code",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3050,
+        "y": 1200,
+        "wires": [
+            [
+                "d944cafd5681f32b"
+            ]
+        ]
+    },
+    {
+        "id": "b54d51ba9776afb0",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Subscribe",
+        "func": "",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/button/\" + flow.get(\"HA_DEVICE\") + \"_Directory\" + \"/print_with_settings\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "finalize": "",
+        "libs": [],
+        "x": 2640,
+        "y": 1520,
+        "wires": [
+            [
+                "a34d8e29aa8729fe"
+            ]
+        ]
+    },
+    {
+        "id": "e74c2ccb931d8117",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "x": 2960,
+        "y": 1460,
+        "wires": [
+            [
+                "6423f25972cee0e3"
+            ]
+        ]
+    },
+    {
+        "id": "24efc147e5e4325c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "Check Values Error",
+        "func": "flow.set(\"has_directory_flow\", true);\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"File Selector Directory Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (testValue(flow.get(\"printer_ip\"))) {\n    node.error(\"Printer IP is not set in flow properties\");\n}\nif (testValue(flow.get(\"access_code\"))) {\n    node.error(\"Printer LAN Access Code is not set in flow properties\")\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\n\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}\nif(!flow.get(\"has_adv_flow\")) {\n    node.error(\"File Selector Directory Flow requires the Advanced flow's dependencies to function. As such, please ensure you have the advanced FTP flow. If you do not need the DB portion, you may delete that subgroup\");\n    return;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3250,
+        "y": 1480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d256effa28784620",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "bb9dffae323b6310",
+        "name": "",
+        "property": "is_printer_reachable",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2890,
+        "y": 1200,
+        "wires": [
+            [
+                "c00b19c39e4b97a2"
+            ]
+        ]
+    }
+]
