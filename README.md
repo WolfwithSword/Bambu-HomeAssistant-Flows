@@ -1,5 +1,5 @@
 # Bambu-HomeAssistant-Flows
-A collection of HomeAssistant Dashboards and NodeRed Flows with a configurator to connect a BambuLabs printer to HomeAssistant through MQTT - based off of my Gists
+A (WIP) collection of HomeAssistant Dashboards and NodeRed Flows with a configurator to connect a BambuLabs printer to HomeAssistant through MQTT - based off of my Gists
 
 The main guides that are option #1 for configuring the flows, with more helpful descriptions: https://www.wolfwithsword.com/tag/bambu-lab-guides/ 
 
