@@ -4669,7 +4669,7 @@
         "z": "fbda6ab16491b918",
         "g": "14f23434a23cdae7",
         "name": "Offline Payload",
-        "func": "msg.payload = { \"print_status\": \"OFFLINE\", \n    \"status\": \"offline\", \n    \"machine_name\":  flow.get(\"printer_name\"), \n    \"machine_serial\": flow.get(\"printer_serial\"),\n     \"stage\": {\n         \"current\": \"Offline\"\n     },\n     \"print_stage\": \"Offline\",\n     \"reset_filter\": \"\",\n      \"force_update\": \"\",\n       \"ams_count\": 0 };\nmsg.topic = \"printer\";\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.machine_serial = flow.get(\"printer_serial\");\nnode.send(msg);",
+        "func": "msg.payload = { \"print_status\": \"OFFLINE\", \n    \"status\": \"offline\", \n    \"machine_name\":  flow.get(\"printer_name\"), \n    \"machine_serial\": flow.get(\"printer_serial\"),\n     \"stage\": {\n         \"current\": \"Offline\"\n     },\n     \"print_action\": \"Offline\",\n     \"reset_filter\": \"\",\n      \"force_update\": \"\",\n       \"ams_count\": 0 };\nmsg.topic = \"printer\";\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.machine_serial = flow.get(\"printer_serial\");\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
