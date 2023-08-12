@@ -351,7 +351,7 @@
         "z": "fbda6ab16491b918",
         "g": "447d3cc9dac791a2",
         "name": "Fix End Time",
-        "func": "if(msg.payload.print_end_time != undefined && msg.payload.print_end_time != \"N/A\") {\n    if(msg.payload.print_status != undefined) {\n        if(msg.payload.print_status == \"FINISH\" || msg.payload.print_status == \"FAILED\") {\n            delete msg.payload.print_end_time;\n        }\n    }\n}\n\nnode.send(msg);",
+        "func": "if(msg.payload.print_end_time != undefined && msg.payload.print_end_time != \"N/A\") {\n    if(msg.payload.print_status != undefined) {\n        if(msg.payload.print_status == \"FINISH\" || msg.payload.print_status == \"FAILED\") {\n            delete msg.payload.print_end_time;\n        }\n    }\n}\n\nif (msg.payload.print_start_time != undefined && msg.payload.print_start_epoch != undefined) {\n    node.send(msg);\n}\nelse if (msg.payload.print_start_time == undefined) {\n    node.send(msg);\n}\nelse if (msg.payload.print_start_epoch == undefined && msg.payload.print_start_time != undefined){\n    delete msg.payload.print_start_time;\n    node.send(msg);\n}\nelse {\n    node.send(msg);\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
