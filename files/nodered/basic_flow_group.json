@@ -25,11 +25,12 @@
             "14f23434a23cdae7",
             "7952a4df8f4bb6a4",
             "36af78d3bdf6f143",
-            "21318a1ddef2c3a6"
+            "21318a1ddef2c3a6",
+            "cf3b6f3ac739cdb4"
         ],
         "x": 28,
         "y": 19,
-        "w": 2454,
+        "w": 2458,
         "h": 1628
     },
     {
@@ -37,8 +38,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "296274a0d2a6c675",
-        "name": "VERSION 2.0.1",
-        "info": "Version 2.0.1: 2023-05-07\n- Minor bug fixes for Set Nozzle/Bed Temperature not working\n- Bug fix for nozzle or bed temp sometimes being unavailable when a target temperature is set\n\n===\nVersion 2.0.0: 2023-08-06\n- Reset version - Very soon it will be moved from gists into a repository instead, with its own github pages to configure off of my site if desired.\n- Some cleanup\n- Added a \"State Change\" select - THIS DOES NOT LET YOU CHANGE STATE. It is purely to auto add the device triggers for print stage, since MQTT Device Trigger does not let me supply a list of values for a custom one.\n    - Note: Stage is very unreliable now with recent firmware and should not be depended on for automations. It is left for older firmwares or if BBL makes it reliable again.\n    - If you want an automation to turn off lights during calibration steps, make it look for print status = RUNNING and layer = 0. Once layer = 1 or higher, it is equivalent to \"printing\" stage, but as 0 it is equiv to any calibration stage\n- Did the same for a \"Print Status Change\" select. Setting an option for it does nothing! Just used for automation triggers with prefilled values.\n- Added button to force FTP fetch if exists in flow\n- Added more error handling regarding MQTT connections (Printer + Your output such as HA). Separated into connection of MQTT to printer and if printer ip is reachable on network via ping. This should present any issues of either MQTT being disconnected when both are online as it will retry on several timers now - unless your IPs have changed.\n- Added some additional controls for toggling video (not timelapse!!!) (only when camera exists)\n- Added Parsing for Print-Real_Action as Print Action. This uses the same IDs as current stage, however it's limited to just stages during printing, such as printing, pause, etc. I also manually inject idle if stg_cur comes back as idle (this is the only reliable stg_cur btw)\n- Added Camera Resolution setting - will only show up after some camera messages populate in. If it shows up but as unavailable, wait 5 minutes or press the reset filter button.\n- Added a few flow-based values to override certain settings based on received data - necessary for new firmwares.\n- Added a bunch of warning and error messages depending on present flows, invalid stuff, etc. Some are ignorable and will be prefixed as [Ignorable]. Please ignore these if you understand the context a bit.\n\n===\nRev 48: 2023-05-01\n- Changed the p1p cloud mqtt connection, even though it should not ever be used except for one older firmware\n\n===\nRev 46/47: 2023-05-01\n- Removing MQTT configs to be external nodes passing in, so importing multiple flows and updating are easier\n- Added a reconnect for when printer comes online with new mqtt flow. Shouldn't be necessary but added as a backup\n- When HA connects in MQTT now, it will reset the filter so no more waiting 5m on setup. Hopefully\n\n===\nRev 45: 2023-04-29\n- Added Filament Unload button which runs the built in unload procedure\n\n===\nRev 42: 2023-04-27\n- Added sensor for storing the last Pressure Advance value from LIDAR calibration for 24 hours\n\n===\nRev 40/41: 2023-04-27\n- Whoops forgot to change this for 40\n- Added new button to \"clear\" external spool\n\n===\nRev 39: 2023-04-26\n- Add support for plate_type sensor (only filled out by advanced flow with FTP)\n- Support for newest firmware release of X1C 01.05.01.00 (20230426)\n- VT_Tray already implemented for P1P, but renamed to External Spool now.\n\n===\nRev 36: 2023-04-07\n- Changed logic of the global connected status to be ping-based\nEvery 30s we will ping the printer to check if it's online or not.\nThis is because the MQTT will be online if P1P cloud mode, even if printer is not.\n\n\n===\nRev 35: 2023-04-05\n- Added in workaround for allowing P1P to connect using Cloud mode\nThis requires an additional setup flow to set a global attribute\nAnd requires a local flow boolean for P1P_CLOUD_MODE\n\n====\nRev 34: 2023-03-14\n- Added fan speed controls for Chamber, Part and Aux fans.\n- Heatbreak fan is read only currently.\n\n====\nRev 33: 2023-03-11\n\n- Fixed EndTime continuing to increment after print ended\n- In progress but not yet activated placeholders for camera entities\n\n====\nRev 31: 2023-03-05\n\n- Added default icons to some more sensors\n- Added Number Boxes to set Bed and Nozzle Temps within ranges (0-100 bed, 0-300 nozzle)\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n\nChanged a bit how filament fetching works.\nNow it will be unknown, none or the sensor unavailable depending on \"how\" it can't get the filament type in use.\nThis is such that the advanced flow fetching filament type can work better\n(i.e., when it's unavailable here, then filament fetch will work)\n\nIT IS OKAY if the filament sensor is not working fully, that's expected due to limitations.\n\n====\nRev 29: 2023-02-23\n\nFixed: Issue with a junction not being in the group of the last update\n\nAdded: \n    - Button to turn on and off nozzle light.\n\n====\nRev 28: 2023-02-23\n\nAdded:\n    - New Filament Sensor. This will attempt to get the *type* of filament in use. Really only works for AMS users. Don't worry if it doesn't show up or is unavailable, it just means it can't make a default one and is not considered an error - I just have no way of handling / finding out.\n    - New buttons to turn on or off the Logo Light via GCODE - these are buttons and not a light or switch, as I cannot poll for the light status.\n I also from now on will not be including the flow page in the exports, but JUST the group, this should make importing easier for replacement.\n\n",
+        "name": "VERSION 2.0.2",
+        "info": "Version 2.0.2: 2023-08-19\n- Fixed several bugs regarding start time\n- Fixed issues regarding print real Action\n- Fixed minor bugs surrounding HMS errors not resetting to 0\n- Changed HMS error attributes format\n- Separated HMS notifications to be separate sensors per severity level (unknown, info, common, and then serious and fatal). Existing automations will have the \"sum\" of all HMS messages as expected before.\n- Provided failsafe for if the PING command is killed for unknown reasons resulting in it not being \"reachable\", when ping next succeeds it will shortly force a reset - MQTT stays connected during this, so only a momentary notice of \"offline\". If you have any automations depending on the printer suddenly going offline, please make sure it's offline for at least 60 seconds continuously to be sure.\n- Fixed bug where changing or setting fan speeds was not working anymore\n- Fixed HMS description lookup\n\n===\nVersion 2.0.1: 2023-08-07\n- Minor bug fixes for Set Nozzle/Bed Temperature not working\n- Bug fix for nozzle or bed temp sometimes being unavailable when a target temperature is set\n\n===\nVersion 2.0.0: 2023-08-06\n- Reset version - Very soon it will be moved from gists into a repository instead, with its own github pages to configure off of my site if desired.\n- Some cleanup\n- Added a \"State Change\" select - THIS DOES NOT LET YOU CHANGE STATE. It is purely to auto add the device triggers for print stage, since MQTT Device Trigger does not let me supply a list of values for a custom one.\n    - Note: Stage is very unreliable now with recent firmware and should not be depended on for automations. It is left for older firmwares or if BBL makes it reliable again.\n    - If you want an automation to turn off lights during calibration steps, make it look for print status = RUNNING and layer = 0. Once layer = 1 or higher, it is equivalent to \"printing\" stage, but as 0 it is equiv to any calibration stage\n- Did the same for a \"Print Status Change\" select. Setting an option for it does nothing! Just used for automation triggers with prefilled values.\n- Added button to force FTP fetch if exists in flow\n- Added more error handling regarding MQTT connections (Printer + Your output such as HA). Separated into connection of MQTT to printer and if printer ip is reachable on network via ping. This should present any issues of either MQTT being disconnected when both are online as it will retry on several timers now - unless your IPs have changed.\n- Added some additional controls for toggling video (not timelapse!!!) (only when camera exists)\n- Added Parsing for Print-Real_Action as Print Action. This uses the same IDs as current stage, however it's limited to just stages during printing, such as printing, pause, etc. I also manually inject idle if stg_cur comes back as idle (this is the only reliable stg_cur btw)\n- Added Camera Resolution setting - will only show up after some camera messages populate in. If it shows up but as unavailable, wait 5 minutes or press the reset filter button.\n- Added a few flow-based values to override certain settings based on received data - necessary for new firmwares.\n- Added a bunch of warning and error messages depending on present flows, invalid stuff, etc. Some are ignorable and will be prefixed as [Ignorable]. Please ignore these if you understand the context a bit.\n\n===\nRev 48: 2023-05-01\n- Changed the p1p cloud mqtt connection, even though it should not ever be used except for one older firmware\n\n===\nRev 46/47: 2023-05-01\n- Removing MQTT configs to be external nodes passing in, so importing multiple flows and updating are easier\n- Added a reconnect for when printer comes online with new mqtt flow. Shouldn't be necessary but added as a backup\n- When HA connects in MQTT now, it will reset the filter so no more waiting 5m on setup. Hopefully\n\n===\nRev 45: 2023-04-29\n- Added Filament Unload button which runs the built in unload procedure\n\n===\nRev 42: 2023-04-27\n- Added sensor for storing the last Pressure Advance value from LIDAR calibration for 24 hours\n\n===\nRev 40/41: 2023-04-27\n- Whoops forgot to change this for 40\n- Added new button to \"clear\" external spool\n\n===\nRev 39: 2023-04-26\n- Add support for plate_type sensor (only filled out by advanced flow with FTP)\n- Support for newest firmware release of X1C 01.05.01.00 (20230426)\n- VT_Tray already implemented for P1P, but renamed to External Spool now.\n\n===\nRev 36: 2023-04-07\n- Changed logic of the global connected status to be ping-based\nEvery 30s we will ping the printer to check if it's online or not.\nThis is because the MQTT will be online if P1P cloud mode, even if printer is not.\n\n\n===\nRev 35: 2023-04-05\n- Added in workaround for allowing P1P to connect using Cloud mode\nThis requires an additional setup flow to set a global attribute\nAnd requires a local flow boolean for P1P_CLOUD_MODE\n\n====\nRev 34: 2023-03-14\n- Added fan speed controls for Chamber, Part and Aux fans.\n- Heatbreak fan is read only currently.\n\n====\nRev 33: 2023-03-11\n\n- Fixed EndTime continuing to increment after print ended\n- In progress but not yet activated placeholders for camera entities\n\n====\nRev 31: 2023-03-05\n\n- Added default icons to some more sensors\n- Added Number Boxes to set Bed and Nozzle Temps within ranges (0-100 bed, 0-300 nozzle)\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n\nChanged a bit how filament fetching works.\nNow it will be unknown, none or the sensor unavailable depending on \"how\" it can't get the filament type in use.\nThis is such that the advanced flow fetching filament type can work better\n(i.e., when it's unavailable here, then filament fetch will work)\n\nIT IS OKAY if the filament sensor is not working fully, that's expected due to limitations.\n\n====\nRev 29: 2023-02-23\n\nFixed: Issue with a junction not being in the group of the last update\n\nAdded: \n    - Button to turn on and off nozzle light.\n\n====\nRev 28: 2023-02-23\n\nAdded:\n    - New Filament Sensor. This will attempt to get the *type* of filament in use. Really only works for AMS users. Don't worry if it doesn't show up or is unavailable, it just means it can't make a default one and is not considered an error - I just have no way of handling / finding out.\n    - New buttons to turn on or off the Logo Light via GCODE - these are buttons and not a light or switch, as I cannot poll for the light status.\n I also from now on will not be including the flow page in the exports, but JUST the group, this should make importing easier for replacement.\n\n",
         "x": 140,
         "y": 60,
         "wires": []
@@ -191,7 +192,7 @@
         "z": "fbda6ab16491b918",
         "g": "7258bcda05ea8b85",
         "name": "Convert HMS Codes",
-        "func": "function DecimalHexTwosComplement(decimal) {\n    var size = 8;\n    var hexadecimal;\n    if (decimal >= 0) {\n        hexadecimal = decimal.toString(16);\n\n        while ((hexadecimal.length % size) != 0) {\n            hexadecimal = \"\" + 0 + hexadecimal;\n        }\n\n        return hexadecimal;\n    } else {\n        hexadecimal = Math.abs(decimal).toString(16);\n        while ((hexadecimal.length % size) != 0) {\n            hexadecimal = \"\" + 0 + hexadecimal;\n        }\n\n        var output = '';\n        for (var i = 0; i < hexadecimal.length; i++) {\n            output += (0x0F - parseInt(hexadecimal[i], 16)).toString(16);\n        }\n\n        output = (0x01 + parseInt(output, 16)).toString(16);\n        return output;\n    }\n}\n\nlet template = []\nlet hms_data_dictionary = undefined;\nif(msg.payload.print.hms != undefined){\n    for (var hms_code of msg.payload.print.hms) {\n        var attr = \"\";\n        if(hms_code.attr != undefined && hms_code.attr != \"\") {\n            attr=DecimalHexTwosComplement(hms_code.attr);\n        }\n        var code = \"\";\n        if(hms_code.code != undefined && hms_code.code != \"\") {\n            code = DecimalHexTwosComplement(hms_code.code);\n        }\n    \n        let full_code = (attr + code).replace(/(.{4})/g, \"$1_\");\n        full_code = full_code.substring(0, full_code.length - 1);\n        let url = \"https://wiki.bambulab.com/en/x1/troubleshooting/hmscode/\"+full_code;\n\n        let description = \"\";\n        if (flow.get(\"hms_data\") != undefined && hms_data_dictionary == undefined) {\n            hms_data_dictionary = flow.get(\"hms_data\");\n        };\n        \n        if (hms_data_dictionary.hms[full_code.replaceAll(\"_\", \"\")] != undefined) {\n            description = hms_data_dictionary.hms[full_code.replaceAll(\"_\", \"\")];\n        }\n        else if (hms_data_dictionary.error[full_code.replaceAll(\"_\", \"\")] != undefined) {\n            description = hms_data_dictionary.error[full_code.replaceAll(\"_\", \"\")];\n        }\n\n        let module = \"\"; let type = \"\";\n        if(flow.get(\"hms_module_parser\") != undefined) {\n            let module_parser = flow.get(\"hms_module_parser\");\n            module = module_parser(parseInt(hms_code.attr));        \n        }\n        if (flow.get(\"hms_level_parser\") != undefined) {\n            let level_parser = flow.get(\"hms_level_parser\");\n            type = level_parser(parseInt(hms_code.code));\n        }\n\n        let d = { \"code\": \"HMS_\" + full_code, \"url\": url, \"description\": description, \"short_code\": full_code.replaceAll(\"_\", \"\"),\n            \"module\": module, \"type\": type };\n        template.push(d);\n    }\n    msg.payload.print.hms = template;\n}\nnode.send(msg);",
+        "func": "function DecimalHexTwosComplement(decimal) {\n    var size = 8;\n    var hexadecimal;\n    if (decimal >= 0) {\n        hexadecimal = decimal.toString(16);\n\n        while ((hexadecimal.length % size) != 0) {\n            hexadecimal = \"\" + 0 + hexadecimal;\n        }\n\n        return hexadecimal;\n    } else {\n        hexadecimal = Math.abs(decimal).toString(16);\n        while ((hexadecimal.length % size) != 0) {\n            hexadecimal = \"\" + 0 + hexadecimal;\n        }\n\n        var output = '';\n        for (var i = 0; i < hexadecimal.length; i++) {\n            output += (0x0F - parseInt(hexadecimal[i], 16)).toString(16);\n        }\n\n        output = (0x01 + parseInt(output, 16)).toString(16);\n        return output;\n    }\n}\n\nlet hms_data = {\n    \"HMS_Info\": [],\n    \"HMS_Common\": [],\n    \"HMS_Serious\": [],\n    \"HMS_Fatal\": [],\n    \"HMS_Unknown\": []\n};\n\n\nlet template = []\nlet count = 0;\nlet hms_data_dictionary = undefined;\nif(msg.payload.print.hms != undefined){\n    for (var hms_code of msg.payload.print.hms) {\n        var attr = \"\";\n        if(hms_code.attr != undefined && hms_code.attr != \"\") {\n            attr=DecimalHexTwosComplement(hms_code.attr);\n        }\n        var code = \"\";\n        if(hms_code.code != undefined && hms_code.code != \"\") {\n            code = DecimalHexTwosComplement(hms_code.code);\n        }\n    \n        let full_code = (attr + code).replace(/(.{4})/g, \"$1_\");\n        full_code = full_code.substring(0, full_code.length - 1);\n        let url = \"https://wiki.bambulab.com/en/x1/troubleshooting/hmscode/\"+full_code;\n\n        let description = \"\";\n        if (flow.get(\"hms_data\") != undefined && hms_data_dictionary == undefined) {\n            hms_data_dictionary = flow.get(\"hms_data\");\n        };\n        \n        if (hms_data_dictionary.hms[full_code.toLowerCase().replaceAll(\"_\", \"\")] != undefined) {\n            description = hms_data_dictionary.hms[full_code.toLowerCase().replaceAll(\"_\", \"\")];\n        }\n        else if (hms_data_dictionary.error[full_code.toLowerCase().replaceAll(\"_\", \"\")] != undefined) {\n            description = hms_data_dictionary.error[full_code.toLowerCase().replaceAll(\"_\", \"\")];\n        }\n\n        let module = \"\"; let type = \"\";\n        if(flow.get(\"hms_module_parser\") != undefined) {\n            let module_parser = flow.get(\"hms_module_parser\");\n            module = module_parser(parseInt(hms_code.attr));        \n        }\n        if (flow.get(\"hms_level_parser\") != undefined) {\n            let level_parser = flow.get(\"hms_level_parser\");\n            type = level_parser(parseInt(hms_code.code));\n        }\n        if (type == \"\") {\n            type = \"Unknown\";\n        }\n\n        let d = { \"code\": \"HMS_\" + full_code, \"url\": url, \"description\": description, \"short_code\": full_code.replaceAll(\"_\", \"\"),\n            \"module\": module, \"type\": type };\n        \n        hms_data[\"HMS_\"+ type].push(d);\n        count = count + 1;\n        //template.push(d);\n    }\n   // msg.payload.print.hms = hms_data;\n    delete msg.payload.print.hms;\n    msg.payload.print[\"HMS_Unknown\"] = hms_data[\"HMS_Unknown\"];\n    msg.payload.print[\"HMS_Info\"] = hms_data[\"HMS_Info\"];\n    msg.payload.print[\"HMS_Common\"] = hms_data[\"HMS_Common\"];\n    msg.payload.print[\"HMS_Serious\"] = hms_data[\"HMS_Serious\"];\n    msg.payload.print[\"HMS_Fatal\"] = hms_data[\"HMS_Fatal\"];\n    msg.payload.print[\"HMS_Notifications\"] = {\n        \"Unknown\": hms_data[\"HMS_Unknown\"].length,\n        \"Info\": hms_data[\"HMS_Info\"].length,\n        \"Common\": hms_data[\"HMS_Common\"].length,\n        \"Serious\": hms_data[\"HMS_Serious\"].length,\n        \"Fatal\": hms_data[\"HMS_Fatal\"].length,\n        \"Total\": count\n    };\n   //msg.payload.print.hms = template;\n}\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -306,12 +307,15 @@
             "c0391687bc6674d8",
             "e3632543367cde87",
             "36329bf86f291f67",
-            "bfd2f9c2fb504f1c"
+            "bfd2f9c2fb504f1c",
+            "09a152793d9c9225",
+            "0eb17a59df4f21da",
+            "937e5e2dc76777fa"
         ],
-        "x": 54,
+        "x": 64,
         "y": 539,
         "w": 892,
-        "h": 242
+        "h": 282
     },
     {
         "id": "2e55e7e1a4b5a983",
@@ -321,7 +325,7 @@
         "name": "Printer - Printer Parse - Link Out",
         "mode": "return",
         "links": [],
-        "x": 905,
+        "x": 915,
         "y": 740,
         "wires": []
     },
@@ -337,7 +341,7 @@
         "arraySpltType": "len",
         "stream": false,
         "addname": "topic",
-        "x": 810,
+        "x": 830,
         "y": 740,
         "wires": [
             [
@@ -357,11 +361,12 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 670,
+        "x": 680,
         "y": 740,
         "wires": [
             [
-                "95c79df7110fb57f"
+                "95c79df7110fb57f",
+                "0eb17a59df4f21da"
             ]
         ]
     },
@@ -377,7 +382,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 480,
+        "x": 490,
         "y": 740,
         "wires": [
             [
@@ -397,7 +402,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 840,
+        "x": 850,
         "y": 700,
         "wires": [
             [
@@ -417,7 +422,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 650,
+        "x": 660,
         "y": 700,
         "wires": [
             [
@@ -437,7 +442,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 450,
+        "x": 460,
         "y": 700,
         "wires": [
             [
@@ -450,7 +455,7 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "447d3cc9dac791a2",
-        "x": 80,
+        "x": 90,
         "y": 700,
         "wires": [
             [
@@ -482,7 +487,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 610,
+        "x": 620,
         "y": 640,
         "wires": [
             [
@@ -523,7 +528,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 220,
+        "x": 230,
         "y": 660,
         "wires": [
             [
@@ -551,7 +556,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 240,
+        "x": 250,
         "y": 720,
         "wires": [
             [
@@ -564,7 +569,7 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "447d3cc9dac791a2",
-        "x": 860,
+        "x": 870,
         "y": 660,
         "wires": [
             [
@@ -584,7 +589,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 390,
+        "x": 400,
         "y": 620,
         "wires": [
             [
@@ -616,7 +621,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 750,
+        "x": 760,
         "y": 640,
         "wires": [
             [
@@ -651,7 +656,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 730,
+        "x": 740,
         "y": 580,
         "wires": [
             [
@@ -682,7 +687,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 190,
+        "x": 200,
         "y": 620,
         "wires": [
             [
@@ -702,7 +707,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 580,
+        "x": 590,
         "y": 580,
         "wires": [
             [
@@ -722,7 +727,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 410,
+        "x": 420,
         "y": 580,
         "wires": [
             [
@@ -742,7 +747,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 270,
+        "x": 280,
         "y": 580,
         "wires": [
             [
@@ -755,13 +760,103 @@
         "type": "link in",
         "z": "fbda6ab16491b918",
         "g": "447d3cc9dac791a2",
-        "name": "Printer - Printer Parse - {PRINTER_MODEL} {PRINTER_NAME}",
+        "name": "Printer - Printer Parse - X1C 3DP-00M-547",
         "links": [],
-        "x": 125,
+        "x": 135,
         "y": 580,
         "wires": [
             [
                 "36329bf86f291f67"
+            ]
+        ]
+    },
+    {
+        "id": "09a152793d9c9225",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "447d3cc9dac791a2",
+        "name": "Convert Timestamps",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.print_start_time",
+                "pt": "msg",
+                "to": "$moment(msg.payload.print_start_time).format(\"MMMM D, yyyy [at] h:mm A\")",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 780,
+        "wires": [
+            [
+                "95c79df7110fb57f"
+            ]
+        ]
+    },
+    {
+        "id": "0eb17a59df4f21da",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "447d3cc9dac791a2",
+        "name": "",
+        "property": "payload.print_start_time",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 210,
+        "y": 780,
+        "wires": [
+            [
+                "937e5e2dc76777fa"
+            ],
+            [
+                "95c79df7110fb57f"
+            ]
+        ]
+    },
+    {
+        "id": "937e5e2dc76777fa",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "447d3cc9dac791a2",
+        "name": "",
+        "property": "payload.print_start_time",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "000",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 370,
+        "y": 780,
+        "wires": [
+            [
+                "09a152793d9c9225"
+            ],
+            [
+                "95c79df7110fb57f"
             ]
         ]
     },
@@ -869,7 +964,7 @@
         "type": "mqtt out",
         "z": "fbda6ab16491b918",
         "g": "21f4e96b26230c30",
-        "name": "bambu-mqtt-out {PRINTER_NAME}",
+        "name": "bambu-mqtt-out",
         "topic": "",
         "qos": "1",
         "retain": "false",
@@ -1290,7 +1385,7 @@
         "z": "fbda6ab16491b918",
         "g": "0504d7acd6810522",
         "name": "Set Printer Reachable State Flow",
-        "func": "\nif (msg.payload !== undefined && msg.payload.code !== undefined\n    && msg.payload.code == 0) {\n    if(!flow.get(\"is_printer_reachable\")) {\n        node.log(\"Printer \" + flow.get(\"printer_name\") + \" is reachable\");\n    }\n    flow.set(\"is_printer_reachable\", true);\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Printer IP is online\" });\n} else {\n    if(flow.get(\"is_printer_reachable\")) {\n        node.warn(\"Printer \" + flow.get(\"printer_name\") + \" is not reachable!\");\n    }\n    flow.set(\"is_printer_reachable\", false);\n    node.status({ fill: \"red\", shape: \"ring\", text: \"Printer is not reachable\" });\n}",
+        "func": "let was_ping_killed = false;\nif (msg.payload !== undefined && msg.payload.code !== undefined\n    && msg.payload.code == 0) {\n    if(!flow.get(\"is_printer_reachable\")) {\n        node.log(\"Printer \" + flow.get(\"printer_name\") + \" is reachable\");\n    }\n    flow.set(\"is_printer_reachable\", true);\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Printer IP is online\" });\n} else {\n    was_ping_killed = false;\n    // TODO IF PING KILLED \n    if(flow.get(\"is_printer_reachable\")) {\n        if (was_ping_killed) {\n            // if ping command killed\n            node.warn(\"Ping command was unexpectedly killed\");\n        }\n        else {\n            node.warn(\"Printer \" + flow.get(\"printer_name\") + \" is not reachable!\");\n        }\n\n    }\n    if (was_ping_killed) {\n        // if ping command killed\n        node.status({fill: \"red\", shape: \"ring\", text: \"Ping command was unexpectedly killed\"});\n    }\n    else {\n        flow.set(\"is_printer_reachable\", false);\n        node.status({ fill: \"red\", shape: \"ring\", text: \"Printer is not reachable\" });\n    }\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1346,7 +1441,7 @@
         "z": "fbda6ab16491b918",
         "g": "0504d7acd6810522",
         "name": "Reorder HMS Data",
-        "func": "let hms_codes = {\n    \"hms\": {},\n    \"error\": {},\n    \"has_data\": false\n};\nif(msg.payload != undefined &&  msg.statusCode == 200 && msg.payload.data != undefined) {\n    if(msg.payload.data.device_hms != undefined && msg.payload.data.device_hms.en != undefined) {\n        for (var entry of msg.payload.data.device_hms.en) {\n            hms_codes[\"hms\"][(entry.ecode).toString()] = entry.intro;\n        }\n        hms_codes[\"has_data\"] = true;\n    }\n    if (msg.payload.data.device_hms != undefined && msg.payload.data.device_hms.en != undefined) {\n        for (var entry of msg.payload.data.device_hms.en) {\n            hms_codes[\"error\"][(entry.ecode).toString()] = entry.intro;\n        }\n        hms_codes[\"has_data\"] = true;\n    }\n}\nflow.set(\"hms_data\", hms_codes);\n",
+        "func": "let hms_codes = {\n    \"hms\": {},\n    \"error\": {},\n    \"has_data\": false\n};\nif(msg.payload != undefined &&  msg.statusCode == 200 && msg.payload.data != undefined) {\n    if(msg.payload.data.device_hms != undefined && msg.payload.data.device_hms.en != undefined) {\n        for (var entry of msg.payload.data.device_hms.en) {\n            hms_codes[\"hms\"][(entry.ecode).toString().toLowerCase()] = entry.intro;\n        }\n        hms_codes[\"has_data\"] = true;\n    }\n    if (msg.payload.data.device_hms != undefined && msg.payload.data.device_hms.en != undefined) {\n        for (var entry of msg.payload.data.device_hms.en) {\n            hms_codes[\"error\"][(entry.ecode).toString().toLowerCase()] = entry.intro;\n        }\n        hms_codes[\"has_data\"] = true;\n    }\n}\nflow.set(\"hms_data\", hms_codes);\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1397,7 +1492,8 @@
             "248ebd30cb6cf901",
             "67a6fefd2fe7e87b",
             "52488654017051f0",
-            "d0562f428dc4d8c9"
+            "d0562f428dc4d8c9",
+            "eee67c75e63f7aa7"
         ],
         "x": 54,
         "y": 1099,
@@ -1944,7 +2040,7 @@
         "wires": [
             [
                 "a58ecd0f72093858",
-                "a822737d7b64e447"
+                "eee67c75e63f7aa7"
             ]
         ]
     },
@@ -2052,6 +2148,32 @@
         "wires": [
             [
                 "52488654017051f0"
+            ]
+        ]
+    },
+    {
+        "id": "eee67c75e63f7aa7",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "70091da2e4b669c1",
+        "name": "delay",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 150,
+        "y": 1300,
+        "wires": [
+            [
+                "a822737d7b64e447"
             ]
         ]
     },
@@ -3820,7 +3942,7 @@
         "z": "fbda6ab16491b918",
         "g": "fa96932f13cc3d89",
         "name": "Printer Config",
-        "func": "let data = {};\nlet payload = {};\nlet device = {};\nlet root_topic = flow.get(\"root_topic\");\nlet ha_device_name = flow.get(\"HA_DEVICE\");\nif(msg.payload == undefined && !msg.topic.includes(\"reset\")|| msg.topic == \"msg\") {\n    return;\n}\nlet type = \"sensor\";\n\nlet diagnostic_topics = [\"wifi_signal\", \"sdcard\", \"SW_version\", \"HW_version\", \"nozzle_diameter\", \"nozzle_type\",\n    \"ams_count\", \"upload\", \"work_light\", \"upgrade_state\", \"model\", \"machine_name\", \"mess_production_state\", \"xcam\",\n    \"ipcam\", \"serial_number\", \"timelapse_state\", \"recording_state\", \"is_220_voltage\", \"firmware_type\"];\n\nif(diagnostic_topics.includes(msg.topic)) {\n    msg.entity_category = \"diagnostic\";\n}\nif (msg.topic == \"wifi_signal\") {\n    msg.payload = msg.payload.match(/^-?\\d+/)[0];\n    msg.device_class = \"signal_strength\"\n    msg.unit_of_measurement = \"dBm\";\n}\nelse if (msg.topic == \"hw_switch_state\") {\n    msg.topic = \"extruder_loaded\";\n}\nelse if (msg.topic == \"toggle_recording\" || msg.topic == \"toggle_timelapse\") {\n    type = \"switch\";\n    msg.entity_category = \"config\";\n}\nelse if (msg.topic.match(/temperature/)) {\n    msg.device_class = \"temperature\";\n}\nelse if (msg.topic == \"hms\") {\n    msg.topic = \"HMS\";\n    msg.icon = \"mdi:message-alert-outline\"\n}\nelse if (msg.topic.match(/(.*)fan(.*)/) && msg.topic !== \"fan_gear\") {\n    msg.unit_of_measurement = \"%\";\n    type = \"fan\";\n    if(msg.topic == \"heatbreak_fan\") {\n        type = \"sensor\";\n    }\n    msg.icon = \"mdi:fan\"\n    if (msg.topic == \"aux_part_fan\") {\n        delete msg.unit_of_measurement;\n        type = \"sensor\";\n    }\n}\nelse if (msg.topic.match(/serial/)) {\n    msg.icon = \"mdi:barcode\";\n    msg.entity_category = \"diagnostic\";\n}\nelse if (msg.topic == \"status\" || msg.topic == \"print_state\") {\n    payload.icon = \"mdi:printer-3d\";\n}\nelse if(msg.topic == \"sdcard\") {\n    msg.icon = \"mdi:sd\"\n}\nelse if(msg.topic.includes(\"layer\")){\n    msg.icon = \"mdi:layers\";\n}\nelse if (msg.topic == \"print_progress\") {\n    msg.unit_of_measurement = \"%\";\n}\nelse if(msg.topic == \"print_remaining_time\") {\n    msg.unit_of_measurement = \"min\";\n    msg.device_class = \"duration\";\n}\nelse if (msg.topic.match(/time/) && msg.topic != \"timelapse_state\") {\n    msg.icon = \"mdi:clock\";\n    if(msg.topic.includes(\"_start_time\")){\n        msg.icon = \"mdi:clock-start\";\n    } \n    else if (msg.topic.includes(\"_end_time\")) {\n        msg.icon = \"mdi:clock-end\";\n    }\n}\nelse if(msg.topic == \"speed\") {\n    msg.icon = \"mdi:speedometer\"\n}\n\nelse if (msg.topic == \"SW_version\") {\n    device.sw_version = msg.payload;\n    flow.set(\"fw_version\", msg.payload);\n}\nelse if (msg.topic == \"HW_version\") {\n    device.hw_version = msg.payload;\n}\nelse if(msg.topic == \"pause_print\") {\n    msg.icon = \"mdi:pause\";\n}\nelse if (msg.topic == \"resume_print\") {\n    msg.icon = \"mdi:play\";\n}\nelse if (msg.topic == \"camera_rtsp\") {\n    msg.icon = \"mdi:camera\";\n}\nelse if (msg.topic == \"stop_print\") {\n    msg.icon = \"mdi:cancel\";\n}\nelse if (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    msg.icon = \"mdi:state-machine\";\n}\nelse if (msg.topic == \"nozzle_diameter\" || msg.topic == \"nozzle_type\") {\n    msg.icon = \"mdi:printer-3d-nozzle\"\n}\nelse if (msg.topic == \"timelapse_state\" || msg.topic == \"recording_state\") {\n    msg.icon = \"mdi:record-rec\";\n}\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nif(msg.topic == \"chamber_light\") {\n    type = \"light\";\n} \nif (msg.topic == \"print_preview\") {\n    type = \"camera\";\n    payload.image_encoding = \"b64\";\n}\nlet button_topics = [\"reset_filter\", \"unload_filament\", \"pause_print\", \"resume_print\", \"stop_print\",\n     \"force_update\", \"logo_light_on\", \"logo_light_off\", \"clear_external_spool\", \"force_ftp_fetch\"];\nif (button_topics.includes(msg.topic) || msg.topic.includes(\"nozzle_light\")) {\n    type = \"button\";\n}\n\nif(msg.topic == \"speed\") {\n    type = \"select\";\n    //msg.entity_category = \"config\";\n}\nif(msg.topic == \"camera_resolution\") {\n    type = \"select\";\n    \n}\nif(msg.topic.startsWith(\"set_\") && msg.topic.endsWith(\"_temp\")) {\n    type = \"number\";\n    payload.min = 0;\n\n    if(msg.topic.includes(\"bed\")) {\n        payload.max = 110;\n        if (flow.get(\"is_220_voltage\")) {\n            payload.max = 120;\n        }\n    }\n    if(msg.topic.includes(\"nozzle\")) {\n        payload.max = 300;\n    }\n    payload.mode = \"box\";\n    //msg.entity_category = \"config\";\n}\n\nlet base_topic = root_topic + \"/\"+ type + \"/\" + ha_device_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\nif (msg.topic == \"big_fan2\") {\n    payload.name = \"Chamber Fan\";\n}\nelse if (msg.topic == \"big_fan1\") {\n    payload.name = \"Auxilliary Fan\";\n}\nelse if (msg.topic == \"cooling_fan\") {\n    payload.name = \"Part Cooling Fan\";\n}\nelse if (msg.topic == \"HMS\") {\n    payload.name = \"HMS Errors\";\n}\nelse if (msg.topic == \"vt_tray\") {\n    payload.name = \"External Spool\";\n}\nelse if (msg.topic == \"camera_rtsp\") {\n    payload.name = \"LAN Camera\";\n}\nelse if (msg.topic == \"aux_part_fan\") {\n    payload.name = \"Aux Fan Installed\";\n    payload.entity_category = \"diagnostic\";\n} else if (msg.topic == \"last_calibrated_pa\") {\n    //payload.expire_after = 3600 * 24;\n    payload.name = \"Last Calibrated PA\";\n}\nelse if (msg.topic == \"xcam\") {\n    payload.name = \"Settings\";\n}\n\n\ndevice.identifiers = [];\ndevice.identifiers[0] = ha_device_name;\nif (msg.topic == \"serial_number\") {\n    msg.entity_category = \"diagnostic\";\n    device.identifiers[1] = msg.payload;\n}\ndevice.manufacturer = \"Bambu Labs\";\ndevice.model = flow.get(\"model\");\ndevice.name =ha_device_name;\n\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\nif(msg.entity_category != undefined) {\n    payload.entity_category = msg.entity_category;\n}\n\npayload.device = device;\npayload.unique_id = ha_device_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\nif (payload.device_class == \"temperature\") {\n    payload.unit_of_measurement = \"°C\";\n    payload.temperature_unit = \"°C\";\n}\n\nif (msg.topic == \"machine_serial\") {\n    return;\n}\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\nif(type == \"fan\") {\n    payload.command_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    delete payload.json_attributes_topic;\n    payload.percentage_command_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/percent/set\";\n    payload.percentage_state_topic = root_topic + \"/\"  + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/percent/state\";\n    payload.speed_range_max = 10;\n    payload.speed_range_min = 1;\n}\nelse if (type == \"light\") {\n    payload.command_topic = base_topic + \"/set\";\n    delete payload.json_attributes_topic;\n}\nelse if(type == \"number\") {\n    delete payload.json_attributes_topic;\n    payload.command_topic = base_topic + \"/set\";\n    payload.state_topic = base_topic + \"/set\";\n}\nelse if(type == \"switch\") {\n    payload.command_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    delete payload.json_attributes_topic;\n    /*delete payload.availability_topic;\n    payload.availability = [];\n    let a1 = {};\n    a1.topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"ipcam\" + \"/state\";\n    a1.payload_available = \"Present\";\n    a1.payload_not_available = \"No Camera\";\n    payload.availability.push(a1);*/\n    \n    if(msg.topic == \"toggle_timelapse\") {\n        payload.icon = \"mdi:record-rec\";\n        payload.state_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"timelapse_state\" + \"/state\";\n    }\n    else if (msg.topic == \"toggle_recording\") {\n        payload.icon = \"mdi:record-rec\";\n        payload.state_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"recording_state\" + \"/state\";\n    }\n}\nif (type == \"button\" &&  msg.topic.includes(\"reset_filter\")) {\n    delete payload.state_topic;\n    delete payload.json_attributes_topic;\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    payload.entity_category = \"config\";\n}\nif (type == \"button\" && (msg.topic.includes(\"logo_light\") || msg.topic.includes(\"nozzle_light\"))) {\n    //payload.entity_category = \"config\";\n    delete payload.state_topic;\n    delete payload.json_attributes_topic;\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n}\nif (type == \"button\" && (msg.topic.includes(\"clear_external_spool\")\n    || msg.topic == \"unload_filament\" || msg.topic == \"force_ftp_fetch\")) {\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    if( msg.topic == \"force_ftp_fetch\") {\n        delete payload.json_attributes_topic;\n        payload.entity_category = \"config\";\n    }\n}\nelse if (type == \"button\") {\n    delete payload.state_topic;\n    delete payload.json_attributes_topic;\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    if(msg.topic.includes(\"_print\")) {\n      let available = \"\";\n      if(msg.topic.includes(\"pause\")) {\n          available = \"RUNNING\";\n      }\n      else if(msg.topic.includes(\"resume\")) {\n          available = \"PAUSE\";\n      }\n      else if(msg.topic.includes(\"stop\")) {\n          available = \"IS_RUNNING\"\n      }\n      else {\n          return;\n      }\n      payload.availability = [];\n      let a1 = {};\n      a1.topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"print_status\" + \"/state\";\n      a1.payload_available = available;\n      a1.payload_not_available = \"N/A\";\n      delete payload.availability_topic;\n      if(msg.topic.includes(\"stop\")) {\n        a1.value_template = '{{ \"' + available + '\" if value == \"RUNNING\" or value == \"PAUSE\" else \"N/A\" }}'\n      } else {\n        a1.value_template = '{{ \"'+available+'\" if value == \"'+available+'\" else \"N/A\" }}'\n      }\n      payload.availability.push(a1);\n    }\n    else if (msg.topic == \"force_update\") {\n        payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n        payload.entity_category = \"config\";\n        payload.name = \"Force Sensor Updates\";\n    }\n}\nif (type == \"camera\" && !msg.topic.includes(\"rtsp\")) {\n    payload.topic = base_topic + \"/image\";\n    payload.json_attributes_topic = base_topic + \"/attr\";\n    payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    delete payload.state_topic;\n}\nelse if (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    delete payload.availability_topic;\n}\nelse if(msg.topic == \"serial_number\" || msg.topic.includes(\"version\")) {\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n}\n\nelse if (msg.topic == \"speed\") {\n    payload.command_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    payload.state_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.json_attributes_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    payload.options = [\"Silent\", \"Standard\", \"Sport\", \"Ludicrous\"];   \n}\nelse if (msg.topic == \"camera_resolution\") {\n    let resolutions = flow.get(\"camera_resolutions\");\n    payload.icon = \"mdi:high-definition-box\";\n    payload.entity_category = \"config\";\n    payload.command_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    payload.state_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.json_attributes_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    payload.options = resolutions;\n}\nif (msg.topic != \"status\" && msg.topic != \"print_status\"\n    && msg.topic != \"vt_tray\"\n    && msg.topic != \"resume_print\" && msg.topic != \"pause_print\" && msg.topic != \"stop_print\"\n    && msg.topic != \"machine_name\" && msg.topic != \"machine_serial\") {\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n\n}\nif (msg.topic == \"reset_filter\") {\n    payload.name = \"Debug Reset NR Filter\";\n}\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\nif (data.topic.startsWith(root_topic)) {\n    node.send(data);\n}\nif (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n}\npayload.name = getFriendlyName(msg.topic);\n\npayload.unique_id = ha_device_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\ndelete payload.command_topic;\ndelete payload.options;\ndelete payload.json_attributes_topic;\ndelete payload.state_topic;\npayload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";    \ndata.qos = 1;\ndata.retain = true;\n\nif (msg.topic == \"big_fan2\") {\n    payload.name = \"Chamber Fan\";\n}\nelse if (msg.topic == \"big_fan1\") {\n    payload.name = \"Auxilliary Fan\";\n}\nelse if (msg.topic == \"cooling_fan\") {\n    payload.name = \"Part Cooling Fan\";\n}\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\nif (type == \"fan\") {\n    delete payload.entity_category;\n    delete payload.json_attributes_topic;\n    delete payload.percentage_command_topic;\n    delete payload.percentage_state_topic;\n    payload.state_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    delete payload.speed_range_max;\n    delete payload.speed_range_min;\n    data.topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/config\";\n    data.payload = payload;\n    data.qos = 1;\n    data.retain = true;\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n\n}\n\nif (msg.topic == \"speed\") {\n    msg.topic = \"speed_info\";\n    type = \"sensor\";\n    let base_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    \n    payload.state_topic = base_topic + \"/state\";\n    payload.json_attributes_topic = base_topic + \"/attr\";\n    data.topic = base_topic + \"/config\";\n    data.payload = payload;\n    data.qos = 1;\n    data.retain = true;\n\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n\n}\n\nif (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    if(msg.topic == \"stage\") {\n        payload.name = \"Lidar Usage\";\n        payload.unique_id = ha_device_name + \"_\" + \"lidar_usage\";\n        payload.object_id = payload.unique_id;\n        type = \"device_automation\"\n        let base_topic = root_topic + \"/\"  + type + \"/\" + ha_device_name + \"/\" + \"lidar_on\";\n\n        payload.topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n        payload.value_template = '{{ \"on\" if \"lidar\" in value|lower else \"off\" }}';\n        payload.payload = \"on\";\n\n        payload.type = \"in use\";\n        payload.automation_type = \"trigger\";\n\n        payload.subtype = \"Lidar\";\n        data.topic = base_topic + \"/config\";\n        \n        data.payload = payload;\n        data.qos = 1;\n        data.retain = true;\n        if (data.topic.startsWith(root_topic)) {\n            node.send(data);\n        }\n        base_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + \"lidar_off\";\n        payload.payload = \"off\";\n\n        payload.automation_type = \"trigger\";\n\n        payload.type = \"not in use\";\n        data.topic = base_topic + \"/config\";\n\n        data.payload = payload;\n        if (data.topic.startsWith(root_topic)) {\n            node.send(data);\n        }\n    }\n\n    /////////////////////////\n    delete payload.value_template;\n    delete payload.payload;\n    delete payload.type;\n    delete payload.subtype;\n    delete payload.automation_type;\n    delete payload.availability_topic;\n    if(msg.topic == \"stage\")\n        payload.name = \"Stage Change\";\n    else if (msg.topic == \"print_action\")\n        payload.name = \"Print Action Change\";\n    payload.unique_id = ha_device_name + \"_\" + msg.topic +\"_change\";\n    payload.object_id = payload.unique_id;\n    base_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic +\"_change\";\n    payload.state_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.command_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic +\"_change\" + \"/donotset\";;\n    payload.options = flow.get(\"stages\"); \n    payload.icon = \"mdi:delta\";\n    payload.entity_category = \"diagnostic\";\n    data.topic = base_topic + \"/config\";\n    data.qos = 1;\n    data.retain = true;\n    data.payload = payload;\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n}\n\nif (msg.topic == \"print_status\") {\n    delete payload.availability_topic;\n\n    payload.name = \"Print Status Change\";\n    payload.unique_id = ha_device_name + \"_\" + \"status_change\";\n    payload.object_id = payload.unique_id;\n    base_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + \"status_change\";\n    payload.state_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.command_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + \"status_change\" + \"/donotset\";;\n    payload.options = flow.get(\"statuses\");\n    payload.icon = \"mdi:delta\";\n    payload.entity_category = \"diagnostic\";\n    data.topic = base_topic + \"/config\";\n    data.qos = 1;\n    data.retain = true;\n    data.payload = payload;\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n}\n",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\nlet root_topic = flow.get(\"root_topic\");\nlet ha_device_name = flow.get(\"HA_DEVICE\");\nif(msg.payload == undefined && !msg.topic.includes(\"reset\")|| msg.topic == \"msg\") {\n    return;\n}\nlet type = \"sensor\";\n\nlet diagnostic_topics = [\"wifi_signal\", \"sdcard\", \"SW_version\", \"HW_version\", \"nozzle_diameter\", \"nozzle_type\",\n    \"ams_count\", \"upload\", \"work_light\", \"upgrade_state\", \"model\", \"machine_name\", \"mess_production_state\", \"xcam\",\n    \"ipcam\", \"serial_number\", \"timelapse_state\", \"recording_state\", \"is_220_voltage\", \"firmware_type\"];\n\nif(diagnostic_topics.includes(msg.topic)) {\n    msg.entity_category = \"diagnostic\";\n}\nif (msg.topic == \"wifi_signal\") {\n    msg.payload = msg.payload.match(/^-?\\d+/)[0];\n    msg.device_class = \"signal_strength\"\n    msg.unit_of_measurement = \"dBm\";\n}\nelse if (msg.topic == \"hw_switch_state\") {\n    msg.topic = \"extruder_loaded\";\n}\nelse if (msg.topic == \"toggle_recording\" || msg.topic == \"toggle_timelapse\") {\n    type = \"switch\";\n    msg.entity_category = \"config\";\n}\nelse if (msg.topic.match(/temperature/)) {\n    msg.device_class = \"temperature\";\n}\nelse if (msg.topic.includes(\"HMS\")) {\n    msg.icon = \"mdi:message-alert-outline\"\n    if(msg.topic.includes(\"Notifications\")) {\n        msg.topic = \"HMS\";\n    }\n}\nelse if (msg.topic.match(/(.*)fan(.*)/) && msg.topic !== \"fan_gear\") {\n    msg.unit_of_measurement = \"%\";\n    type = \"fan\";\n    if(msg.topic == \"heatbreak_fan\") {\n        type = \"sensor\";\n    }\n    msg.icon = \"mdi:fan\"\n    if (msg.topic == \"aux_part_fan\") {\n        delete msg.unit_of_measurement;\n        type = \"sensor\";\n    }\n}\nelse if (msg.topic.match(/serial/)) {\n    msg.icon = \"mdi:barcode\";\n    msg.entity_category = \"diagnostic\";\n}\nelse if (msg.topic == \"status\" || msg.topic == \"print_state\") {\n    payload.icon = \"mdi:printer-3d\";\n}\nelse if(msg.topic == \"sdcard\") {\n    msg.icon = \"mdi:sd\"\n}\nelse if(msg.topic.includes(\"layer\")){\n    msg.icon = \"mdi:layers\";\n}\nelse if (msg.topic == \"print_progress\") {\n    msg.unit_of_measurement = \"%\";\n}\nelse if(msg.topic == \"print_remaining_time\") {\n    msg.unit_of_measurement = \"min\";\n    msg.device_class = \"duration\";\n}\nelse if (msg.topic.match(/time/) && msg.topic != \"timelapse_state\") {\n    msg.icon = \"mdi:clock\";\n    if(msg.topic.includes(\"_start_time\")){\n        msg.icon = \"mdi:clock-start\";\n    } \n    else if (msg.topic.includes(\"_end_time\")) {\n        msg.icon = \"mdi:clock-end\";\n    }\n}\nelse if(msg.topic == \"speed\") {\n    msg.icon = \"mdi:speedometer\"\n}\n\nelse if (msg.topic == \"SW_version\") {\n    device.sw_version = msg.payload;\n    flow.set(\"fw_version\", msg.payload);\n}\nelse if (msg.topic == \"HW_version\") {\n    device.hw_version = msg.payload;\n}\nelse if(msg.topic == \"pause_print\") {\n    msg.icon = \"mdi:pause\";\n}\nelse if (msg.topic == \"resume_print\") {\n    msg.icon = \"mdi:play\";\n}\nelse if (msg.topic == \"camera_rtsp\") {\n    msg.icon = \"mdi:camera\";\n}\nelse if (msg.topic == \"stop_print\") {\n    msg.icon = \"mdi:cancel\";\n}\nelse if (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    msg.icon = \"mdi:state-machine\";\n}\nelse if (msg.topic == \"nozzle_diameter\" || msg.topic == \"nozzle_type\") {\n    msg.icon = \"mdi:printer-3d-nozzle\"\n}\nelse if (msg.topic == \"timelapse_state\" || msg.topic == \"recording_state\") {\n    msg.icon = \"mdi:record-rec\";\n}\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nif(msg.topic == \"chamber_light\") {\n    type = \"light\";\n} \nif (msg.topic == \"print_preview\") {\n    type = \"camera\";\n    payload.image_encoding = \"b64\";\n}\nlet button_topics = [\"reset_filter\", \"unload_filament\", \"pause_print\", \"resume_print\", \"stop_print\",\n     \"force_update\", \"logo_light_on\", \"logo_light_off\", \"clear_external_spool\", \"force_ftp_fetch\"];\nif (button_topics.includes(msg.topic) || msg.topic.includes(\"nozzle_light\")) {\n    type = \"button\";\n}\n\nif(msg.topic == \"speed\") {\n    type = \"select\";\n    //msg.entity_category = \"config\";\n}\nif(msg.topic == \"camera_resolution\") {\n    type = \"select\";\n    \n}\nif(msg.topic.startsWith(\"set_\") && msg.topic.endsWith(\"_temp\")) {\n    type = \"number\";\n    payload.min = 0;\n\n    if(msg.topic.includes(\"bed\")) {\n        payload.max = 110;\n        if (flow.get(\"is_220_voltage\")) {\n            payload.max = 120;\n        }\n    }\n    if(msg.topic.includes(\"nozzle\")) {\n        payload.max = 300;\n    }\n    payload.mode = \"box\";\n    //msg.entity_category = \"config\";\n}\n\nlet base_topic = root_topic + \"/\"+ type + \"/\" + ha_device_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\nif (msg.topic == \"big_fan2\") {\n    payload.name = \"Chamber Fan\";\n}\nelse if (msg.topic == \"big_fan1\") {\n    payload.name = \"Auxilliary Fan\";\n}\nelse if (msg.topic == \"cooling_fan\") {\n    payload.name = \"Part Cooling Fan\";\n}\nelse if (msg.topic == \"vt_tray\") {\n    payload.name = \"External Spool\";\n}\nelse if (msg.topic == \"camera_rtsp\") {\n    payload.name = \"LAN Camera\";\n}\nelse if (msg.topic == \"aux_part_fan\") {\n    payload.name = \"Aux Fan Installed\";\n    payload.entity_category = \"diagnostic\";\n} else if (msg.topic == \"last_calibrated_pa\") {\n    //payload.expire_after = 3600 * 24;\n    payload.name = \"Last Calibrated PA\";\n}\nelse if (msg.topic == \"xcam\") {\n    payload.name = \"Settings\";\n}\nelse if (msg.topic == \"HMS\") {\n    payload.name = \"HMS Notifications\";\n}\n\n\ndevice.identifiers = [];\ndevice.identifiers[0] = ha_device_name;\nif (msg.topic == \"serial_number\") {\n    msg.entity_category = \"diagnostic\";\n    device.identifiers[1] = msg.payload;\n}\ndevice.manufacturer = \"Bambu Labs\";\ndevice.model = flow.get(\"model\");\ndevice.name =ha_device_name;\n\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\nif(msg.entity_category != undefined) {\n    payload.entity_category = msg.entity_category;\n}\n\npayload.device = device;\npayload.unique_id = ha_device_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\nif (payload.device_class == \"temperature\") {\n    payload.unit_of_measurement = \"°C\";\n    payload.temperature_unit = \"°C\";\n}\n\nif (msg.topic == \"machine_serial\") {\n    return;\n}\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\nif(type == \"fan\") {\n    payload.command_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    delete payload.json_attributes_topic;\n    payload.percentage_command_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/percent/set\";\n    payload.percentage_state_topic = root_topic + \"/\"  + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/percent/state\";\n    payload.speed_range_max = 10;\n    payload.speed_range_min = 1;\n}\nelse if (type == \"light\") {\n    payload.command_topic = base_topic + \"/set\";\n    delete payload.json_attributes_topic;\n}\nelse if(type == \"number\") {\n    delete payload.json_attributes_topic;\n    payload.command_topic = base_topic + \"/set\";\n    payload.state_topic = base_topic + \"/set\";\n}\nelse if(type == \"switch\") {\n    payload.command_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    delete payload.json_attributes_topic;\n    /*delete payload.availability_topic;\n    payload.availability = [];\n    let a1 = {};\n    a1.topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"ipcam\" + \"/state\";\n    a1.payload_available = \"Present\";\n    a1.payload_not_available = \"No Camera\";\n    payload.availability.push(a1);*/\n    \n    if(msg.topic == \"toggle_timelapse\") {\n        payload.icon = \"mdi:record-rec\";\n        payload.state_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"timelapse_state\" + \"/state\";\n    }\n    else if (msg.topic == \"toggle_recording\") {\n        payload.icon = \"mdi:record-rec\";\n        payload.state_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"recording_state\" + \"/state\";\n    }\n}\nif (type == \"button\" &&  msg.topic.includes(\"reset_filter\")) {\n    delete payload.state_topic;\n    delete payload.json_attributes_topic;\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    payload.entity_category = \"config\";\n}\nif (type == \"button\" && (msg.topic.includes(\"logo_light\") || msg.topic.includes(\"nozzle_light\"))) {\n    //payload.entity_category = \"config\";\n    delete payload.state_topic;\n    delete payload.json_attributes_topic;\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n}\nif (type == \"button\" && (msg.topic.includes(\"clear_external_spool\")\n    || msg.topic == \"unload_filament\" || msg.topic == \"force_ftp_fetch\")) {\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    if( msg.topic == \"force_ftp_fetch\") {\n        delete payload.json_attributes_topic;\n        payload.entity_category = \"config\";\n    }\n}\nelse if (type == \"button\") {\n    delete payload.state_topic;\n    delete payload.json_attributes_topic;\n    payload.command_topic = root_topic + \"/\"  + \"button\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    if(msg.topic.includes(\"_print\")) {\n      let available = \"\";\n      if(msg.topic.includes(\"pause\")) {\n          available = \"RUNNING\";\n      }\n      else if(msg.topic.includes(\"resume\")) {\n          available = \"PAUSE\";\n      }\n      else if(msg.topic.includes(\"stop\")) {\n          available = \"IS_RUNNING\"\n      }\n      else {\n          return;\n      }\n      payload.availability = [];\n      let a1 = {};\n      a1.topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"print_status\" + \"/state\";\n      a1.payload_available = available;\n      a1.payload_not_available = \"N/A\";\n      delete payload.availability_topic;\n      if(msg.topic.includes(\"stop\")) {\n        a1.value_template = '{{ \"' + available + '\" if value == \"RUNNING\" or value == \"PAUSE\" else \"N/A\" }}'\n      } else {\n        a1.value_template = '{{ \"'+available+'\" if value == \"'+available+'\" else \"N/A\" }}'\n      }\n      payload.availability.push(a1);\n    }\n    else if (msg.topic == \"force_update\") {\n        payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n        payload.entity_category = \"config\";\n        payload.name = \"Force Sensor Updates\";\n    }\n}\nif (type == \"camera\" && !msg.topic.includes(\"rtsp\")) {\n    payload.topic = base_topic + \"/image\";\n    payload.json_attributes_topic = base_topic + \"/attr\";\n    payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    delete payload.state_topic;\n}\nelse if (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    delete payload.availability_topic;\n}\nelse if(msg.topic == \"serial_number\" || msg.topic.includes(\"version\")) {\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n}\n\nelse if (msg.topic == \"speed\") {\n    payload.command_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    payload.state_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.json_attributes_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    payload.availability_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    payload.options = [\"Silent\", \"Standard\", \"Sport\", \"Ludicrous\"];   \n}\nelse if (msg.topic == \"camera_resolution\") {\n    let resolutions = flow.get(\"camera_resolutions\");\n    payload.icon = \"mdi:high-definition-box\";\n    payload.entity_category = \"config\";\n    payload.command_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/set\";\n    payload.state_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.json_attributes_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n    payload.options = resolutions;\n}\nif (msg.topic != \"status\" && msg.topic != \"print_status\"\n    && msg.topic != \"vt_tray\"\n    && msg.topic != \"resume_print\" && msg.topic != \"pause_print\" && msg.topic != \"stop_print\"\n    && msg.topic != \"machine_name\" && msg.topic != \"machine_serial\") {\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n\n}\nif (msg.topic == \"reset_filter\") {\n    payload.name = \"Debug Reset NR Filter\";\n}\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\nif (data.topic.startsWith(root_topic)) {\n    node.send(data);\n}\nif (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n}\npayload.name = getFriendlyName(msg.topic);\n\npayload.unique_id = ha_device_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\ndelete payload.command_topic;\ndelete payload.options;\ndelete payload.json_attributes_topic;\ndelete payload.state_topic;\npayload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";    \ndata.qos = 1;\ndata.retain = true;\n\nif (msg.topic == \"big_fan2\") {\n    payload.name = \"Chamber Fan\";\n}\nelse if (msg.topic == \"big_fan1\") {\n    payload.name = \"Auxilliary Fan\";\n}\nelse if (msg.topic == \"cooling_fan\") {\n    payload.name = \"Part Cooling Fan\";\n}\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\nif (type == \"fan\") {\n    delete payload.entity_category;\n    delete payload.json_attributes_topic;\n    delete payload.percentage_command_topic;\n    delete payload.percentage_state_topic;\n    payload.state_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    delete payload.speed_range_max;\n    delete payload.speed_range_min;\n    data.topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/config\";\n    data.payload = payload;\n    data.qos = 1;\n    data.retain = true;\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n\n}\n\nif (msg.topic == \"speed\") {\n    msg.topic = \"speed_info\";\n    type = \"sensor\";\n    let base_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic;\n    \n    payload.state_topic = base_topic + \"/state\";\n    payload.json_attributes_topic = base_topic + \"/attr\";\n    data.topic = base_topic + \"/config\";\n    data.payload = payload;\n    data.qos = 1;\n    data.retain = true;\n\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n\n}\n\nif (msg.topic == \"stage\" || msg.topic == \"print_action\") {\n    if(msg.topic == \"stage\") {\n        payload.name = \"Lidar Usage\";\n        payload.unique_id = ha_device_name + \"_\" + \"lidar_usage\";\n        payload.object_id = payload.unique_id;\n        type = \"device_automation\"\n        let base_topic = root_topic + \"/\"  + type + \"/\" + ha_device_name + \"/\" + \"lidar_on\";\n\n        payload.topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n        payload.value_template = '{{ \"on\" if \"lidar\" in value|lower else \"off\" }}';\n        payload.payload = \"on\";\n\n        payload.type = \"in use\";\n        payload.automation_type = \"trigger\";\n\n        payload.subtype = \"Lidar\";\n        data.topic = base_topic + \"/config\";\n        \n        data.payload = payload;\n        data.qos = 1;\n        data.retain = true;\n        if (data.topic.startsWith(root_topic)) {\n            node.send(data);\n        }\n        base_topic = root_topic + \"/\" + type + \"/\" + ha_device_name + \"/\" + \"lidar_off\";\n        payload.payload = \"off\";\n\n        payload.automation_type = \"trigger\";\n\n        payload.type = \"not in use\";\n        data.topic = base_topic + \"/config\";\n\n        data.payload = payload;\n        if (data.topic.startsWith(root_topic)) {\n            node.send(data);\n        }\n    }\n\n    /////////////////////////\n    delete payload.value_template;\n    delete payload.payload;\n    delete payload.type;\n    delete payload.subtype;\n    delete payload.automation_type;\n    delete payload.availability_topic;\n    if(msg.topic == \"stage\")\n        payload.name = \"Stage Change\";\n    else if (msg.topic == \"print_action\")\n        payload.name = \"Print Action Change\";\n    payload.unique_id = ha_device_name + \"_\" + msg.topic +\"_change\";\n    payload.object_id = payload.unique_id;\n    base_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic +\"_change\";\n    payload.state_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.command_topic = root_topic + \"/\" + \"select\" + \"/\" + ha_device_name + \"/\" + msg.topic +\"_change\" + \"/donotset\";;\n    payload.options = flow.get(\"stages\"); \n    payload.icon = \"mdi:delta\";\n    payload.entity_category = \"diagnostic\";\n    data.topic = base_topic + \"/config\";\n    data.qos = 1;\n    data.retain = true;\n    data.payload = payload;\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n}\n\nif (msg.topic == \"print_status\") {\n    delete payload.availability_topic;\n\n    payload.name = \"Print Status Change\";\n    payload.unique_id = ha_device_name + \"_\" + \"status_change\";\n    payload.object_id = payload.unique_id;\n    base_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + \"status_change\";\n    payload.state_topic = root_topic + \"/\"  + \"sensor\" + \"/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    payload.command_topic = root_topic + \"/\"  + \"select\" + \"/\" + ha_device_name + \"/\" + \"status_change\" + \"/donotset\";;\n    payload.options = flow.get(\"statuses\");\n    payload.icon = \"mdi:delta\";\n    payload.entity_category = \"diagnostic\";\n    data.topic = base_topic + \"/config\";\n    data.qos = 1;\n    data.retain = true;\n    data.payload = payload;\n    if (data.topic.startsWith(root_topic)) {\n        node.send(data);\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -3840,7 +3962,7 @@
         "z": "fbda6ab16491b918",
         "g": "fa96932f13cc3d89",
         "name": "Printer State",
-        "func": "function sendNonEmpty(message) {\n    if(message.payload == 0 || (message.payload != undefined && message.payload != \"\" && msg.payload != {})) {\n        node.send(message);\n    }\n}\n\nlet hasAttr = false;\n\nif (msg.payload == undefined) {\n    return;\n}\nlet root_topic = flow.get(\"root_topic\");\nlet ha_device_name = flow.get(\"HA_DEVICE\");\nif (msg.topic == \"machine_serial\" || msg.topic == \"print_preview\" || msg.topic == \"msg\") {\n    return;\n}\nif (msg.topic == \"reset_filter\" || msg.topic == \"resume_print\" || msg.topic == \"pause_print\"\n    || msg.topic == \"clear_external_spool\" || msg.topic == \"force_ftp_fetch\"\n    || msg.topic.includes(\"logo_light\") || msg.topic.includes(\"nozzle_light\")) {\n    return;\n}\nif(msg.topic == \"nozzle_diameter\") {\n    flow.set(\"nozzle_diameter\", msg.payload);\n}\nif(msg.topic.startsWith(\"set_\") && msg.topic.endsWith(\"_temp\")) {\n    return;\n}\nelse if (msg.topic == \"last_calibrated_pa\" && msg.payload == \"\") {\n    return;\n}\nelse if (msg.topic == \"toggle_timelapse\" || msg.topic == \"toggle_recording\") {\n    return;\n}\nelse if (msg.topic == \"hw_switch_state\") {\n    msg.topic = \"extruder_loaded\";\n    if(msg.payload == \"1\") {\n        msg.payload = true;\n    }\n    else {\n        msg.payload = false;\n    }\n}\nelse if (msg.topic == \"machine_name\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    let oldPayload = msg.payload;\n    msg.payload = { \"Serial Number\": flow.get(\"printer_serial\")};\n    node.send(msg);\n    msg.payload = oldPayload;\n    msg.topic = oldTopic;\n}\nelse if (msg.topic == \"wifi_signal\")\n    msg.payload = msg.payload.match(/^-?\\d+/)[0];\nelse if (msg.topic == \"xcam\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.status;\n}\nelse if (msg.topic == \"upload\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.message;\n}\nelse if (msg.topic == \"camera_rtsp\") {\n    var oldTopic = msg.topic;\n    var oldPayload = msg.payload;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    if (oldPayload != \"Disabled\") {\n        msg.payload = {\"URL\": oldPayload, \"User\": \"bblp\", \"Password\": \"<access_code>\", \"Protocol\": \"TCP\", \"SSL Verify\": \"disable\", \"Framerate\": 30, \"Port (Optional)\": 322, \"LAN Mode\": \"Not Required\"};\n        node.send(msg);\n        oldPayload = \"Enabled\";\n    }\n    msg.topic = oldTopic;\n    msg.payload = oldPayload;\n}\nelse if (msg.topic == \"upgrade_state\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    let state = \"AVAILABLE\";\n    if (msg.payload.new_version_state == 1) {\n        msg.payload = state;\n    }\n    else {\n        msg.payload = msg.payload.status;\n    }\n}\nelse if (msg.topic == \"stage\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n\n    var current = msg.payload.current;\n    var prev = {};\n    var count = 0;\n    \n    if(msg.payload.prev != undefined) {\n        for (var stg of msg.payload.prev) {\n            prev[count.toString()] = stg;\n            count += 1;\n        }\n            msg.payload = prev;\n            node.send(msg);\n    }\n\n    msg.topic = oldTopic;\n    msg.payload = current;\n}\nelse if (msg.topic == \"ipcam\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.ipcam_dev;\n}\nelse if (msg.topic == \"vt_tray\") {\n    var oldTopic = msg.topic;\n    if (msg.payload.color != undefined\n        && !msg.payload.color.startsWith(\"#\")) {\n        msg.payload.color = \"#\" + msg.payload.color;\n    }\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.type;\n}\nelse if (msg.topic == \"subtask\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.name;\n}\nelse if (msg.topic == \"print\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.type;\n    if(msg.payload == undefined || msg.payload == \"\") {\n        msg.payload = \"None\";\n    }\n}\nelse if (msg.topic == \"bed_temperature\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    if (msg.payload.target_temperature != undefined) {\n        msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n        node.send(msg);\n    }\n    if(msg.payload.temperature == undefined) {\n        return;\n    }\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.temperature;\n}\nelse if (msg.topic == \"nozzle_temperature\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    if(msg.payload.target_temperature != undefined) {\n        msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n        node.send(msg);\n    }\n    if (msg.payload.temperature == undefined) {\n        return;\n    }\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.temperature;\n}\nelse if (msg.topic == \"chamber_temperature\") {\n    msg.payload = msg.payload.temperature;\n}\nelse if (msg.topic == \"gcode\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.file;\n}\nelse if (msg.topic == \"hms\") {\n    msg.topic = \"HMS\";\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    var numOfCodes = msg.payload == undefined || msg.payload == [] ? 0 : msg.payload.length;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    var links = {};\n    for (var data of msg.payload) {\n        //let m = data.url;\n        if (data.type != undefined && data.type != \"\") {\n            //m = \"[\"+data.type+\"]\" + \" \" + m;\n            links[data.code.replaceAll(\" \", \"_\") + \" Severity\"] = data.type;\n        }\n        if ( data.description != undefined && data.description != \"\") {\n            links[data.code.replaceAll(\" \", \"_\")+\" Description\"] = data.description;\n            //m = data.description + \"\\n\"+ m;    \n        }\n        if(data.module != undefined && data.module != \"\") {\n            //m = \"[\"+data.module+\"]\" + \"\\n\" + m;\n            links[data.code.replaceAll(\" \", \"_\") + \" Module\"] = data.module;\n        }\n\n        links[data.code.replaceAll(\" \", \"_\")] = data.url;\n    }\n    msg.payload = links;\n    if(msg.payload != undefined && msg.payload != \"\" && msg.payload != {}) {\n        node.send(msg);\n    }\n    msg.topic = oldTopic;\n    msg.payload = numOfCodes;\n}\nelse if (msg.topic == \"speed\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/select/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + \"speed_info\" + \"/attr\";\n    node.send(msg);\n    msg.topic = \"speed\";\n    msg.payload = msg.payload.profile;\n    msg.topic = root_topic + \"/select/\" + ha_device_name + \"/\" + \"speed\" + \"/state\";\n    node.send(msg);\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + \"speed_info\" + \"/state\";\n    node.send(msg);\n    return;\n}\nelse if (msg.topic == \"camera_resolution\") {\n    msg.topic = root_topic + \"/select/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n    return;\n}\nelse if (msg.topic == \"chamber_light\") {\n    msg.payload = msg.payload.toUpperCase();\n    msg.topic = root_topic + \"/light/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n    return;\n}\nelse if (msg.topic.match(/(.*)fan(.*)/) && msg.topic !== \"fan_gear\" && msg.topic != \"heatbreak_fan\"\n    && msg.topic != \"aux_part_fan\") {\n    let orig_topic = msg.topic;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + orig_topic + \"/state\";\n    node.send(msg);\n    msg.topic = root_topic + \"/fan/\" + ha_device_name + \"/\" + orig_topic + \"/percent/state\";\n    msg.payload = parseInt(msg.payload) / 10;\n    node.send(msg);\n    if(msg.payload == 0 || msg.payload == \"0\") {\n        msg.payload = \"OFF\";\n        msg.topic = root_topic + \"/fan/\" + ha_device_name + \"/\" + orig_topic+ \"/state\";\n        node.send(msg);\n    }\n    else {\n        msg.payload = \"ON\";\n        msg.topic = root_topic + \"/fan/\" + ha_device_name + \"/\" + orig_topic + \"/state\";\n        node.send(msg);\n    }\n    return;\n}\nmsg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n\nif(hasAttr) {\n    sendNonEmpty(msg);\n}\nelse {\n    node.send(msg);\n}\n",
+        "func": "function sendNonEmpty(message) {\n    if(message.payload == 0 || (message.payload != undefined && message.payload != \"\" && msg.payload != {})) {\n        node.send(message);\n    }\n}\n\nlet hasAttr = false;\n\nif (msg.payload == undefined) {\n    return;\n}\nlet root_topic = flow.get(\"root_topic\");\nlet ha_device_name = flow.get(\"HA_DEVICE\");\nif (msg.topic == \"machine_serial\" || msg.topic == \"print_preview\" || msg.topic == \"msg\") {\n    return;\n}\nif (msg.topic == \"reset_filter\" || msg.topic == \"resume_print\" || msg.topic == \"pause_print\"\n    || msg.topic == \"clear_external_spool\" || msg.topic == \"force_ftp_fetch\"\n    || msg.topic.includes(\"logo_light\") || msg.topic.includes(\"nozzle_light\")) {\n    return;\n}\nif(msg.topic == \"nozzle_diameter\") {\n    flow.set(\"nozzle_diameter\", msg.payload);\n}\nif(msg.topic.startsWith(\"set_\") && msg.topic.endsWith(\"_temp\")) {\n    return;\n}\nelse if (msg.topic == \"last_calibrated_pa\" && msg.payload == \"\") {\n    return;\n}\nelse if (msg.topic == \"toggle_timelapse\" || msg.topic == \"toggle_recording\") {\n    return;\n}\nelse if (msg.topic == \"hw_switch_state\") {\n    msg.topic = \"extruder_loaded\";\n    if(msg.payload == \"1\") {\n        msg.payload = true;\n    }\n    else {\n        msg.payload = false;\n    }\n}\nelse if (msg.topic == \"machine_name\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    let oldPayload = msg.payload;\n    msg.payload = { \"Serial Number\": flow.get(\"printer_serial\")};\n    node.send(msg);\n    msg.payload = oldPayload;\n    msg.topic = oldTopic;\n}\nelse if (msg.topic == \"wifi_signal\")\n    msg.payload = msg.payload.match(/^-?\\d+/)[0];\nelse if (msg.topic == \"xcam\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.status;\n}\nelse if (msg.topic == \"upload\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.message;\n}\nelse if (msg.topic == \"camera_rtsp\") {\n    var oldTopic = msg.topic;\n    var oldPayload = msg.payload;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    if (oldPayload != \"Disabled\") {\n        msg.payload = {\"URL\": oldPayload, \"User\": \"bblp\", \"Password\": \"<access_code>\", \"Protocol\": \"TCP\", \"SSL Verify\": \"disable\", \"Framerate\": 30, \"Port (Optional)\": 322, \"LAN Mode\": \"Not Required\"};\n        node.send(msg);\n        oldPayload = \"Enabled\";\n    }\n    msg.topic = oldTopic;\n    msg.payload = oldPayload;\n}\nelse if (msg.topic == \"upgrade_state\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    let state = \"AVAILABLE\";\n    if (msg.payload.new_version_state == 1) {\n        msg.payload = state;\n    }\n    else {\n        msg.payload = msg.payload.status;\n    }\n}\nelse if (msg.topic == \"stage\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n\n    var current = msg.payload.current;\n    var prev = {};\n    var count = 0;\n    \n    if(msg.payload.prev != undefined) {\n        for (var stg of msg.payload.prev) {\n            prev[count.toString()] = stg;\n            count += 1;\n        }\n            msg.payload = prev;\n            node.send(msg);\n    }\n\n    msg.topic = oldTopic;\n    msg.payload = current;\n}\nelse if (msg.topic == \"ipcam\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.ipcam_dev;\n}\nelse if (msg.topic == \"vt_tray\") {\n    var oldTopic = msg.topic;\n    if (msg.payload.color != undefined\n        && !msg.payload.color.startsWith(\"#\")) {\n        msg.payload.color = \"#\" + msg.payload.color;\n    }\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.type;\n}\nelse if (msg.topic == \"subtask\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.name;\n}\nelse if (msg.topic == \"print\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.type;\n    if(msg.payload == undefined || msg.payload == \"\") {\n        msg.payload = \"None\";\n    }\n}\nelse if (msg.topic == \"bed_temperature\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    if (msg.payload.target_temperature != undefined) {\n        msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n        node.send(msg);\n    }\n    if(msg.payload.temperature == undefined) {\n        return;\n    }\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.temperature;\n}\nelse if (msg.topic == \"nozzle_temperature\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    if(msg.payload.target_temperature != undefined) {\n        msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n        node.send(msg);\n    }\n    if (msg.payload.temperature == undefined) {\n        return;\n    }\n    msg.topic = oldTopic;\n    msg.payload = msg.payload.temperature;\n}\nelse if (msg.topic == \"chamber_temperature\") {\n    msg.payload = msg.payload.temperature;\n}\nelse if (msg.topic == \"gcode\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = oldTopic;\n    if(msg.payload.file == undefined) {\n        return;\n    }\n    msg.payload = msg.payload.file;\n}\nelse if (msg.topic.includes(\"HMS\")) {\n    //msg.topic = \"HMS\";\n    var oldTopic = msg.topic;\n    var numOfCodes = 0;\n    hasAttr = true;\n    if (oldTopic != \"HMS_Notifications\"){\n        msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n        numOfCodes = msg.payload == undefined || msg.payload == [] ? 0 : msg.payload.length;\n        var links = {};\n        for (var data of msg.payload) {\n            //if (data.type != undefined && data.type != \"\") {\n            //    links[data.code.replaceAll(\" \", \"_\") + \" Severity\"] = data.type;\n            //}\n            if ( data.description != undefined && data.description != \"\") {\n                links[data.code.replaceAll(\" \", \"_\")+\" Description\"] = data.description;\n            }\n            if(data.module != undefined && data.module != \"\") {\n                links[data.code.replaceAll(\" \", \"_\") + \" Module\"] = data.module;\n            }\n\n            links[data.code.replaceAll(\" \", \"_\")] = data.url;\n        }\n        msg.payload = links;\n        if(msg.payload != undefined && msg.payload != \"\" && msg.payload != {}) {\n            node.send(msg);\n        }\n        msg.topic = oldTopic;\n        msg.payload = numOfCodes;\n    }\n    else {\n        numOfCodes = msg.payload[\"Total\"];\n        delete msg.payload[\"Total\"];\n        msg.topic = \"HMS\";\n        if (msg.payload != undefined && msg.payload != \"\" && msg.payload != {}) {\n            msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n            node.send(msg);\n        }\n        msg.topic = \"HMS\";\n        msg.payload = numOfCodes;\n    }\n}\nelse if (msg.topic == \"speed\") {\n    var oldTopic = msg.topic;\n    hasAttr = true;\n    msg.topic = root_topic + \"/select/\" + ha_device_name + \"/\" + msg.topic + \"/attr\";\n    node.send(msg);\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + \"speed_info\" + \"/attr\";\n    node.send(msg);\n    msg.topic = \"speed\";\n    msg.payload = msg.payload.profile;\n    msg.topic = root_topic + \"/select/\" + ha_device_name + \"/\" + \"speed\" + \"/state\";\n    node.send(msg);\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + \"speed_info\" + \"/state\";\n    node.send(msg);\n    return;\n}\nelse if (msg.topic == \"camera_resolution\") {\n    msg.topic = root_topic + \"/select/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n    return;\n}\nelse if (msg.topic == \"chamber_light\") {\n    msg.payload = msg.payload.toUpperCase();\n    msg.topic = root_topic + \"/light/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n    node.send(msg);\n    return;\n}\nelse if (msg.topic.match(/(.*)fan(.*)/) && msg.topic !== \"fan_gear\" && msg.topic != \"heatbreak_fan\"\n    && msg.topic != \"aux_part_fan\") {\n    let orig_topic = msg.topic;\n    msg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + orig_topic + \"/state\";\n    node.send(msg);\n    msg.topic = root_topic + \"/fan/\" + ha_device_name + \"/\" + orig_topic + \"/percent/state\";\n    msg.payload = parseInt(msg.payload) / 10;\n    node.send(msg);\n    if(msg.payload == 0 || msg.payload == \"0\") {\n        msg.payload = \"OFF\";\n        msg.topic = root_topic + \"/fan/\" + ha_device_name + \"/\" + orig_topic+ \"/state\";\n        node.send(msg);\n    }\n    else {\n        msg.payload = \"ON\";\n        msg.topic = root_topic + \"/fan/\" + ha_device_name + \"/\" + orig_topic + \"/state\";\n        node.send(msg);\n    }\n    return;\n}\nmsg.topic = root_topic + \"/sensor/\" + ha_device_name + \"/\" + msg.topic + \"/state\";\n\nif(hasAttr) {\n    sendNonEmpty(msg);\n}\nelse {\n    node.send(msg);\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4199,7 +4321,8 @@
             "96223de14da95f0a",
             "eba20ea13f37261c",
             "9c6461a60c6a8bd2",
-            "81ac7533c0fa0a23"
+            "81ac7533c0fa0a23",
+            "d2e5a31a0167dbb9"
         ],
         "x": 54,
         "y": 79,
@@ -4211,7 +4334,7 @@
         "type": "mqtt in",
         "z": "fbda6ab16491b918",
         "g": "14f23434a23cdae7",
-        "name": "Bambu {PRINTER_MODEL} {PRINTER_NAME}",
+        "name": "Bambu MQTT In",
         "topic": "",
         "qos": "2",
         "datatype": "json",
@@ -4220,7 +4343,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 270,
+        "x": 240,
         "y": 280,
         "wires": [
             [
@@ -4324,7 +4447,7 @@
         "type": "inject",
         "z": "fbda6ab16491b918",
         "g": "14f23434a23cdae7",
-        "name": "Inject OFFLINE {PRINTER_NAME}",
+        "name": "Inject OFFLINE",
         "props": [
             {
                 "p": "payload"
@@ -4356,17 +4479,23 @@
         "rules": [
             {
                 "t": "false"
+            },
+            {
+                "t": "true"
             }
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 1,
+        "outputs": 2,
         "x": 430,
         "y": 480,
         "wires": [
             [
                 "cc63110a9c0b3341",
                 "eba20ea13f37261c"
+            ],
+            [
+                "d2e5a31a0167dbb9"
             ]
         ]
     },
@@ -4675,8 +4804,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 580,
-        "y": 480,
+        "x": 700,
+        "y": 460,
         "wires": [
             [
                 "f0580207cb1f90ff"
@@ -4751,8 +4880,8 @@
         "links": [
             "270186a0ec06877a"
         ],
-        "x": 815,
-        "y": 480,
+        "x": 935,
+        "y": 460,
         "wires": []
     },
     {
@@ -4767,8 +4896,8 @@
         "arraySpltType": "len",
         "stream": false,
         "addname": "topic",
-        "x": 730,
-        "y": 480,
+        "x": 850,
+        "y": 460,
         "wires": [
             [
                 "c74f41e5232489b6"
@@ -5115,6 +5244,20 @@
         ]
     },
     {
+        "id": "d2e5a31a0167dbb9",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "14f23434a23cdae7",
+        "name": "Force Update Out",
+        "mode": "link",
+        "links": [
+            "b34684c338d973fb"
+        ],
+        "x": 575,
+        "y": 480,
+        "wires": []
+    },
+    {
         "id": "7952a4df8f4bb6a4",
         "type": "group",
         "z": "fbda6ab16491b918",
@@ -5144,9 +5287,9 @@
             "ec9ac5d1e7062638"
         ],
         "x": 54,
-        "y": 799,
+        "y": 839,
         "w": 722,
-        "h": 282
+        "h": 242
     },
     {
         "id": "7cbd22af688976aa",
@@ -5167,7 +5310,7 @@
         "onceDelay": "15",
         "topic": "",
         "x": 160,
-        "y": 840,
+        "y": 880,
         "wires": [
             [
                 "872330b0d9c9afc5",
@@ -5190,7 +5333,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 320,
-        "y": 940,
+        "y": 960,
         "wires": [
             [
                 "0c9c48807302abbe"
@@ -5233,7 +5376,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 320,
-        "y": 900,
+        "y": 920,
         "wires": [
             [
                 "35b56dc02e67ecbc"
@@ -5258,7 +5401,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 470,
+        "x": 510,
         "y": 960,
         "wires": [
             [
@@ -5305,7 +5448,7 @@
         "finalize": "",
         "libs": [],
         "x": 190,
-        "y": 940,
+        "y": 960,
         "wires": [
             [
                 "12d493bc4868cb6b"
@@ -5325,7 +5468,7 @@
         "finalize": "",
         "libs": [],
         "x": 190,
-        "y": 900,
+        "y": 920,
         "wires": [
             [
                 "1186527cf1f7ec0e"
@@ -5344,8 +5487,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 490,
-        "y": 840,
+        "x": 510,
+        "y": 900,
         "wires": [
             [
                 "0c9c48807302abbe"
@@ -5362,7 +5505,7 @@
             "123228b4999f2d36"
         ],
         "x": 95,
-        "y": 920,
+        "y": 940,
         "wires": [
             [
                 "22103cc95aa9c259",
@@ -5469,7 +5612,8 @@
         "name": "Force Update In",
         "links": [
             "35b56dc02e67ecbc",
-            "10c4349de6dd1635"
+            "10c4349de6dd1635",
+            "d2e5a31a0167dbb9"
         ],
         "x": 95,
         "y": 1000,
@@ -5489,8 +5633,8 @@
         "links": [
             "b34684c338d973fb"
         ],
-        "x": 415,
-        "y": 860,
+        "x": 435,
+        "y": 880,
         "wires": []
     },
     {

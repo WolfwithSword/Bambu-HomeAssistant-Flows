@@ -42,8 +42,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.0",
-        "info": "Version 2.0.0: 2023-??-??\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.0.2",
+        "info": "Version 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1700,
         "wires": []
@@ -82,6 +82,27 @@
                 "pt": "flow",
                 "to": "true",
                 "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "energy_rate_sensor",
+                "pt": "flow",
+                "to": "sensor.{HA_ELECTRIC_RATE_COST}",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "power_plug_meter_sensor",
+                "pt": "flow",
+                "to": "sensor.{HA_PRINTER_METER_PLUG_TOTAL_KWH}",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "path_prefix",
+                "pt": "flow",
+                "to": "/data/fetched/",
+                "tot": "str"
             }
         ],
         "action": "",
@@ -222,23 +243,46 @@
             "8d19d0768126d960",
             "302a329fbabf8e92",
             "94f08b2a34e68dd4",
-            "b37e1ea07031ddb3",
-            "0a2561d5abf6ca94",
             "f2fd88c2be22e11f",
             "3d26204dd2cb5b43",
             "53d8b5de5daaa9ba",
             "7cbdaf040db972c0",
-            "f5a3e6f3fbdc7124",
             "d342f643c08ee9d3",
             "1f420b4921e3d087",
             "33269b09bb9a4a3b",
             "bd69f6023cb00184",
             "e81aee378a4539c5",
-            "9a89138f9553f880"
+            "9a89138f9553f880",
+            "fb700d6d896b4e38",
+            "87659026e1b64e10",
+            "e2407320c2160d63",
+            "27e8750d79dc7117",
+            "de0f8d6c3213410d",
+            "51c6377e70811e9a",
+            "7b11af61e6e0ef10",
+            "8391500077eba8ae",
+            "eeba54db5300affd",
+            "e57e03d60aa57d90",
+            "83e2f72cc122faf3",
+            "20e12e2dbc0511d2",
+            "aedffc8f39c5e784",
+            "6488fbbd9a16fced",
+            "5fba0cd4a415a1a0",
+            "81669dbc1cb1994d",
+            "f6ec9c1c878be81a",
+            "269dc2231b49e4bb",
+            "3b1d3fc339195087",
+            "835d262eba54ae5c",
+            "c97ff23076ed10b4",
+            "82e802f48daa83da",
+            "3d9b17f1d8d8058f",
+            "ccef33154dde5e17",
+            "f83cc5013554e075",
+            "c40cba2075d93e84"
         ],
-        "x": 74,
+        "x": 54,
         "y": 2499,
-        "w": 1672,
+        "w": 1682,
         "h": 662
     },
     {
@@ -271,7 +315,7 @@
         "halt_if": "0",
         "halt_if_type": "num",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_start_epoch",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -291,10 +335,10 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1030,
-        "y": 2620,
+        "y": 2600,
         "wires": [
             [
-                "ba7473069f371df8"
+                "27e8750d79dc7117"
             ],
             [
                 "29ce3287b0fc9101"
@@ -313,7 +357,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_subtask",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -332,11 +376,11 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1350,
+        "x": 1390,
         "y": 2660,
         "wires": [
             [
-                "8bf5c9135058acb6"
+                "3d9b17f1d8d8058f"
             ]
         ]
     },
@@ -352,7 +396,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_ELECTRIC_RATE_COST}",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -371,7 +415,7 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1350,
+        "x": 1470,
         "y": 2700,
         "wires": [
             [
@@ -391,7 +435,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -410,11 +454,11 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1350,
+        "x": 1270,
         "y": 2780,
         "wires": [
             [
-                "bc135fef68caf1ed"
+                "c97ff23076ed10b4"
             ]
         ]
     },
@@ -430,7 +474,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_METER_PLUG_TOTAL_KWH}",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -449,7 +493,7 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1510,
+        "x": 1550,
         "y": 2780,
         "wires": [
             [
@@ -463,12 +507,12 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Initial",
-        "query": "INSERT INTO prints (\n    start_epoch,\n    printer,\n    printer_serial,\n    name,\n    initial_kwh,\n    status,\n    electric_rate\n) VALUES (\n    '{{msg.values.start_epoch}}',\n    '{{msg.values.printer}}',\n    '{{msg.values.printer_serial}}',\n    '{{msg.values.name}}',\n    '{{msg.values.initial_kwh}}',\n    '{{msg.values.status}}',\n    '{{msg.values.electric_rate}}'\n);",
+        "query": "INSERT INTO prints (\n    start_epoch,\n    printer,\n    printer_serial,\n    name,\n    initial_kwh,\n    status,\n    electric_rate\n) VALUES (\n    '{{msg.values.start_epoch}}',\n    '{{msg.values.printer}}',\n    '{{msg.values.printer_serial}}',\n    '{{msg.values.name}}',\n    '{{msg.values.initial_kwh}}',\n    '{{msg.values.status}}',\n    '{{msg.values.electric_rate}}'\n) ON CONFLICT DO NOTHING;",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1510,
-        "y": 2820,
+        "x": 1530,
+        "y": 2840,
         "wires": [
             []
         ]
@@ -485,7 +529,7 @@
         "halt_if": "0",
         "halt_if_type": "num",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_start_epoch",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -508,7 +552,7 @@
         "y": 2840,
         "wires": [
             [
-                "80fe10448625eade"
+                "835d262eba54ae5c"
             ],
             []
         ]
@@ -525,7 +569,7 @@
         "halt_if": "unknown",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -565,7 +609,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_METER_PLUG_TOTAL_KWH}",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -602,11 +646,11 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1000,
+        "x": 960,
         "y": 2960,
         "wires": [
             [
-                "ac28bca5d1b05769"
+                "8391500077eba8ae"
             ]
         ]
     },
@@ -622,7 +666,7 @@
         "halt_if": "unavailable",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_subtask",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -645,7 +689,7 @@
         "y": 2800,
         "wires": [
             [
-                "7ef27dfc5aaf648f"
+                "3b1d3fc339195087"
             ],
             []
         ]
@@ -662,7 +706,7 @@
         "halt_if": "unknown",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_machine_name",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -685,7 +729,7 @@
         "y": 2760,
         "wires": [
             [
-                "c0bd71c5f8c63191"
+                "269dc2231b49e4bb"
             ],
             []
         ]
@@ -708,12 +752,12 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 340,
-        "y": 2680,
+        "x": 380,
+        "y": 2720,
         "wires": [
             [
-                "fd7de145f90381e2",
-                "c7c9f6fcbdd71a9f"
+                "c7c9f6fcbdd71a9f",
+                "f6ec9c1c878be81a"
             ]
         ]
     },
@@ -739,7 +783,7 @@
         "y": 2620,
         "wires": [
             [
-                "50ca810a9ab07205"
+                "fb700d6d896b4e38"
             ]
         ]
     },
@@ -753,8 +797,8 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 630,
-        "y": 3060,
+        "x": 750,
+        "y": 3120,
         "wires": [
             []
         ]
@@ -777,8 +821,8 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 270,
-        "y": 3000,
+        "x": 150,
+        "y": 3040,
         "wires": [
             [
                 "53d8b5de5daaa9ba"
@@ -798,11 +842,11 @@
         "septopics": false,
         "property": "payload.kwh",
         "topi": "topic",
-        "x": 720,
-        "y": 3000,
+        "x": 420,
+        "y": 3080,
         "wires": [
             [
-                "68f63aed66cbd5e3"
+                "c40cba2075d93e84"
             ]
         ]
     },
@@ -818,7 +862,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_ELECTRIC_RATE_COST}",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -837,8 +881,8 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 890,
-        "y": 3000,
+        "x": 730,
+        "y": 3060,
         "wires": [
             [
                 "b62ebcf18556c189"
@@ -857,7 +901,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_METER_PLUG_TOTAL_KWH}",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -876,8 +920,8 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 590,
-        "y": 3000,
+        "x": 510,
+        "y": 3020,
         "wires": [
             [
                 "061ba64419d1fe72"
@@ -920,7 +964,7 @@
                 "1707d16455cba415"
             ],
             [
-                "417afcee7a04a0a2"
+                "82e802f48daa83da"
             ]
         ]
     },
@@ -934,7 +978,7 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1000,
+        "x": 900,
         "y": 2920,
         "wires": [
             []
@@ -946,7 +990,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Update (Weights)",
-        "query": "UPDATE prints SET\n    material_used = '{{msg.payload.weight}}',\n    material = '{{msg.payload.material}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "query": "UPDATE prints SET\n    material_used = '{{msg.weight}}',\n    material = '{{msg.material}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -968,7 +1012,7 @@
         "halt_if": "0",
         "halt_if_type": "num",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_start_epoch",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -1008,7 +1052,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_progress",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -1037,7 +1081,7 @@
         "y": 2700,
         "wires": [
             [
-                "6e251ea8ba446823"
+                "7b11af61e6e0ef10"
             ]
         ]
     },
@@ -1068,7 +1112,7 @@
         "y": 2700,
         "wires": [
             [
-                "7ede0a3eb2a13c94"
+                "51c6377e70811e9a"
             ],
             []
         ]
@@ -1085,7 +1129,7 @@
         "halt_if": "0",
         "halt_if_type": "num",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_start_epoch",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -1123,11 +1167,11 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 840,
+        "x": 680,
         "y": 2780,
         "wires": [
             [
-                "ac28bca5d1b05769"
+                "8391500077eba8ae"
             ]
         ]
     },
@@ -1161,8 +1205,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 650,
-        "y": 2780,
+        "x": 850,
+        "y": 2740,
         "wires": [
             [
                 "fa51361c222215dd"
@@ -1421,13 +1465,13 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Force start epoch",
-        "func": "msg.start_epoch = Math.round(Date.now() / 1000);\nnode.send(msg);",
+        "func": "msg.start_epoch = Math.round(Date.now() / 1000);\nmsg.values.start_epoch = msg.start_epoch;\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced \" + msg.values.start_epoch });",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1010,
+        "x": 930,
         "y": 2660,
         "wires": [
             [
@@ -1461,13 +1505,13 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Set Topic",
-        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nmsg.payload = msg.start_epoch;\nnode.send(msg);\n\nif(msg.payload != 0) {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}",
+        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nmsg.payload = msg.start_epoch;\nif(msg.values != undefined) {\n    delete msg.values;\n}\nnode.send(msg);\n\nif(msg.payload != 0) {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1020,
+        "x": 1100,
         "y": 2740,
         "wires": [
             [
@@ -1487,8 +1531,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1140,
-        "y": 2800,
+        "x": 1200,
+        "y": 2840,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1507,8 +1551,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1130,
-        "y": 2840,
+        "x": 1210,
+        "y": 2880,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1527,7 +1571,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_machine_name",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -1559,7 +1603,7 @@
         "type": "delay",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "",
+        "name": "3s",
         "pauseType": "delay",
         "timeout": "3",
         "timeoutUnits": "seconds",
@@ -1572,11 +1616,11 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1200,
+        "x": 1110,
         "y": 2660,
         "wires": [
             [
-                "ba7473069f371df8"
+                "27e8750d79dc7117"
             ]
         ]
     },
@@ -1585,7 +1629,7 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1020,
+        "x": 1080,
         "y": 2780,
         "wires": [
             [
@@ -1600,13 +1644,13 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "If Start Forced Clear",
-        "func": "msg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nif(flow.get(msg.machine_name + \"_forced_startepoch\") == true) {\n    msg.start_epoch = 0;\n    node.send(msg);\n}\n",
+        "func": "msg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nif(flow.get(msg.machine_name + \"_forced_startepoch\") == true) {\n    msg.start_epoch = 0;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send(msg);\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 840,
+        "x": 900,
         "y": 2820,
         "wires": [
             [
@@ -1626,7 +1670,7 @@
         "halt_if": "unknown",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_machine_name",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -1645,7 +1689,7 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 650,
+        "x": 710,
         "y": 2820,
         "wires": [
             [
@@ -1674,7 +1718,7 @@
         "g": "a3e765e96362759b",
         "name": "",
         "pauseType": "delay",
-        "timeout": "6",
+        "timeout": "20",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1685,11 +1729,11 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1340,
+        "x": 1140,
         "y": 2540,
         "wires": [
             [
-                "9f2d2e2411d850db"
+                "87659026e1b64e10"
             ]
         ]
     },
@@ -1700,7 +1744,7 @@
         "g": "a3e765e96362759b",
         "name": "",
         "pauseType": "delay",
-        "timeout": "7",
+        "timeout": "21",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1711,11 +1755,11 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1660,
+        "x": 1560,
         "y": 2540,
         "wires": [
             [
-                "302a329fbabf8e92"
+                "e2407320c2160d63"
             ]
         ]
     },
@@ -1731,7 +1775,7 @@
         "halt_if": "0",
         "halt_if_type": "num",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_print_start_epoch",
+        "entity_id": "x",
         "state_type": "num",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -1750,8 +1794,8 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1650,
-        "y": 2580,
+        "x": 1570,
+        "y": 2620,
         "wires": [
             [
                 "94f08b2a34e68dd4"
@@ -1765,190 +1809,13 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Update (Plate)",
-        "query": "UPDATE prints SET\n    plate_type = '{{msg.payload}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "query": "UPDATE prints SET\n    plate_type = '{{msg.plate}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1580,
-        "y": 2620,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "b37e1ea07031ddb3",
-        "type": "trigger-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "When Print Ends or Pause",
-        "server": "ed9339d3bdf92870",
-        "version": 2,
-        "exposeToHomeAssistant": false,
-        "haConfig": [
-            {
-                "property": "name",
-                "value": ""
-            },
-            {
-                "property": "icon",
-                "value": ""
-            }
-        ],
-        "entityid": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
-        "entityidfiltertype": "exact",
-        "debugenabled": false,
-        "constraints": [
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "IDLE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": ""
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FINISH"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FAILED"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PREPARE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "unknown"
-            }
-        ],
-        "inputs": 0,
-        "outputs": 2,
-        "customoutputs": [],
-        "outputinitially": false,
-        "state_type": "str",
-        "enableInput": false,
-        "x": 210,
+        "x": 1600,
         "y": 2660,
         "wires": [
-            [
-                "f2fd88c2be22e11f"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "0a2561d5abf6ca94",
-        "type": "trigger-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "When Print Resume",
-        "server": "ed9339d3bdf92870",
-        "version": 2,
-        "exposeToHomeAssistant": false,
-        "haConfig": [
-            {
-                "property": "name",
-                "value": ""
-            },
-            {
-                "property": "icon",
-                "value": ""
-            }
-        ],
-        "entityid": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
-        "entityidfiltertype": "exact",
-        "debugenabled": false,
-        "constraints": [
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PAUSE"
-            }
-        ],
-        "inputs": 0,
-        "outputs": 2,
-        "customoutputs": [],
-        "outputinitially": false,
-        "state_type": "str",
-        "enableInput": false,
-        "x": 190,
-        "y": 2780,
-        "wires": [
-            [
-                "3d26204dd2cb5b43"
-            ],
             []
         ]
     },
@@ -1968,8 +1835,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 270,
-        "y": 2700,
+        "x": 150,
+        "y": 2740,
         "wires": [
             [
                 "a59ef513683810a9"
@@ -1992,11 +1859,11 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 230,
-        "y": 2820,
+        "x": 150,
+        "y": 2780,
         "wires": [
             [
-                "fd7de145f90381e2"
+                "f6ec9c1c878be81a"
             ]
         ]
     },
@@ -2016,11 +1883,11 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 410,
-        "y": 3000,
+        "x": 270,
+        "y": 3040,
         "wires": [
             [
-                "6a4ba58e99355e4c"
+                "f83cc5013554e075"
             ]
         ]
     },
@@ -2055,155 +1922,8 @@
         "y": 2740,
         "wires": [
             [
-                "eee0dce21d4b91c2"
+                "de0f8d6c3213410d"
             ]
-        ]
-    },
-    {
-        "id": "f5a3e6f3fbdc7124",
-        "type": "trigger-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "When Print Starts",
-        "server": "ed9339d3bdf92870",
-        "version": 2,
-        "exposeToHomeAssistant": false,
-        "haConfig": [
-            {
-                "property": "name",
-                "value": ""
-            },
-            {
-                "property": "icon",
-                "value": ""
-            }
-        ],
-        "entityid": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
-        "entityidfiltertype": "exact",
-        "debugenabled": false,
-        "constraints": [
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "IDLE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": ""
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PREPARE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "unknown"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "unavailable"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PAUSE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FAILED"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FINISH"
-            }
-        ],
-        "inputs": 0,
-        "outputs": 2,
-        "customoutputs": [],
-        "outputinitially": false,
-        "state_type": "str",
-        "enableInput": false,
-        "x": 180,
-        "y": 2580,
-        "wires": [
-            [
-                "d342f643c08ee9d3"
-            ],
-            []
         ]
     },
     {
@@ -2224,7 +1944,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 340,
+        "x": 660,
         "y": 2580,
         "wires": [
             [
@@ -2296,7 +2016,7 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 180,
+        "x": 740,
         "y": 2540,
         "wires": [
             [
@@ -2313,7 +2033,7 @@
         "links": [
             "d0de2bfdbe4c20b5"
         ],
-        "x": 1215,
+        "x": 1025,
         "y": 2540,
         "wires": [
             [
@@ -2330,11 +2050,603 @@
         "links": [
             "4ccfb3dfd3993e15"
         ],
-        "x": 1535,
+        "x": 1455,
         "y": 2540,
         "wires": [
             [
                 "8d19d0768126d960"
+            ]
+        ]
+    },
+    {
+        "id": "fb700d6d896b4e38",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Set Entity Id",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 2580,
+        "wires": [
+            [
+                "50ca810a9ab07205"
+            ]
+        ]
+    },
+    {
+        "id": "87659026e1b64e10",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Set Entity Id",
+        "func": "msg.weight = msg.payload.weight;\nmsg.material = msg.payload.material;\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1310,
+        "y": 2540,
+        "wires": [
+            [
+                "9f2d2e2411d850db"
+            ]
+        ]
+    },
+    {
+        "id": "e2407320c2160d63",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Set Entity Id",
+        "func": "msg.plate = msg.payload;\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1570,
+        "y": 2580,
+        "wires": [
+            [
+                "302a329fbabf8e92"
+            ]
+        ]
+    },
+    {
+        "id": "27e8750d79dc7117",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_subtask\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1230,
+        "y": 2660,
+        "wires": [
+            [
+                "ba7473069f371df8"
+            ]
+        ]
+    },
+    {
+        "id": "de0f8d6c3213410d",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1510,
+        "y": 2740,
+        "wires": [
+            [
+                "eee0dce21d4b91c2"
+            ]
+        ]
+    },
+    {
+        "id": "51c6377e70811e9a",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_progress\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 2660,
+        "wires": [
+            [
+                "7ede0a3eb2a13c94"
+            ]
+        ]
+    },
+    {
+        "id": "7b11af61e6e0ef10",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 2660,
+        "wires": [
+            [
+                "6e251ea8ba446823"
+            ]
+        ]
+    },
+    {
+        "id": "8391500077eba8ae",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 2780,
+        "wires": [
+            [
+                "ac28bca5d1b05769"
+            ]
+        ]
+    },
+    {
+        "id": "eeba54db5300affd",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Subscribe",
+        "func": "",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "finalize": "",
+        "libs": [],
+        "x": 140,
+        "y": 2540,
+        "wires": [
+            [
+                "e57e03d60aa57d90"
+            ]
+        ]
+    },
+    {
+        "id": "e57e03d60aa57d90",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "delay",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 270,
+        "y": 2540,
+        "wires": [
+            [
+                "83e2f72cc122faf3"
+            ]
+        ]
+    },
+    {
+        "id": "83e2f72cc122faf3",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 400,
+        "y": 2540,
+        "wires": [
+            [
+                "ccef33154dde5e17"
+            ]
+        ]
+    },
+    {
+        "id": "20e12e2dbc0511d2",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 150,
+        "y": 2580,
+        "wires": [
+            [
+                "aedffc8f39c5e784"
+            ]
+        ]
+    },
+    {
+        "id": "aedffc8f39c5e784",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 280,
+        "y": 2580,
+        "wires": [
+            [
+                "6488fbbd9a16fced"
+            ]
+        ]
+    },
+    {
+        "id": "6488fbbd9a16fced",
+        "type": "api-get-history",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "server": "ed9339d3bdf92870",
+        "version": 0,
+        "startdate": "",
+        "enddate": "",
+        "entityid": "",
+        "entityidtype": "is",
+        "useRelativeTime": true,
+        "relativeTime": "60s",
+        "flatten": true,
+        "output_type": "array",
+        "output_location_type": "msg",
+        "output_location": "payload",
+        "x": 410,
+        "y": 2580,
+        "wires": [
+            [
+                "5fba0cd4a415a1a0"
+            ]
+        ]
+    },
+    {
+        "id": "5fba0cd4a415a1a0",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Get Latest & Previous",
+        "func": "if (msg.payload != undefined && msg.payload.length != undefined && msg.payload.length > 0) {\n    let li = msg.payload;\n    let first_state = \"\";\n    let newmsg = {};\n    li.sort((x, y) => {\n        return new Date(x.last_updated) < new Date(y.last_updated) ? 1 : -1\n    })\n    let states_only = [];\n    for (var event of li) {\n        if(event.state == \"PREPARE\") {\n            continue;\n        }\n        if(first_state == \"\") {\n            first_state == event.state;\n            states_only.push(event.state);\n        }\n        else if(first_state != event.state) {\n            states_only.push(event.state);\n        }\n        \n    }\n    newmsg.current_state = states_only[0];\n    newmsg.previous_state = states_only[0];\n    if(states_only.length > 1) {\n        newmsg.previous_state = states_only[1];\n    }\n    \n    node.send(newmsg);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 2620,
+        "wires": [
+            [
+                "81669dbc1cb1994d"
+            ]
+        ]
+    },
+    {
+        "id": "81669dbc1cb1994d",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Start / End or Pause / Resume",
+        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        node.send([null, null, msg]);\n        node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Resumed\" });\n    }\n    else {\n\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\" && msg.current_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n                node.send([null, msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Paused\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n}\nelse {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state +\" -> \"+ msg.current_state });\n}\nif(msg.current_state == \"OFFLINE\" && msg.previous_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Offline\"});\n}\nelse if(msg.current_state == \"IDLE\" && msg.previous_state == \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Online\" });\n}\nelse if (msg.current_state != \"IDLE\" && msg.previous_state == \"OFFLINE\" && msg.current_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Recovered from Offline Status\" });\n}",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 2660,
+        "wires": [
+            [
+                "d342f643c08ee9d3"
+            ],
+            [
+                "f2fd88c2be22e11f"
+            ],
+            [
+                "3d26204dd2cb5b43"
+            ]
+        ]
+    },
+    {
+        "id": "f6ec9c1c878be81a",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 2760,
+        "wires": [
+            [
+                "fd7de145f90381e2"
+            ]
+        ]
+    },
+    {
+        "id": "269dc2231b49e4bb",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_subtask\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 2800,
+        "wires": [
+            [
+                "c0bd71c5f8c63191"
+            ]
+        ]
+    },
+    {
+        "id": "3b1d3fc339195087",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 2840,
+        "wires": [
+            [
+                "7ef27dfc5aaf648f"
+            ]
+        ]
+    },
+    {
+        "id": "835d262eba54ae5c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 2880,
+        "wires": [
+            [
+                "80fe10448625eade"
+            ]
+        ]
+    },
+    {
+        "id": "c97ff23076ed10b4",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.entity_id",
+                "pt": "msg",
+                "to": "power_plug_meter_sensor",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.entityId",
+                "pt": "msg",
+                "to": "power_plug_meter_sensor",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1410,
+        "y": 2780,
+        "wires": [
+            [
+                "bc135fef68caf1ed"
+            ]
+        ]
+    },
+    {
+        "id": "82e802f48daa83da",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.entity_id",
+                "pt": "msg",
+                "to": "power_plug_meter_sensor",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.entityId",
+                "pt": "msg",
+                "to": "power_plug_meter_sensor",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 270,
+        "y": 2920,
+        "wires": [
+            [
+                "417afcee7a04a0a2"
+            ]
+        ]
+    },
+    {
+        "id": "3d9b17f1d8d8058f",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.entity_id",
+                "pt": "msg",
+                "to": "energy_rate_sensor",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.entityId",
+                "pt": "msg",
+                "to": "energy_rate_sensor",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1330,
+        "y": 2700,
+        "wires": [
+            [
+                "8bf5c9135058acb6"
+            ]
+        ]
+    },
+    {
+        "id": "ccef33154dde5e17",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 530,
+        "y": 2540,
+        "wires": [
+            [
+                "20e12e2dbc0511d2"
+            ]
+        ]
+    },
+    {
+        "id": "f83cc5013554e075",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "let name = flow.get(\"power_plug_meter_sensor\");\nif(name == undefined || name == \"\") {\n    return;\n}\nmsg.payload.entityId = flow.get(\"power_plug_meter_sensor\");\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 3020,
+        "wires": [
+            [
+                "6a4ba58e99355e4c"
+            ]
+        ]
+    },
+    {
+        "id": "c40cba2075d93e84",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "EId",
+        "func": "let name = flow.get(\"energy_rate_sensor\");\nif(name == undefined || name == \"\") {\n    return;\n}\nmsg.payload.entityId = flow.get(\"energy_rate_sensor\");\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 3080,
+        "wires": [
+            [
+                "68f63aed66cbd5e3"
             ]
         ]
     },
@@ -2400,7 +2712,6 @@
             "a49a2aa56216a94f",
             "e91c88c6b0449efb",
             "1a3a1c71ba1cf2f3",
-            "5f11d43b46d9a943",
             "5e0688f121b8fddb",
             "1b174dc5a3c2cb2b",
             "53d9f117e4bdc75a",
@@ -2412,12 +2723,21 @@
             "78ca6a864531e4b4",
             "7fe0a7636edfc4e8",
             "0f0b9aa41491e74a",
-            "2b5fbcfc32a16fa5"
+            "2b5fbcfc32a16fa5",
+            "9d9e2b832774a598",
+            "929abbcb71cde6a2",
+            "bd56371da0a2e632",
+            "dc8f60896e88822e",
+            "5a5aad687311dcf6",
+            "015f1beab287c717",
+            "3ead9edd41601385",
+            "34a5733e7ccb948d",
+            "8a4f1c973014f966"
         ],
-        "x": 1794,
-        "y": 2559,
-        "w": 652,
-        "h": 382
+        "x": 1754,
+        "y": 2539,
+        "w": 692,
+        "h": 462
     },
     {
         "id": "2f0c417bdc5f70ba",
@@ -2435,7 +2755,7 @@
         "expiry": "",
         "broker": "489094618c340eef",
         "x": 2340,
-        "y": 2700,
+        "y": 2760,
         "wires": []
     },
     {
@@ -2451,7 +2771,7 @@
         "finalize": "",
         "libs": [],
         "x": 2230,
-        "y": 2640,
+        "y": 2700,
         "wires": [
             [
                 "53d9f117e4bdc75a"
@@ -2471,7 +2791,7 @@
         "finalize": "",
         "libs": [],
         "x": 2240,
-        "y": 2600,
+        "y": 2660,
         "wires": [
             [
                 "53d9f117e4bdc75a"
@@ -2491,122 +2811,11 @@
         "finalize": "",
         "libs": [],
         "x": 2220,
-        "y": 2840,
+        "y": 2900,
         "wires": [
             [
                 "270ff91a248dd8f8"
             ]
-        ]
-    },
-    {
-        "id": "5f11d43b46d9a943",
-        "type": "trigger-state",
-        "z": "fbda6ab16491b918",
-        "g": "e2ddb329074d1a53",
-        "name": "When Print Ends or Pause",
-        "server": "ed9339d3bdf92870",
-        "version": 2,
-        "exposeToHomeAssistant": false,
-        "haConfig": [
-            {
-                "property": "name",
-                "value": ""
-            },
-            {
-                "property": "icon",
-                "value": ""
-            }
-        ],
-        "entityid": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
-        "entityidfiltertype": "exact",
-        "debugenabled": false,
-        "constraints": [
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "IDLE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": ""
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FINISH"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FAILED"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PREPARE"
-            }
-        ],
-        "inputs": 0,
-        "outputs": 2,
-        "customoutputs": [],
-        "outputinitially": false,
-        "state_type": "str",
-        "enableInput": false,
-        "x": 1930,
-        "y": 2600,
-        "wires": [
-            [
-                "78ca6a864531e4b4"
-            ],
-            []
         ]
     },
     {
@@ -2635,8 +2844,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 1980,
-        "y": 2740,
+        "x": 1900,
+        "y": 2900,
         "wires": [
             [
                 "e72f63899b356531"
@@ -2665,8 +2874,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1900,
-        "y": 2680,
+        "x": 2200,
+        "y": 2860,
         "wires": [
             [
                 "5e0688f121b8fddb"
@@ -2679,7 +2888,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2340,
-        "y": 2620,
+        "y": 2680,
         "wires": [
             [
                 "2f0c417bdc5f70ba"
@@ -2692,7 +2901,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2120,
-        "y": 2640,
+        "y": 2700,
         "wires": [
             [
                 "e91c88c6b0449efb",
@@ -2705,8 +2914,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2100,
-        "y": 2760,
+        "x": 2060,
+        "y": 2900,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -2719,7 +2928,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2060,
-        "y": 2860,
+        "y": 2920,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -2739,7 +2948,7 @@
         "finalize": "",
         "libs": [],
         "x": 2210,
-        "y": 2900,
+        "y": 2960,
         "wires": [
             [
                 "270ff91a248dd8f8"
@@ -2752,7 +2961,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2380,
-        "y": 2840,
+        "y": 2900,
         "wires": [
             [
                 "1e3ee56ffe1d6afb"
@@ -2775,8 +2984,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1910,
-        "y": 2640,
+        "x": 2050,
+        "y": 2860,
         "wires": [
             [
                 "1b174dc5a3c2cb2b"
@@ -2789,7 +2998,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 1960,
-        "y": 2900,
+        "y": 2960,
         "wires": [
             [
                 "5be89edbbd6808a4"
@@ -2806,7 +3015,7 @@
             "d0de2bfdbe4c20b5"
         ],
         "x": 1995,
-        "y": 2860,
+        "y": 2920,
         "wires": [
             [
                 "41db1a005f0694bc"
@@ -2823,10 +3032,211 @@
             "4ccfb3dfd3993e15"
         ],
         "x": 1885,
-        "y": 2900,
+        "y": 2960,
         "wires": [
             [
                 "7fe0a7636edfc4e8"
+            ]
+        ]
+    },
+    {
+        "id": "9d9e2b832774a598",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "Subscribe",
+        "func": "",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "finalize": "",
+        "libs": [],
+        "x": 1840,
+        "y": 2580,
+        "wires": [
+            [
+                "929abbcb71cde6a2"
+            ]
+        ]
+    },
+    {
+        "id": "929abbcb71cde6a2",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1990,
+        "y": 2580,
+        "wires": [
+            [
+                "bd56371da0a2e632"
+            ]
+        ]
+    },
+    {
+        "id": "bd56371da0a2e632",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 1840,
+        "y": 2620,
+        "wires": [
+            [
+                "8a4f1c973014f966"
+            ]
+        ]
+    },
+    {
+        "id": "dc8f60896e88822e",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2090,
+        "y": 2620,
+        "wires": [
+            [
+                "5a5aad687311dcf6"
+            ]
+        ]
+    },
+    {
+        "id": "5a5aad687311dcf6",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1840,
+        "y": 2660,
+        "wires": [
+            [
+                "015f1beab287c717"
+            ]
+        ]
+    },
+    {
+        "id": "015f1beab287c717",
+        "type": "api-get-history",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "",
+        "server": "ed9339d3bdf92870",
+        "version": 0,
+        "startdate": "",
+        "enddate": "",
+        "entityid": "",
+        "entityidtype": "is",
+        "useRelativeTime": true,
+        "relativeTime": "60s",
+        "flatten": true,
+        "output_type": "array",
+        "output_location_type": "msg",
+        "output_location": "payload",
+        "x": 1970,
+        "y": 2660,
+        "wires": [
+            [
+                "3ead9edd41601385"
+            ]
+        ]
+    },
+    {
+        "id": "3ead9edd41601385",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "Get Latest & Previous",
+        "func": "if (msg.payload != undefined && msg.payload.length != undefined && msg.payload.length > 0) {\n    let li = msg.payload;\n    let first_state = \"\";\n    let newmsg = {};\n    li.sort((x, y) => {\n        return new Date(x.last_updated) < new Date(y.last_updated) ? 1 : -1\n    })\n    let states_only = [];\n    for (var event of li) {\n        if (event.state == \"PREPARE\") {\n            continue;\n        }\n        if (first_state == \"\") {\n            first_state == event.state;\n            states_only.push(event.state);\n        }\n        else if (first_state != event.state) {\n            states_only.push(event.state);\n        }\n\n    }\n    newmsg.current_state = states_only[0];\n    newmsg.previous_state = states_only[0];\n    if (states_only.length > 1) {\n        newmsg.previous_state = states_only[1];\n    }\n    node.send(newmsg);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1880,
+        "y": 2700,
+        "wires": [
+            [
+                "34a5733e7ccb948d"
+            ]
+        ]
+    },
+    {
+        "id": "34a5733e7ccb948d",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "End or Pause",
+        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state\n    && msg.previous_state != \"FINISH\" && msg.previous_state != \"FAILED\") {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        node.status({ fill: \"yellow\", shape: \"ring\", text: \"Print Resumed\" });\n    }\n    else {\n\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\" && msg.current_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n                node.send(msg);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Paused\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send(msg);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send(msg);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.status({ fill: \"yellow\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1880,
+        "y": 2760,
+        "wires": [
+            [
+                "78ca6a864531e4b4"
+            ]
+        ]
+    },
+    {
+        "id": "8a4f1c973014f966",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 1970,
+        "y": 2620,
+        "wires": [
+            [
+                "dc8f60896e88822e"
             ]
         ]
     },
@@ -2908,13 +3318,10 @@
             "3dc0d9a315fb5a62",
             "f5e80d942b782f85",
             "e1e4d60219ddca10",
-            "66a3effc271e832a",
             "4878f77e0b70394f",
             "9c9a70fe3c4e05a6",
             "84f691a521695fd2",
-            "9a76cf767001ab31",
             "5473649d0d4b8226",
-            "16862e7b6a526f8a",
             "f24558e18910f7cd",
             "93813c0a93edd5af",
             "a9c4d210d07b2491",
@@ -2929,7 +3336,20 @@
             "b6ff9234e9c4103a",
             "f21f80a62c5be33c",
             "d0de2bfdbe4c20b5",
-            "4ccfb3dfd3993e15"
+            "4ccfb3dfd3993e15",
+            "ce55f73a8f638a6d",
+            "005198128b13fd0b",
+            "9327e5ca3160a74e",
+            "3f1c8e25f7805121",
+            "d30195b17d06483a",
+            "34fb479b5e33f9c7",
+            "bc1c9acec2e7b857",
+            "a16e19bc9442375f",
+            "3a7ca8e6215a655a",
+            "2dda54c49285778c",
+            "b4d807c686531217",
+            "f5834a52286a1756",
+            "603bbc81cb4c9ce3"
         ],
         "x": 54,
         "y": 1739,
@@ -2981,7 +3401,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Preview Image Buffer",
-        "func": "var image = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/\"+msg.plate_name+\".png\") {\n            image = file.payload;\n            break;\n        }\n    }\n}\n\nif (image !== null) {\n    msg.payload = image;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = \"/data/fetched/\"+flow.get(\"printer_name\")+\"/preview.png\";\n    node.send(msg);\n}",
+        "func": "var image = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/\"+msg.plate_name+\".png\") {\n            image = file.payload;\n            break;\n        }\n    }\n}\n\nif (image !== null) {\n    msg.payload = image;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/preview.png\";\n    node.send(msg);\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -3063,7 +3483,7 @@
         "type": "delay",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "",
+        "name": "delay",
         "pauseType": "delay",
         "timeout": "1",
         "timeoutUnits": "seconds",
@@ -3076,8 +3496,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 360,
-        "y": 1900,
+        "x": 390,
+        "y": 1800,
         "wires": [
             [
                 "2b6a547ffa94394d"
@@ -3096,7 +3516,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_subtask",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -3129,13 +3549,13 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Check Print File",
-        "func": "var found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\n\nfor (var obj of msg.files) {\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj) {\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    node.send(msg)\n    let msgText = \"Not Found - \" + msg.payload;\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
+        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\n\nfor (var obj of msg.files) {\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj) {\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    let msgText = \"Not Found - \" + msg.payload;\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1980,
+        "x": 2000,
         "y": 1800,
         "wires": [
             [
@@ -3175,7 +3595,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Print Data XML",
-        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/slice_info.config\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = \"/data/fetched/\"+flow.get(\"printer_name\")+\"/slicer_info.xml\";\n    node.send(msg);\n}",
+        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/slice_info.config\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\") + flow.get(\"printer_name\")+\"/slicer_info.xml\";\n    node.send(msg);\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -3270,8 +3690,8 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Type And Sum Weights",
-        "func": "var filaments = {};\n\nvar weight = 0.0;\n\nvar current_plate_meta = undefined;\nif (msg.payload !== undefined && msg.payload.config != undefined\n    && msg.payload.config.plate != undefined) {\n    let plates = msg.payload.config.plate;\n    for (var plate of plates) {\n        for (var p of plate.metadata) {\n            if(p.property.key == \"index\" && \n                parseInt(p.property.value) == msg.plate_id) {\n                    current_plate_meta = plate.metadata;\n                    break;\n                }\n            //if (p.property.key == \"weight\") {\n            //    weight += parseFloat(p.property.value);\n            //}\n        }\n        for (var f of plate.filament) {\n            if(f.property.type != undefined && \n            !f.property.type.includes(\"Support\")\n                && f.property.type != \"PLA-S\"\n                && f.property.type != \"PA-S\"\n                ) {\n                if (filaments[f.property.type] == undefined) {\n                    filaments[f.property.type] = parseFloat(f.property.used_g);\n                }\n                else {\n                    filaments[f.property.type] = filaments[f.property.type] + parseFloat(f.property.used_g);\n                }\n            }\n        }\n    }\n}\n\nif(current_plate_meta != undefined) {\n    for (var p of current_plate_meta) {\n        if (p.property.key == \"weight\") {\n            weight += parseFloat(p.property.value);\n        }\n    }\n}\n\nmsg.payload = {};\nmsg.payload.weight = weight;\nmsg.payload.material = \"\";\nvar fil = Object.keys(filaments);\nvar max = 0;\nfor (var ff of fil) {\n    if (filaments[ff] >= max) {\n        max = filaments[ff];\n        msg.payload.material = ff;\n    }\n}\nif (max == 0) {\n    msg.payload.material = \"\";\n}\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload.weight });\nnode.send(msg);",
-        "outputs": 1,
+        "func": "var filaments = {};\n\nvar weight = 0.0;\nvar has_only_one_plate = false;\nvar current_plate_meta = undefined;\nif (msg.payload !== undefined && msg.payload.config != undefined\n    && msg.payload.config.plate != undefined) {\n    let plates = msg.payload.config.plate;\n    if(plates.length == 1 && (flow.get(\"current_platename\") == undefined || flow.get(\"current_platename\") == \"\")) {\n        has_only_one_plate = true;\n    }\n    for (var plate of plates) {\n        for (var p of plate.metadata) {\n            if(p.property.key == \"index\" && \n                (parseInt(p.property.value) == msg.plate_id \n                || has_only_one_plate)) {\n                    current_plate_meta = plate.metadata;\n                    msg.plate_id = parseInt(p.property.value);\n                    if(has_only_one_plate && (flow.get(\"current_platename\") == undefined || flow.get(\"current_platename\") == \"\")) {\n                        flow.set(\"current_platename\", \"plate_\"+msg.plate_id + \".gcode\");\n                        node.send([null, {}]);\n                    }\n                    break;\n                }\n            //if (p.property.key == \"weight\") {\n            //    weight += parseFloat(p.property.value);\n            //}\n        }\n        for (var f of plate.filament) {\n            if(f.property.type != undefined && \n            !f.property.type.includes(\"Support\")\n                && f.property.type != \"PLA-S\"\n                && f.property.type != \"PA-S\"\n                ) {\n                if (filaments[f.property.type] == undefined) {\n                    filaments[f.property.type] = parseFloat(f.property.used_g);\n                }\n                else {\n                    filaments[f.property.type] = filaments[f.property.type] + parseFloat(f.property.used_g);\n                }\n            }\n        }\n    }\n}\n\nif(current_plate_meta != undefined) {\n    for (var p of current_plate_meta) {\n        if (p.property.key == \"weight\") {\n            weight += parseFloat(p.property.value);\n        }\n    }\n}\n\nmsg.payload = {};\nmsg.payload.weight = weight;\nmsg.payload.material = \"\";\nvar fil = Object.keys(filaments);\nvar max = 0;\nfor (var ff of fil) {\n    if (filaments[ff] >= max) {\n        max = filaments[ff];\n        msg.payload.material = ff;\n    }\n}\nif (max == 0) {\n    msg.payload.material = \"\";\n}\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload.weight + \"g of material, mostly or all \" + msg.payload.material });\nnode.send([msg, null]);",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -3281,6 +3701,9 @@
         "wires": [
             [
                 "d0de2bfdbe4c20b5"
+            ],
+            [
+                "5473649d0d4b8226"
             ]
         ]
     },
@@ -3316,7 +3739,7 @@
         "globalPythonName": "",
         "importPathList": [],
         "fnCodePre": "#comment",
-        "fnCode": "import ftplib\nimport ssl\nimport os\n\nftplib.ssl_version = ssl.PROTOCOL_TLSv1_2\n\nclass ImplicitFTP_TLS(ftplib.FTP_TLS):\n    \"\"\"FTP_TLS subclass that automatically wraps sockets in SSL to support implicit FTPS.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self._sock = None\n\n    @property\n    def sock(self):\n        \"\"\"Return the socket.\"\"\"\n        return self._sock\n\n    @sock.setter\n    def sock(self, value):\n        \"\"\"When modifying the socket, ensure that it is ssl wrapped.\"\"\"\n        if value is not None and not isinstance(value, ssl.SSLSocket):\n            value = self.context.wrap_socket(value)\n        self._sock = value\n\n    def ntransfercmd(self, cmd, rest=None):\n        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)\n        if self._prot_p:\n            session = self.sock.session\n            if isinstance(self.sock, ssl.SSLSocket):\n                    session = self.sock.session\n            conn = self.context.wrap_socket(conn,\n                                            server_hostname=self.host,\n                                            session=session)  # this is the fix\n        return conn, size\n\nftps = ImplicitFTP_TLS()\n\nftps.connect(host=msg[\"printer_ip\"], port=990)\n\nftps.login(user=\"bblp\", passwd=msg[\"access_code\"])\nftps.prot_p()\n\npath = \"/data/fetched/\"+ msg[\"printer_name\"]\nisExist = os.path.exists(path)\nif not isExist:\n   os.makedirs(path)\n\nlocalFileName = path + \"/current_print.3mf\"\n\nwith open(localFileName, 'wb') as f:\n    ftps.retrbinary('RETR ' + msg[\"payload\"], f.write)\n\nmsg[\"localFilename\"] = localFileName\nftps.close()\nreturn msg\n\n",
+        "fnCode": "import ftplib\nimport ssl\nimport os\n\nftplib.ssl_version = ssl.PROTOCOL_TLSv1_2\n\nclass ImplicitFTP_TLS(ftplib.FTP_TLS):\n    \"\"\"FTP_TLS subclass that automatically wraps sockets in SSL to support implicit FTPS.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self._sock = None\n\n    @property\n    def sock(self):\n        \"\"\"Return the socket.\"\"\"\n        return self._sock\n\n    @sock.setter\n    def sock(self, value):\n        \"\"\"When modifying the socket, ensure that it is ssl wrapped.\"\"\"\n        if value is not None and not isinstance(value, ssl.SSLSocket):\n            value = self.context.wrap_socket(value)\n        self._sock = value\n\n    def ntransfercmd(self, cmd, rest=None):\n        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)\n        if self._prot_p:\n            session = self.sock.session\n            if isinstance(self.sock, ssl.SSLSocket):\n                    session = self.sock.session\n            conn = self.context.wrap_socket(conn,\n                                            server_hostname=self.host,\n                                            session=session)  # this is the fix\n        return conn, size\n\nftps = ImplicitFTP_TLS()\n\nftps.connect(host=msg[\"printer_ip\"], port=990)\n\nftps.login(user=\"bblp\", passwd=msg[\"access_code\"])\nftps.prot_p()\n\npath = msg[\"path_prefix\"]+ msg[\"printer_name\"]\nisExist = os.path.exists(path)\nif not isExist:\n   os.makedirs(path)\n\nlocalFileName = path + \"/current_print.3mf\"\n\nwith open(localFileName, 'wb') as f:\n    ftps.retrbinary('RETR ' + msg[\"payload\"], f.write)\n\nmsg[\"localFilename\"] = localFileName\nftps.close()\nreturn msg\n\n",
         "fnCodePost": "#comment",
         "x": 1530,
         "y": 1840,
@@ -3354,7 +3777,7 @@
                 "3dc0d9a315fb5a62"
             ],
             [
-                "9a76cf767001ab31"
+                "603bbc81cb4c9ce3"
             ]
         ]
     },
@@ -3380,7 +3803,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Default Img Base64",
-        "func": "var default_image = \"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bnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iCiAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6R0lNUD0iaHR0cDovL3d3dy5naW1wLm9yZy94bXAvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDo4ZDUxMzAzNy0xYTUxLTQ5Y2EtYTZjMS1hYjNjOTlhNTVmODIiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NGI5ZmE4YWYtYzY5ZC00YmM4LWE2NDctMGM2NmUxNGViODU0IgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6N2U3OThjODAtODA3YS00NzUwLTlhY2UtNzU5NjE1YmExOTA4IgogICBkYzpGb3JtYXQ9ImltYWdlL3BuZyIKICAgR0lNUDpBUEk9IjIuMCIKICAgR0lNUDpQbGF0Zm9ybT0iV2luZG93cyIKICAgR0lNUDpUaW1lU3RhbXA9IjE2NzYwNTQ2MDMxNzc5NzkiCiAgIEdJTVA6VmVyc2lvbj0iMi4xMC4zMiIKICAgdGlmZjpPcmllbnRhdGlvbj0iMSIKICAgeG1wOkNyZWF0b3JUb29sPSJHSU1QIDIuMTAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjM6MDI6MTBUMTQ6NDM6MjMtMDQ6MDAiCiAgIHhtcDpNb2RpZnlEYXRlPSIyMDIzOjAyOjEwVDE0OjQzOjIzLTA0OjAwIj4KICAgPHhtcE1NOkhpc3Rvcnk+CiAgICA8cmRmOlNlcT4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NWE0ODRmNjctNDY0ZC00ZDg3LTgxYTktYmFmOTQ2MjQwMmViIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJHaW1wIDIuMTAgKFdpbmRvd3MpIgogICAgICBzdEV2dDp3aGVuPSIyMDIzLTAyLTEwVDE0OjQzOjIzIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PgmblDYAAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfnAgoSKxc46T0uAAAbEUlEQVR42u2deZRU1YGHf2+vrVeaHRG6lYCK4JxxzSTDosySGBWj2ZyJk9EcJWYijiCYM5lzcs4ExAhqEJAmambMxGwmk0zGJSKYRKNoxLhB090gO03v1bW+5d75o6q1XdCmu7rrVb3f9y9U1ev73v3qvXpf3QIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQUjrr184y69fMMjkRwUTgEwWPM+gV62tAujEbU2wAgmRJ3hB3vj503Pe1ydCgAUq7v+Pf8tZY2tbNDMes2wzIu81QZAgBNKBkn6/xPJpG9I2x7r3Z84xmPo0UBkHJ5x797vqqaOC0TCy2LWOoXhKZG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\";\n\nmsg.filename = \"/data/fetched/\"+flow.get(\"printer_name\")+\"/preview.png\";\nmsg.payload = default_image;\nnode.send(msg);",
+        "func": "var default_image = \"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bnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iCiAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6R0lNUD0iaHR0cDovL3d3dy5naW1wLm9yZy94bXAvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDo4ZDUxMzAzNy0xYTUxLTQ5Y2EtYTZjMS1hYjNjOTlhNTVmODIiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NGI5ZmE4YWYtYzY5ZC00YmM4LWE2NDctMGM2NmUxNGViODU0IgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6N2U3OThjODAtODA3YS00NzUwLTlhY2UtNzU5NjE1YmExOTA4IgogICBkYzpGb3JtYXQ9ImltYWdlL3BuZyIKICAgR0lNUDpBUEk9IjIuMCIKICAgR0lNUDpQbGF0Zm9ybT0iV2luZG93cyIKICAgR0lNUDpUaW1lU3RhbXA9IjE2NzYwNTQ2MDMxNzc5NzkiCiAgIEdJTVA6VmVyc2lvbj0iMi4xMC4zMiIKICAgdGlmZjpPcmllbnRhdGlvbj0iMSIKICAgeG1wOkNyZWF0b3JUb29sPSJHSU1QIDIuMTAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjM6MDI6MTBUMTQ6NDM6MjMtMDQ6MDAiCiAgIHhtcDpNb2RpZnlEYXRlPSIyMDIzOjAyOjEwVDE0OjQzOjIzLTA0OjAwIj4KICAgPHhtcE1NOkhpc3Rvcnk+CiAgICA8cmRmOlNlcT4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NWE0ODRmNjctNDY0ZC00ZDg3LTgxYTktYmFmOTQ2MjQwMmViIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJHaW1wIDIuMTAgKFdpbmRvd3MpIgogICAgICBzdEV2dDp3aGVuPSIyMDIzLTAyLTEwVDE0OjQzOjIzIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PgmblDYAAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfnAgoSKxc46T0uAAAbEUlEQVR42u2deZRU1YGHf2+vrVeaHRG6lYCK4JxxzSTDosySGBWj2ZyJk9EcJWYijiCYM5lzcs4ExAhqEJAmambMxGwmk0zGJSKYRKNoxLhB090gO03v1bW+5d75o6q1XdCmu7rrVb3f9y9U1ev73v3qvXpf3QIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQUjrr184y69fMMjkRwUTgEwWPM+gV62tAujEbU2wAgmRJ3hB3vj503Pe1ydCgAUq7v+Pf8tZY2tbNDMes2wzIu81QZAgBNKBkn6/xPJpG9I2x7r3Z84xmPo0UBkHJ5x797vqqaOC0TCy2LWOoXhKZG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\";\n\nmsg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/preview.png\";\nmsg.payload = default_image;\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -3406,7 +3829,7 @@
         "halt_if": "",
         "halt_if_type": "str",
         "halt_if_compare": "is_not",
-        "entity_id": "sensor.{HA_PRINTER_ENTITY_NAME}_gcode",
+        "entity_id": "x",
         "state_type": "str",
         "blockInputOverrides": false,
         "outputProperties": [
@@ -3439,7 +3862,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Get Plate",
-        "func": "\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nnode.send(msg);",
+        "func": "if (msg.decompress_data != undefined) {\n    msg.payload = msg.decompress_data;\n}\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\"Metadata/\", \"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nnode.send(msg); \nnode.status({ fill: \"blue\", shape: \"ring\", text: plate_name });\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -3625,7 +4048,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 520,
+        "x": 540,
         "y": 1800,
         "wires": [
             [
@@ -3668,7 +4091,7 @@
         "type": "mqtt in",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "Bambu {PRINTER_MODEL} {PRINTER_NAME} Report",
+        "name": "Bambu MQTT In",
         "topic": "",
         "qos": "2",
         "datatype": "json",
@@ -3677,8 +4100,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 260,
-        "y": 2280,
+        "x": 180,
+        "y": 2320,
         "wires": [
             [
                 "a0b30399e596f2c4"
@@ -3694,7 +4117,7 @@
         "property": "payload.print",
         "action": "obj",
         "pretty": false,
-        "x": 170,
+        "x": 350,
         "y": 2320,
         "wires": [
             [
@@ -3799,7 +4222,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Set Msg",
-        "func": "let temp_msg = {\n    \"localFilename\": \"/data/fetched/\"+flow.get(\"printer_name\")+\"/current_print.3mf\"\n};\n\nnode.send(temp_msg);",
+        "func": "let temp_msg = {\n    \"localFilename\": flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/current_print.3mf\"\n};\n\nnode.send(temp_msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -3897,7 +4320,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Plate Json",
-        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/plate_\"+msg.plate_id+\".json\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = \"/data/fetched/\"+flow.get(\"printer_name\")+\"/plate.json\";\n    node.send(msg);\n}",
+        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/plate_\"+msg.plate_id+\".json\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/plate.json\";\n    node.send(msg);\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4124,8 +4547,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 450,
-        "y": 2060,
+        "x": 530,
+        "y": 2180,
         "wires": [
             []
         ]
@@ -4136,7 +4559,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Project Data json",
-        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/project_settings.config\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = \"/data/fetched/\"+flow.get(\"printer_name\")+\"/project_info.json\";\n    node.send(msg);\n\n}",
+        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/project_settings.config\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/project_info.json\";\n    node.send(msg);\n\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4258,8 +4681,8 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 190,
-        "y": 2080,
+        "x": 170,
+        "y": 1980,
         "wires": [
             [
                 "9c63753ac1e8be87"
@@ -4284,8 +4707,8 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 200,
-        "y": 1800,
+        "x": 180,
+        "y": 1780,
         "wires": [
             [
                 "291c79c514634664"
@@ -4308,7 +4731,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 350,
+        "x": 550,
         "y": 2020,
         "wires": [
             [
@@ -4333,11 +4756,11 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 190,
-        "y": 1940,
+        "x": 350,
+        "y": 1900,
         "wires": [
             [
-                "c905d2cbece4a005"
+                "9327e5ca3160a74e"
             ]
         ]
     },
@@ -4410,6 +4833,13 @@
                 "pt": "msg",
                 "to": "printer_name",
                 "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "path_prefix",
+                "pt": "msg",
+                "to": "path_prefix",
+                "tot": "flow"
             }
         ],
         "action": "",
@@ -4438,7 +4868,7 @@
         "onceDelay": "5",
         "topic": "",
         "x": 170,
-        "y": 2200,
+        "y": 2280,
         "wires": [
             [
                 "e1e4d60219ddca10"
@@ -4457,159 +4887,12 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 180,
-        "y": 2240,
+        "x": 360,
+        "y": 2280,
         "wires": [
             [
                 "29afc93ac757d13c"
             ]
-        ]
-    },
-    {
-        "id": "66a3effc271e832a",
-        "type": "trigger-state",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "When Print Starts",
-        "server": "ed9339d3bdf92870",
-        "version": 2,
-        "exposeToHomeAssistant": false,
-        "haConfig": [
-            {
-                "property": "name",
-                "value": ""
-            },
-            {
-                "property": "icon",
-                "value": ""
-            }
-        ],
-        "entityid": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
-        "entityidfiltertype": "exact",
-        "debugenabled": false,
-        "constraints": [
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "IDLE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": ""
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PREPARE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "unknown"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "unavailable"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PAUSE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FAILED"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "FINISH"
-            }
-        ],
-        "inputs": 0,
-        "outputs": 2,
-        "customoutputs": [],
-        "outputinitially": false,
-        "state_type": "str",
-        "enableInput": false,
-        "x": 180,
-        "y": 1980,
-        "wires": [
-            [
-                "9c63753ac1e8be87"
-            ],
-            []
         ]
     },
     {
@@ -4631,8 +4914,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 330,
-        "y": 2320,
+        "x": 350,
+        "y": 2360,
         "wires": [
             [
                 "9c9a70fe3c4e05a6"
@@ -4668,7 +4951,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Filename?",
-        "func": "let current_filename = flow.get(\"current_filename\");\n\n\nif(current_filename == undefined || current_filename == null || current_filename == \"\") {\n    // via ha\n    node.send([msg, null]);\n}\nelse if (current_filename.startsWith(\"http\")) {\n    // p1p cloud\n}\nelse {\n    msg.filename = current_filename.replace(\".gcode.3mf\", \"\");\n    var found = false;\n    for (var obj of msg.files) {\n        if (msg.filename == obj || msg.filename + \".3mf\" == obj\n            || msg.filename + \".gcode.3mf\" == obj) {\n            msg.filename = \"/\" + obj;\n            msg.payload = msg.filename;\n            found = true;\n            break;\n        }\n        else if (\"/cache/\" + msg.filename == obj || \"/cache/\" + msg.filename + \".3mf\" == obj\n            || \"/cache/\" + msg.filename + \".gcode.3mf\" == obj) {\n            msg.filename = obj;\n            msg.payload = msg.filename;\n            found = true;\n            break;\n        }\n    }\n    if (!found) {\n        // try HA approach just in case;\n        node.send([msg, null]);\n    }\n    else {\n        node.send([null, msg]);\n        // use filename from flow\n    }\n}\n",
+        "func": "let current_filename = flow.get(\"current_filename\");\n\nif(msg.retried != undefined && !msg.retried) {\n    flow.set(\"current_filename\", \"\");\n    msg.retried = true;\n}\nif(current_filename == undefined || current_filename == null || current_filename == \"\") {\n    // via ha\n    if(msg.payload != undefined) {\n        msg.old_payload = msg.payload;\n    }\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_subtask\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse if (current_filename.startsWith(\"http\")) {\n    // p1p cloud\n}\nelse {\n    msg.filename = current_filename.replace(\".gcode.3mf\", \"\");\n    var found = false;\n    for (var obj of msg.files) {\n        if (msg.filename == obj || msg.filename + \".3mf\" == obj\n            || msg.filename + \".gcode.3mf\" == obj) {\n            msg.filename = \"/\" + obj;\n            msg.payload = msg.filename;\n            found = true;\n            break;\n        }\n        else if (\"/cache/\" + msg.filename == obj || \"/cache/\" + msg.filename + \".3mf\" == obj\n            || \"/cache/\" + msg.filename + \".gcode.3mf\" == obj) {\n            msg.filename = obj;\n            msg.payload = msg.filename;\n            found = true;\n            break;\n        }\n    }\n    if (!found) {\n        // try HA approach just in case;\n        node.send([msg, null]);\n    }\n    else {\n        msg.retried = false;\n        node.send([null, msg]);\n        // use filename from flow\n    }\n}\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -4686,25 +4969,12 @@
         ]
     },
     {
-        "id": "9a76cf767001ab31",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "x": 700,
-        "y": 1880,
-        "wires": [
-            [
-                "f8479c53a54a30e6"
-            ]
-        ]
-    },
-    {
         "id": "5473649d0d4b8226",
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Plate name?",
-        "func": "let current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
+        "func": "let current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    msg.decompress_data = msg.payload;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_gcode\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -4722,114 +4992,11 @@
         ]
     },
     {
-        "id": "16862e7b6a526f8a",
-        "type": "trigger-state",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "When Print Ends",
-        "server": "ed9339d3bdf92870",
-        "version": 2,
-        "exposeToHomeAssistant": false,
-        "haConfig": [
-            {
-                "property": "name",
-                "value": ""
-            },
-            {
-                "property": "icon",
-                "value": ""
-            }
-        ],
-        "entityid": "sensor.{HA_PRINTER_ENTITY_NAME}_print_status",
-        "entityidfiltertype": "exact",
-        "debugenabled": false,
-        "constraints": [
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "includes",
-                "comparatorValueDatatype": "list",
-                "comparatorValue": "FAILED,FINISH,IDLE,OFFLINE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "RUNNING"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "current_state",
-                "propertyValue": "new_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "PREPARE"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": ""
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "unknown"
-            },
-            {
-                "targetType": "this_entity",
-                "targetValue": "",
-                "propertyType": "previous_state",
-                "propertyValue": "old_state.state",
-                "comparatorType": "is_not",
-                "comparatorValueDatatype": "str",
-                "comparatorValue": "unavailable"
-            }
-        ],
-        "inputs": 0,
-        "outputs": 2,
-        "customoutputs": [],
-        "outputinitially": false,
-        "state_type": "str",
-        "enableInput": false,
-        "x": 180,
-        "y": 2140,
-        "wires": [
-            [
-                "f24558e18910f7cd",
-                "f21a27ebe27373ac"
-            ],
-            []
-        ]
-    },
-    {
         "id": "f24558e18910f7cd",
         "type": "change",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "Clear File and Plate Names",
+        "name": "Clear Names",
         "rules": [
             {
                 "t": "set",
@@ -4858,8 +5025,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 420,
-        "y": 2140,
+        "x": 550,
+        "y": 2220,
         "wires": [
             []
         ]
@@ -4882,7 +5049,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 380,
+        "x": 540,
         "y": 1980,
         "wires": [
             [
@@ -4906,11 +5073,11 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 370,
+        "x": 350,
         "y": 1940,
         "wires": [
             [
-                "c905d2cbece4a005"
+                "9327e5ca3160a74e"
             ]
         ]
     },
@@ -4947,8 +5114,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "x": 360,
-        "y": 1840,
+        "x": 260,
+        "y": 1900,
         "wires": [
             [
                 "7ff317869f9c6f32"
@@ -4961,7 +5128,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Set Filepath",
-        "func": "msg.filename = \"/data/fetched/\"+flow.get(\"printer_name\")+\"/current_print.3mf\";\nnode.send(msg);",
+        "func": "msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/current_print.3mf\";\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5003,14 +5170,14 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Sub",
-        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "func": "flow.set(\"has_ftp_complete\", false);\nlet config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 270,
-        "y": 1840,
+        "x": 150,
+        "y": 1860,
         "wires": [
             [
                 "2d2a60988e25d24d"
@@ -5030,7 +5197,7 @@
         "onceDelay": "0.2",
         "topic": "",
         "x": 150,
-        "y": 1840,
+        "y": 1820,
         "wires": [
             [
                 "c85d1f9d9cfa90ca"
@@ -5058,7 +5225,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1470,
+        "x": 1410,
         "y": 1780,
         "wires": [
             [
@@ -5087,11 +5254,11 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1620,
+        "x": 1560,
         "y": 1780,
         "wires": [
             [
-                "5f893cfbc9c8b3da"
+                "005198128b13fd0b"
             ]
         ]
     },
@@ -5139,8 +5306,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1800,
-        "y": 1780,
+        "x": 1840,
+        "y": 1800,
         "wires": [
             [
                 "5cf8b602091be9bb"
@@ -5158,7 +5325,7 @@
             "e81aee378a4539c5",
             "0f0b9aa41491e74a"
         ],
-        "x": 2085,
+        "x": 2105,
         "y": 2200,
         "wires": []
     },
@@ -5176,5 +5343,329 @@
         "x": 1995,
         "y": 2340,
         "wires": []
+    },
+    {
+        "id": "ce55f73a8f638a6d",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "No FTP",
+        "rules": [
+            {
+                "t": "set",
+                "p": "has_ftp_complete",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 760,
+        "y": 1940,
+        "wires": [
+            [
+                "f8479c53a54a30e6"
+            ]
+        ]
+    },
+    {
+        "id": "005198128b13fd0b",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_subtask\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1690,
+        "y": 1780,
+        "wires": [
+            [
+                "5f893cfbc9c8b3da"
+            ]
+        ]
+    },
+    {
+        "id": "9327e5ca3160a74e",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "x": 440,
+        "y": 1900,
+        "wires": [
+            [
+                "c905d2cbece4a005"
+            ]
+        ]
+    },
+    {
+        "id": "3f1c8e25f7805121",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Subscribe",
+        "func": "",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "finalize": "",
+        "libs": [],
+        "x": 140,
+        "y": 2040,
+        "wires": [
+            [
+                "d30195b17d06483a"
+            ]
+        ]
+    },
+    {
+        "id": "d30195b17d06483a",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 290,
+        "y": 2040,
+        "wires": [
+            [
+                "34fb479b5e33f9c7"
+            ]
+        ]
+    },
+    {
+        "id": "34fb479b5e33f9c7",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 160,
+        "y": 2080,
+        "wires": [
+            [
+                "f5834a52286a1756"
+            ]
+        ]
+    },
+    {
+        "id": "bc1c9acec2e7b857",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "EId",
+        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 150,
+        "y": 2120,
+        "wires": [
+            [
+                "a16e19bc9442375f"
+            ]
+        ]
+    },
+    {
+        "id": "a16e19bc9442375f",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 300,
+        "y": 2120,
+        "wires": [
+            [
+                "3a7ca8e6215a655a"
+            ]
+        ]
+    },
+    {
+        "id": "3a7ca8e6215a655a",
+        "type": "api-get-history",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "server": "ed9339d3bdf92870",
+        "version": 0,
+        "startdate": "",
+        "enddate": "",
+        "entityid": "",
+        "entityidtype": "is",
+        "useRelativeTime": true,
+        "relativeTime": "60s",
+        "flatten": true,
+        "output_type": "array",
+        "output_location_type": "msg",
+        "output_location": "payload",
+        "x": 150,
+        "y": 2160,
+        "wires": [
+            [
+                "2dda54c49285778c"
+            ]
+        ]
+    },
+    {
+        "id": "2dda54c49285778c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Get Latest & Previous",
+        "func": "if (msg.payload != undefined && msg.payload.length != undefined && msg.payload.length > 0) {\n    let li = msg.payload;\n    let first_state = \"\";\n    let newmsg = {};\n    li.sort((x, y) => {\n        return new Date(x.last_updated) < new Date(y.last_updated) ? 1 : -1\n    })\n    let states_only = [];\n    for (var event of li) {\n        if (event.state == \"PREPARE\") {\n            continue;\n        }\n        if (first_state == \"\") {\n            first_state == event.state;\n            states_only.push(event.state);\n        }\n        else if (first_state != event.state) {\n            states_only.push(event.state);\n        }\n\n    }\n    newmsg.current_state = states_only[0];\n    newmsg.previous_state = states_only[0];\n    if (states_only.length > 1) {\n        newmsg.previous_state = states_only[1];\n    }\n    node.send(newmsg);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 2200,
+        "wires": [
+            [
+                "b4d807c686531217"
+            ]
+        ]
+    },
+    {
+        "id": "b4d807c686531217",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Start / Ends (or reset)",
+        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 2240,
+        "wires": [
+            [
+                "9c63753ac1e8be87"
+            ],
+            [
+                "f24558e18910f7cd",
+                "f21a27ebe27373ac"
+            ]
+        ]
+    },
+    {
+        "id": "f5834a52286a1756",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 290,
+        "y": 2080,
+        "wires": [
+            [
+                "bc1c9acec2e7b857"
+            ]
+        ]
+    },
+    {
+        "id": "603bbc81cb4c9ce3",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Has Not Retried",
+        "property": "retried",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 780,
+        "y": 1900,
+        "wires": [
+            [
+                "84f691a521695fd2"
+            ],
+            [
+                "ce55f73a8f638a6d"
+            ]
+        ]
+    },
+    {
+        "id": "84f61d394ba2ab34",
+        "type": "mqtt-broker",
+        "name": "Bambu X1C MQTT 3DP-00M-547",
+        "broker": "bambu-x1c.local",
+        "port": "8883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": false,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
     }
 ]

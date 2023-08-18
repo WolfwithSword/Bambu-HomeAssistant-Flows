@@ -1,0 +1,83 @@
+type: picture-elements
+view_layout:
+  column: 1
+elements:
+  - type: conditional
+    conditions:
+      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
+        state_not: OFFLINE
+    elements:
+      - entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
+        type: state-icon
+        style:
+          top: 46%
+          left: 18%
+          '--mdc-icon-size': 2.6em
+        tap_action:
+          action: toggle
+      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
+        type: state-label
+        style:
+          top: 9.8%
+          left: 21.8%
+          font-size: 1.2em
+          color: '#FFFFFF'
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
+            state: RUNNING
+        elements:
+          - type: custom:hui-element
+            card_type: picture-entity
+            show_name: false
+            show_state: false
+            entity: camera.{HA_PRINTER_DEVICE_NAME}_print_preview
+            style:
+              top: 50%
+              left: 50%
+              transform: translate(-45%, -40%) scale(75%, 75%)
+              '--ha-card-border-width': 0px
+              '--ha-card-background': none
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress
+            type: state-badge
+            tap_action:
+              action: none
+            style:
+              top: 18.5%
+              left: 81%
+              font-size: 1em
+              color: rgba(0,0,0,0)
+              '--label-badge-red': '#11739D'
+      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_nozzle_temperature
+        type: state-badge
+        style:
+          top: 31%
+          left: 51%
+          font-size: 0.8em
+          color: rgba(0,0,0,0)
+      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_bed_temperature
+        type: state-badge
+        style:
+          top: 78%
+          left: 51%
+          font-size: 0.8em
+          color: rgba(0,0,0,0)
+      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
+        type: state-badge
+        style:
+          font-size: 0.8em
+          top: 31%
+          left: 19%
+          color: rgba(0,0,0,0)
+style: |
+  ha-card {
+    box-shadow: none !important;
+    background: none !important;
+    border: none !important;
+  }
+image: /local/media/bambuprinter/on_p1p.png
+entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
+state_image:
+  unavailable: /local/media/bambuprinter/off_p1p.png
+  'on': /local/media/bambuprinter/on_p1p.png
+  'off': /local/media/bambuprinter/off_p1p.png

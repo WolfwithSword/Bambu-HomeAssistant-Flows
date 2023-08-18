@@ -1,0 +1,65 @@
+type: picture-elements
+view_layout:
+  column: 1
+elements:
+  - type: custom:config-template-card
+    entities:
+      - sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray
+    element:
+      type: state-icon
+      entity: sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray
+      icon: >-
+        ${states['sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray'].state != 'Empty' ?
+        'fapro:filament-1' : 'mdi:tray' }
+    style:
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%) scale(200%)
+      '--paper-item-icon-color': var(--tray_vt_color)
+      background-color: rgba(0,0,0,0.5)
+      box-shadow: 0 0 5px 5px var(--tray_vt_bg)
+      border-radius: 50px
+      '--mdc-icon-size': 1.8em
+  - type: state-label
+    entity: sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray
+    attribute: type
+    tap_action:
+      action: none
+    style:
+      top: 50%
+      left: 85%
+      text-align: center
+      font-size: 1em
+      background-color: rgba(0,0,0,0.4)
+      box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.4)
+      border-radius: 50px
+      pointer-events: none
+      color: '#FFFFFF'
+  - entity: button.{HA_PRINTER_DEVICE_NAME}_clear_external_spool
+    icon: mdi:delete
+    service: button.press
+    style:
+      top: 40%
+      color: rgb(180,33,50)
+      '--mdc-icon-size': 3.5em
+      left: 2%
+      transform: initial
+    tap_action:
+      action: call-service
+      service: button.press
+      target:
+        entity_id: button.{HA_PRINTER_DEVICE_NAME}_clear_external_spool
+    type: icon
+image: /local/media/bambuprinter/spool.png
+style: |
+  ha-card {
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    height: 60%;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    --tray_vt_color: {{state_attr('sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray', 'color') }};
+    --tray_vt_bg: {% if is_state_attr('sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+  }
