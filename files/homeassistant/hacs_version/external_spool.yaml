@@ -35,21 +35,6 @@ elements:
       border-radius: 50px
       pointer-events: none
       color: '#FFFFFF'
-  - entity: button.{HA_PRINTER_DEVICE_NAME}_clear_external_spool
-    icon: mdi:delete
-    service: button.press
-    style:
-      top: 40%
-      color: rgb(180,33,50)
-      '--mdc-icon-size': 3.5em
-      left: 2%
-      transform: initial
-    tap_action:
-      action: call-service
-      service: button.press
-      target:
-        entity_id: button.{HA_PRINTER_DEVICE_NAME}_clear_external_spool
-    type: icon
 image: /local/media/bambuprinter/spool.png
 style: |
   ha-card {
