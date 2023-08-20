@@ -3402,7 +3402,12 @@
             "603bbc81cb4c9ce3",
             "22232609c683663d",
             "f067576a05ce8f67",
-            "6ab24dd036f012f3"
+            "6ab24dd036f012f3",
+            "58964f0865d26681",
+            "40d15edd232f560f",
+            "dc395c3ab15fc5b7",
+            "1839983bc4fa6f32",
+            "48ea5ffc822af224"
         ],
         "x": 54,
         "y": 1739,
@@ -4184,8 +4189,8 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Cloud?",
-        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nflow.set(\"was_http_successful\", false);\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    flow.set(\"current_platename\", plate);\n                  }\n\n                  delete msg.payload;\n                  node.send(msg);\n            }\n}",
-        "outputs": 1,
+        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nflow.set(\"was_http_successful\", false);\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    flow.set(\"current_platename\", plate);\n                    node.send([null, {\"payload\": plate, \"topic\": \"plate_name\"}]);\n                  }\n\n                  delete msg.payload;\n                  node.send([msg, null]);\n            }\n}",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -4195,6 +4200,9 @@
         "wires": [
             [
                 "1c845f7d3a35bec3"
+            ],
+            [
+                "1839983bc4fa6f32"
             ]
         ]
     },
@@ -4958,8 +4966,8 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Local?",
-        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send(msg);\n            }\n}",
-        "outputs": 1,
+        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }]);\n            }\n}",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -4969,6 +4977,9 @@
         "wires": [
             [
                 "32224e154dd11042"
+            ],
+            [
+                "1839983bc4fa6f32"
             ]
         ]
     },
@@ -5736,5 +5747,91 @@
                 "d702395bb3be0f21"
             ]
         ]
+    },
+    {
+        "id": "58964f0865d26681",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Printer Config",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1180,
+        "y": 2400,
+        "wires": [
+            [
+                "48ea5ffc822af224"
+            ]
+        ]
+    },
+    {
+        "id": "40d15edd232f560f",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Printer State",
+        "func": "if (msg.payload == undefined) {\n    return;\n}\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1190,
+        "y": 2440,
+        "wires": [
+            [
+                "48ea5ffc822af224"
+            ]
+        ]
+    },
+    {
+        "id": "dc395c3ab15fc5b7",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "x": 1060,
+        "y": 2400,
+        "wires": [
+            [
+                "58964f0865d26681",
+                "40d15edd232f560f"
+            ]
+        ]
+    },
+    {
+        "id": "1839983bc4fa6f32",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "x": 740,
+        "y": 2360,
+        "wires": [
+            [
+                "dc395c3ab15fc5b7"
+            ]
+        ]
+    },
+    {
+        "id": "48ea5ffc822af224",
+        "type": "mqtt out",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "MQTT Out",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "489094618c340eef",
+        "x": 1390,
+        "y": 2420,
+        "wires": []
     }
 ]
