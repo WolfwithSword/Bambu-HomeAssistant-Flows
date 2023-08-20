@@ -4122,7 +4122,7 @@
         "topic": "",
         "qos": "2",
         "datatype": "json",
-        "broker": "84f61d394ba2ab34",
+        "broker": "{GENERATED_PRINTER_MQTT_ID}",
         "nl": false,
         "rap": true,
         "rh": 0,
@@ -5666,33 +5666,5 @@
                 "ce55f73a8f638a6d"
             ]
         ]
-    },
-    {
-        "id": "84f61d394ba2ab34",
-        "type": "mqtt-broker",
-        "name": "Bambu X1C MQTT 3DP-00M-547",
-        "broker": "bambu-x1c.local",
-        "port": "8883",
-        "tls": "",
-        "clientid": "",
-        "autoConnect": false,
-        "usetls": true,
-        "protocolVersion": "4",
-        "keepalive": "60",
-        "cleansession": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthPayload": "",
-        "birthMsg": {},
-        "closeTopic": "",
-        "closeQos": "0",
-        "closePayload": "",
-        "closeMsg": {},
-        "willTopic": "",
-        "willQos": "0",
-        "willPayload": "",
-        "willMsg": {},
-        "userProps": "",
-        "sessionExpiry": ""
     }
 ]
