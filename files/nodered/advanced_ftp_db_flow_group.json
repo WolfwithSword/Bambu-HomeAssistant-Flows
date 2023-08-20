@@ -3401,7 +3401,8 @@
             "f5834a52286a1756",
             "603bbc81cb4c9ce3",
             "22232609c683663d",
-            "f067576a05ce8f67"
+            "f067576a05ce8f67",
+            "6ab24dd036f012f3"
         ],
         "x": 54,
         "y": 1739,
@@ -3874,7 +3875,7 @@
         "type": "api-current-state",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "GCode_File",
+        "name": "Plate Name",
         "server": "ed9339d3bdf92870",
         "version": 3,
         "outputs": 1,
@@ -3900,7 +3901,7 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1750,
+        "x": 1910,
         "y": 1860,
         "wires": [
             [
@@ -5000,7 +5001,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Plate name?",
-        "func": "let current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    msg.decompress_data = msg.payload;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_gcode\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
+        "func": "let current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    msg.decompress_data = msg.payload;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_plate_name\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -5010,7 +5011,7 @@
         "y": 1900,
         "wires": [
             [
-                "d702395bb3be0f21"
+                "6ab24dd036f012f3"
             ],
             [
                 "31fe7e40ca1fe0d2"
@@ -5707,6 +5708,32 @@
         "wires": [
             [
                 "22bd310294153ff5"
+            ]
+        ]
+    },
+    {
+        "id": "6ab24dd036f012f3",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1760,
+        "y": 1860,
+        "wires": [
+            [
+                "d702395bb3be0f21"
             ]
         ]
     }
