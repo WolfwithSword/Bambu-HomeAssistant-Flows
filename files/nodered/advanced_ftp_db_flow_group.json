@@ -278,7 +278,8 @@
             "3d9b17f1d8d8058f",
             "ccef33154dde5e17",
             "f83cc5013554e075",
-            "c40cba2075d93e84"
+            "c40cba2075d93e84",
+            "3d20c32e447aefca"
         ],
         "x": 54,
         "y": 2499,
@@ -334,11 +335,11 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1030,
-        "y": 2600,
+        "x": 1010,
+        "y": 2580,
         "wires": [
             [
-                "27e8750d79dc7117"
+                "3d20c32e447aefca"
             ],
             [
                 "29ce3287b0fc9101"
@@ -2651,6 +2652,29 @@
         ]
     },
     {
+        "id": "3d20c32e447aefca",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "NaN Check",
+        "func": "if (msg.values.start_epoch == undefined || isNaN(msg.values.start_epoch)) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1090,
+        "y": 2620,
+        "wires": [
+            [
+                "27e8750d79dc7117"
+            ],
+            [
+                "29ce3287b0fc9101"
+            ]
+        ]
+    },
+    {
         "id": "79ce3199b8eeaa1c",
         "type": "postgresDB",
         "name": "3DPrint DB (PG13)",
@@ -3317,7 +3341,6 @@
             "a326c60150f8d7e5",
             "1c845f7d3a35bec3",
             "dc50f8c00489f468",
-            "05b708e123d5c661",
             "22bd310294153ff5",
             "2965467d46be20b4",
             "150e8ccb27fa934d",
@@ -3376,7 +3399,9 @@
             "2dda54c49285778c",
             "b4d807c686531217",
             "f5834a52286a1756",
-            "603bbc81cb4c9ce3"
+            "603bbc81cb4c9ce3",
+            "22232609c683663d",
+            "f067576a05ce8f67"
         ],
         "x": 54,
         "y": 1739,
@@ -4158,7 +4183,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Cloud?",
-        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n                  delete msg.payload;\n                  node.send(msg);\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    flow.set(\"current_platename\", plate);\n                  }\n            }\n}",
+        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nflow.set(\"was_http_successful\", false);\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n                  delete msg.payload;\n                  node.send(msg);\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    flow.set(\"current_platename\", plate);\n                  }\n            }\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4189,11 +4214,11 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 390,
+        "x": 190,
         "y": 2400,
         "wires": [
             [
-                "05b708e123d5c661"
+                "22232609c683663d"
             ]
         ]
     },
@@ -4209,37 +4234,11 @@
         "createDir": true,
         "overwriteFile": "true",
         "encoding": "none",
-        "x": 680,
+        "x": 540,
         "y": 2440,
         "wires": [
             [
                 "22bd310294153ff5"
-            ]
-        ]
-    },
-    {
-        "id": "05b708e123d5c661",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "",
-        "property": "statusCode",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "200",
-                "vt": "num"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 530,
-        "y": 2400,
-        "wires": [
-            [
-                "f2684e6c83a56bd4"
             ]
         ]
     },
@@ -4255,7 +4254,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 840,
+        "x": 940,
         "y": 2440,
         "wires": [
             [
@@ -4281,7 +4280,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 540,
+        "x": 320,
         "y": 2440,
         "wires": [
             [
@@ -4322,7 +4321,7 @@
         "g": "615e0a4a63e8487d",
         "name": "",
         "pauseType": "delay",
-        "timeout": "5",
+        "timeout": "20",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -4333,11 +4332,11 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 780,
-        "y": 2400,
+        "x": 760,
+        "y": 2280,
         "wires": [
             [
-                "22bd310294153ff5"
+                "f067576a05ce8f67"
             ]
         ]
     },
@@ -4908,7 +4907,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Subscribe",
-        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"printer_report_topic\"),\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"printer_report_topic\"),\n        \"qos\": 2\n    }\n}\nnode.send(config);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5161,7 +5160,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 390,
+        "x": 170,
         "y": 2440,
         "wires": [
             [
@@ -5197,7 +5196,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Sub",
-        "func": "flow.set(\"has_ftp_complete\", false);\nlet config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "func": "flow.set(\"has_ftp_complete\", false);\nlet config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\nflow.set(\"was_http_successful\", false);\nnode.send(config);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5598,7 +5597,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Start / Ends (or reset)",
-        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n}",
+        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n                flow.set(\"was_http_successful\", false);\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n                flow.set(\"was_http_successful\", false);\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n    if(msg.current_state == \"OFFLINE\" || msg.current_state == \"FAILED\" || msg.current_state == \"FINISH\") {\n        flow.set(\"was_http_successful\", false);\n    }\n}",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -5664,6 +5663,50 @@
             ],
             [
                 "ce55f73a8f638a6d"
+            ]
+        ]
+    },
+    {
+        "id": "22232609c683663d",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Status",
+        "func": "if (msg.statusCode != undefined && msg.statusCode == 200) {\n    node.send(msg);\n    flow.set(\"was_http_successful\", true);\n}\nelse {\n    node.warn(\"Error with HTTP GET: \\n\"+ msg);\n    flow.set(\"was_http_successful\", false);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 2400,
+        "wires": [
+            [
+                "f2684e6c83a56bd4"
+            ]
+        ]
+    },
+    {
+        "id": "f067576a05ce8f67",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Was HTTP Successful",
+        "property": "was_http_successful",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 840,
+        "y": 2320,
+        "wires": [
+            [
+                "22bd310294153ff5"
             ]
         ]
     }
