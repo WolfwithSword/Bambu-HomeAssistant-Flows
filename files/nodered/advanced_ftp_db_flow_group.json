@@ -43,7 +43,7 @@
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
         "name": "Version 2.0.3",
-         "info": "Version 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "info": "Version 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1700,
         "wires": []
@@ -3407,11 +3407,13 @@
             "40d15edd232f560f",
             "dc395c3ab15fc5b7",
             "1839983bc4fa6f32",
-            "48ea5ffc822af224"
+            "48ea5ffc822af224",
+            "4cf88c06f97c30db",
+            "3b59acc082a9bc99"
         ],
         "x": 54,
         "y": 1739,
-        "w": 2112,
+        "w": 2152,
         "h": 742
     },
     {
@@ -3761,7 +3763,7 @@
                 "d0de2bfdbe4c20b5"
             ],
             [
-                "82eb71a02f89ed73"
+                "4cf88c06f97c30db"
             ]
         ]
     },
@@ -3920,7 +3922,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Get Plate",
-        "func": "if (msg.decompress_data != undefined) {\n    msg.payload = msg.decompress_data;\n}\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\"Metadata/\", \"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nnode.send(msg); \nnode.status({ fill: \"blue\", shape: \"ring\", text: plate_name });\n",
+        "func": "if (msg.decompress_data != undefined) {\n    msg.payload = msg.decompress_data;\n}\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\"Metadata/\", \"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nflow.set(\"current_platename\", plate_name);\nnode.send(msg); \nnode.status({ fill: \"blue\", shape: \"ring\", text: plate_name });\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4257,7 +4259,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Set Msg",
-        "func": "let temp_msg = {\n    \"localFilename\": flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/current_print.3mf\"\n};\n\nnode.send(temp_msg);",
+        "func": "flow.set(\"try_extract_backup\", false);\nlet temp_msg = {\n    \"localFilename\": flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/current_print.3mf\"\n};\n\nnode.send(temp_msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4476,7 +4478,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Plate Type",
-        "func": "if (msg.payload != undefined && msg.payload.bed_type != undefined) {\n    msg.payload = msg.payload.bed_type;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: msg.payload });\n}",
+        "func": "if (msg.payload != undefined && msg.payload.bed_type != undefined) {\n    msg.payload = msg.payload.bed_type;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: msg.payload });\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4826,6 +4828,13 @@
                 "pt": "msg",
                 "to": "model",
                 "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "try_extract_backup",
+                "pt": "flow",
+                "to": "false",
+                "tot": "bool"
             }
         ],
         "action": "",
@@ -5208,7 +5217,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Sub",
-        "func": "flow.set(\"has_ftp_complete\", false);\nlet config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\nflow.set(\"was_http_successful\", false);\nnode.send(config);",
+        "func": "flow.set(\"has_ftp_complete\", false);\nlet config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\nflow.set(\"was_http_successful\", false);\nflow.set(\"try_extract_backup\", false);\nnode.send(config);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5609,7 +5618,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Start / Ends (or reset)",
-        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n                flow.set(\"was_http_successful\", false);\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n                flow.set(\"was_http_successful\", false);\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n    if(msg.current_state == \"OFFLINE\" || msg.current_state == \"FAILED\" || msg.current_state == \"FINISH\") {\n        flow.set(\"was_http_successful\", false);\n    }\n}",
+        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n    if(msg.current_state == \"OFFLINE\" || msg.current_state == \"FAILED\" || msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\") {\n        flow.set(\"was_http_successful\", false);\n        flow.set(\"try_extract_backup\", false);\n    }\n}\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -5833,5 +5842,57 @@
         "x": 1390,
         "y": 2420,
         "wires": []
+    },
+    {
+        "id": "4cf88c06f97c30db",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "property": "try_extract_backup",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2050,
+        "y": 2160,
+        "wires": [
+            [
+                "3b59acc082a9bc99"
+            ]
+        ]
+    },
+    {
+        "id": "3b59acc082a9bc99",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Try Backup Once",
+        "rules": [
+            {
+                "t": "set",
+                "p": "try_extract_backup",
+                "pt": "flow",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2090,
+        "y": 2120,
+        "wires": [
+            [
+                "82eb71a02f89ed73"
+            ]
+        ]
     }
 ]
