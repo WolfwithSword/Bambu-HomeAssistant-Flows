@@ -23,7 +23,7 @@
         ],
         "x": 28,
         "y": 1659,
-        "w": 2444,
+        "w": 2604,
         "h": 1528
     },
     {
@@ -42,8 +42,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.3",
-        "info": "Version 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.0.4",
+        "info": "Version 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1700,
         "wires": []
@@ -279,11 +279,20 @@
             "ccef33154dde5e17",
             "f83cc5013554e075",
             "c40cba2075d93e84",
-            "3d20c32e447aefca"
+            "3d20c32e447aefca",
+            "85bdccd86c38d0e0",
+            "a062127d516f2611",
+            "1ec91432ced6f4f0",
+            "231456032b28ba12",
+            "d7dea15d1c35da3f",
+            "42748eba9e5a195d",
+            "93e890cf1aad18d6",
+            "a08f5a0473621012",
+            "43c56dfada7aeada"
         ],
         "x": 54,
         "y": 2499,
-        "w": 1682,
+        "w": 1812,
         "h": 662
     },
     {
@@ -498,7 +507,7 @@
         "y": 2780,
         "wires": [
             [
-                "dcf293279321a598"
+                "85bdccd86c38d0e0"
             ]
         ]
     },
@@ -512,8 +521,8 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1530,
-        "y": 2840,
+        "x": 1510,
+        "y": 2880,
         "wires": [
             []
         ]
@@ -647,7 +656,7 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 960,
+        "x": 900,
         "y": 2960,
         "wires": [
             [
@@ -1032,13 +1041,15 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1330,
-        "y": 2580,
+        "x": 1350,
+        "y": 2540,
         "wires": [
             [
-                "c07ce3f59a10aac7"
+                "d7dea15d1c35da3f"
             ],
-            []
+            [
+                "231456032b28ba12"
+            ]
         ]
     },
     {
@@ -1466,7 +1477,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Force start epoch",
-        "func": "msg.start_epoch = Math.round(Date.now() / 1000);\nmsg.values.start_epoch = msg.start_epoch;\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced \" + msg.values.start_epoch });",
+        "func": "msg.start_epoch = Math.round(Date.now() / 1000);\nmsg.values.start_epoch = msg.start_epoch;\nflow.set(\"print_start_epoch\", msg.start_epoch);\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced \" + msg.values.start_epoch });",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1496,8 +1507,8 @@
         "correl": "",
         "expiry": "",
         "broker": "489094618c340eef",
-        "x": 1590,
-        "y": 2880,
+        "x": 1450,
+        "y": 2980,
         "wires": []
     },
     {
@@ -1506,17 +1517,20 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Set Topic",
-        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nmsg.payload = msg.start_epoch;\nif(msg.values != undefined) {\n    delete msg.values;\n}\nnode.send(msg);\n\nif(msg.payload != 0) {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}",
-        "outputs": 1,
+        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nmsg.payload = msg.start_epoch;\nif(msg.values != undefined) {\n    delete msg.values;\n}\nnode.send([msg, null]);\n\nflow.set(\"print_start_epoch\", msg.payload);\n\nmsg.topic = \"print_start_time\";\nmsg.payload = msg.start_epoch;\nif (msg.values != undefined) {\n    delete msg.values;\n}\nif(msg.payload != 0 && msg.payload != \"0\") {\n    node.send([null, msg]);\n}\nif(msg.payload != 0 && msg.payload != \"0\") {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1100,
-        "y": 2740,
+        "x": 1140,
+        "y": 2820,
         "wires": [
             [
-                "1927a157e503a89a"
+                "1ec91432ced6f4f0"
+            ],
+            [
+                "a062127d516f2611"
             ]
         ]
     },
@@ -1532,8 +1546,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1200,
-        "y": 2840,
+        "x": 1220,
+        "y": 2940,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1552,8 +1566,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1210,
-        "y": 2880,
+        "x": 1230,
+        "y": 2980,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1630,8 +1644,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1080,
-        "y": 2780,
+        "x": 1100,
+        "y": 2940,
         "wires": [
             [
                 "239b69ba6de0f3b0",
@@ -1704,8 +1718,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1340,
-        "y": 2880,
+        "x": 1360,
+        "y": 2980,
         "wires": [
             [
                 "b292c53d06fe5323"
@@ -1719,7 +1733,7 @@
         "g": "a3e765e96362759b",
         "name": "",
         "pauseType": "delay",
-        "timeout": "20",
+        "timeout": "22",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1730,7 +1744,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1140,
+        "x": 1040,
         "y": 2540,
         "wires": [
             [
@@ -1745,7 +1759,7 @@
         "g": "a3e765e96362759b",
         "name": "",
         "pauseType": "delay",
-        "timeout": "21",
+        "timeout": "25",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1756,7 +1770,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1560,
+        "x": 1620,
         "y": 2540,
         "wires": [
             [
@@ -1795,13 +1809,15 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1570,
-        "y": 2620,
+        "x": 1730,
+        "y": 2580,
         "wires": [
             [
-                "94f08b2a34e68dd4"
+                "93e890cf1aad18d6"
             ],
-            []
+            [
+                "42748eba9e5a195d"
+            ]
         ]
     },
     {
@@ -1814,8 +1830,8 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1600,
-        "y": 2660,
+        "x": 1740,
+        "y": 2740,
         "wires": [
             []
         ]
@@ -2034,7 +2050,7 @@
         "links": [
             "d0de2bfdbe4c20b5"
         ],
-        "x": 1025,
+        "x": 945,
         "y": 2540,
         "wires": [
             [
@@ -2051,7 +2067,7 @@
         "links": [
             "4ccfb3dfd3993e15"
         ],
-        "x": 1455,
+        "x": 1525,
         "y": 2540,
         "wires": [
             [
@@ -2091,7 +2107,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1310,
+        "x": 1190,
         "y": 2540,
         "wires": [
             [
@@ -2145,7 +2161,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "func": "flow.set(\"print_start_epoch\", msg.values.start_epoch);\n\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2211,7 +2227,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 830,
+        "x": 870,
         "y": 2780,
         "wires": [
             [
@@ -2675,6 +2691,221 @@
         ]
     },
     {
+        "id": "85bdccd86c38d0e0",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Check not unavailable",
+        "property": "values.name",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "unavailable",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1480,
+        "y": 2840,
+        "wires": [
+            [
+                "dcf293279321a598"
+            ]
+        ]
+    },
+    {
+        "id": "a062127d516f2611",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Start Timestamp",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$moment(msg.payload).format(\"MMMM D, yyyy [at] h:mm A\")",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1140,
+        "y": 2860,
+        "wires": [
+            [
+                "1ec91432ced6f4f0"
+            ]
+        ]
+    },
+    {
+        "id": "1ec91432ced6f4f0",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "x": 1260,
+        "y": 2880,
+        "wires": [
+            [
+                "1927a157e503a89a"
+            ]
+        ]
+    },
+    {
+        "id": "231456032b28ba12",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "From Flow",
+        "rules": [
+            {
+                "t": "set",
+                "p": "start_epoch",
+                "pt": "msg",
+                "to": "print_start_epoch",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1210,
+        "y": 2580,
+        "wires": [
+            [
+                "d7dea15d1c35da3f"
+            ]
+        ]
+    },
+    {
+        "id": "d7dea15d1c35da3f",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "x": 1300,
+        "y": 2580,
+        "wires": [
+            [
+                "43c56dfada7aeada"
+            ]
+        ]
+    },
+    {
+        "id": "42748eba9e5a195d",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "From Flow",
+        "rules": [
+            {
+                "t": "set",
+                "p": "start_epoch",
+                "pt": "msg",
+                "to": "print_start_epoch",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1570,
+        "y": 2620,
+        "wires": [
+            [
+                "93e890cf1aad18d6"
+            ]
+        ]
+    },
+    {
+        "id": "93e890cf1aad18d6",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "x": 1740,
+        "y": 2640,
+        "wires": [
+            [
+                "a08f5a0473621012"
+            ]
+        ]
+    },
+    {
+        "id": "a08f5a0473621012",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "property": "start_epoch",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1710,
+        "y": 2680,
+        "wires": [
+            [
+                "94f08b2a34e68dd4"
+            ],
+            [
+                "8d19d0768126d960",
+                "29ce3287b0fc9101"
+            ]
+        ]
+    },
+    {
+        "id": "43c56dfada7aeada",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "property": "start_epoch",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1390,
+        "y": 2580,
+        "wires": [
+            [
+                "c07ce3f59a10aac7"
+            ],
+            [
+                "13ab87bca0a9499a",
+                "29ce3287b0fc9101"
+            ]
+        ]
+    },
+    {
         "id": "79ce3199b8eeaa1c",
         "type": "postgresDB",
         "name": "3DPrint DB (PG13)",
@@ -2709,7 +2940,7 @@
         "ha_boolean": "y|yes|true|on|home|open",
         "connectionDelay": true,
         "cacheJson": true,
-        "heartbeat": false,
+        "heartbeat": true,
         "heartbeatInterval": "30",
         "areaSelector": "friendlyName",
         "deviceSelector": "friendlyName",
@@ -2720,7 +2951,7 @@
         "statusDay": "numeric",
         "statusHourCycle": "default",
         "statusTimeFormat": "h:m",
-        "enableGlobalContextStore": false
+        "enableGlobalContextStore": true
     },
     {
         "id": "e2ddb329074d1a53",
@@ -2759,8 +2990,8 @@
             "8a4f1c973014f966",
             "7cea7009956f5aec"
         ],
-        "x": 1754,
-        "y": 2539,
+        "x": 1914,
+        "y": 2499,
         "w": 692,
         "h": 462
     },
@@ -2779,8 +3010,8 @@
         "correl": "",
         "expiry": "",
         "broker": "489094618c340eef",
-        "x": 2340,
-        "y": 2760,
+        "x": 2500,
+        "y": 2720,
         "wires": []
     },
     {
@@ -2795,8 +3026,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2270,
-        "y": 2640,
+        "x": 2430,
+        "y": 2600,
         "wires": [
             [
                 "7cea7009956f5aec"
@@ -2815,8 +3046,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2280,
-        "y": 2600,
+        "x": 2440,
+        "y": 2560,
         "wires": [
             [
                 "53d9f117e4bdc75a"
@@ -2835,8 +3066,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2220,
-        "y": 2900,
+        "x": 2380,
+        "y": 2860,
         "wires": [
             [
                 "270ff91a248dd8f8"
@@ -2869,8 +3100,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 1900,
-        "y": 2900,
+        "x": 2060,
+        "y": 2860,
         "wires": [
             [
                 "e72f63899b356531"
@@ -2899,8 +3130,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 2200,
-        "y": 2860,
+        "x": 2360,
+        "y": 2820,
         "wires": [
             [
                 "5e0688f121b8fddb"
@@ -2912,8 +3143,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2400,
-        "y": 2680,
+        "x": 2560,
+        "y": 2640,
         "wires": [
             [
                 "2f0c417bdc5f70ba"
@@ -2925,8 +3156,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2160,
-        "y": 2720,
+        "x": 2320,
+        "y": 2680,
         "wires": [
             [
                 "e91c88c6b0449efb",
@@ -2939,8 +3170,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2060,
-        "y": 2900,
+        "x": 2220,
+        "y": 2860,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -2952,8 +3183,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2060,
-        "y": 2920,
+        "x": 2220,
+        "y": 2880,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -2972,8 +3203,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2230,
-        "y": 2960,
+        "x": 2390,
+        "y": 2920,
         "wires": [
             [
                 "270ff91a248dd8f8"
@@ -2985,8 +3216,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2380,
-        "y": 2900,
+        "x": 2540,
+        "y": 2860,
         "wires": [
             [
                 "1e3ee56ffe1d6afb"
@@ -3009,8 +3240,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 2050,
-        "y": 2860,
+        "x": 2210,
+        "y": 2820,
         "wires": [
             [
                 "1b174dc5a3c2cb2b"
@@ -3022,8 +3253,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 1960,
-        "y": 2960,
+        "x": 2120,
+        "y": 2920,
         "wires": [
             [
                 "5be89edbbd6808a4"
@@ -3039,8 +3270,8 @@
         "links": [
             "d0de2bfdbe4c20b5"
         ],
-        "x": 1995,
-        "y": 2920,
+        "x": 2155,
+        "y": 2880,
         "wires": [
             [
                 "41db1a005f0694bc"
@@ -3056,8 +3287,8 @@
         "links": [
             "4ccfb3dfd3993e15"
         ],
-        "x": 1885,
-        "y": 2960,
+        "x": 2045,
+        "y": 2920,
         "wires": [
             [
                 "7fe0a7636edfc4e8"
@@ -3076,8 +3307,8 @@
         "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
         "finalize": "",
         "libs": [],
-        "x": 1840,
-        "y": 2580,
+        "x": 2000,
+        "y": 2540,
         "wires": [
             [
                 "929abbcb71cde6a2"
@@ -3102,8 +3333,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1990,
-        "y": 2580,
+        "x": 2150,
+        "y": 2540,
         "wires": [
             [
                 "bd56371da0a2e632"
@@ -3124,8 +3355,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 1840,
-        "y": 2620,
+        "x": 2000,
+        "y": 2580,
         "wires": [
             [
                 "8a4f1c973014f966"
@@ -3144,8 +3375,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2090,
-        "y": 2620,
+        "x": 2250,
+        "y": 2580,
         "wires": [
             [
                 "5a5aad687311dcf6"
@@ -3170,8 +3401,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1840,
-        "y": 2660,
+        "x": 2000,
+        "y": 2620,
         "wires": [
             [
                 "015f1beab287c717"
@@ -3196,8 +3427,8 @@
         "output_type": "array",
         "output_location_type": "msg",
         "output_location": "payload",
-        "x": 1970,
-        "y": 2660,
+        "x": 2130,
+        "y": 2620,
         "wires": [
             [
                 "3ead9edd41601385"
@@ -3216,8 +3447,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1880,
-        "y": 2700,
+        "x": 2040,
+        "y": 2660,
         "wires": [
             [
                 "34a5733e7ccb948d"
@@ -3236,8 +3467,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1880,
-        "y": 2760,
+        "x": 2040,
+        "y": 2720,
         "wires": [
             [
                 "78ca6a864531e4b4"
@@ -3257,8 +3488,8 @@
         "septopics": true,
         "property": "payload",
         "topi": "topic",
-        "x": 1970,
-        "y": 2620,
+        "x": 2130,
+        "y": 2580,
         "wires": [
             [
                 "dc8f60896e88822e"
@@ -3283,8 +3514,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 2300,
-        "y": 2700,
+        "x": 2460,
+        "y": 2660,
         "wires": [
             [
                 "53d9f117e4bdc75a"
@@ -3609,7 +3840,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Check Print File",
-        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\n\nfor (var obj of msg.files) {\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj) {\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    let msgText = \"Not Found - \" + msg.payload;\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
+        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\n\nfor (var obj of msg.files) {\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj) {\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.payload;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5316,7 +5547,7 @@
         "g": "615e0a4a63e8487d",
         "name": "",
         "pauseType": "delay",
-        "timeout": "2",
+        "timeout": "4",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
