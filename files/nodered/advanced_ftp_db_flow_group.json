@@ -42,8 +42,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.4",
-        "info": "Version 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.0.5",
+        "info": "Version 2.0.5: 2023-09-??\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1700,
         "wires": []
@@ -288,7 +288,8 @@
             "42748eba9e5a195d",
             "93e890cf1aad18d6",
             "a08f5a0473621012",
-            "43c56dfada7aeada"
+            "43c56dfada7aeada",
+            "1036e9d3d63d4a72"
         ],
         "x": 54,
         "y": 2499,
@@ -1483,8 +1484,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 930,
-        "y": 2660,
+        "x": 1010,
+        "y": 2700,
         "wires": [
             [
                 "380607347779a3fa",
@@ -1606,7 +1607,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1030,
-        "y": 2700,
+        "y": 2740,
         "wires": [
             [
                 "76b73ce6ce99d69d"
@@ -1631,8 +1632,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1110,
-        "y": 2660,
+        "x": 1190,
+        "y": 2700,
         "wires": [
             [
                 "27e8750d79dc7117"
@@ -2673,14 +2674,14 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "NaN Check",
-        "func": "if (msg.values.start_epoch == undefined || isNaN(msg.values.start_epoch)) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}",
+        "func": "if (msg.error != undefined || msg.values.start_epoch == undefined || isNaN(msg.values.start_epoch)) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1090,
-        "y": 2620,
+        "x": 1030,
+        "y": 2660,
         "wires": [
             [
                 "27e8750d79dc7117"
@@ -2902,6 +2903,24 @@
             [
                 "13ab87bca0a9499a",
                 "29ce3287b0fc9101"
+            ]
+        ]
+    },
+    {
+        "id": "1036e9d3d63d4a72",
+        "type": "catch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "scope": [
+            "50ca810a9ab07205"
+        ],
+        "uncaught": false,
+        "x": 870,
+        "y": 2660,
+        "wires": [
+            [
+                "3d20c32e447aefca"
             ]
         ]
     },
@@ -3840,7 +3859,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Check Print File",
-        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\n\nfor (var obj of msg.files) {\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj) {\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.payload;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
+        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\nmsg.filename = msg.filname.replace(\".gcode.3mf\", \"\");\nfor (var obj of msg.files) {\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj) {\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.payload;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5206,7 +5225,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Local?",
-        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }]);\n            }\n}",
+        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }]);\n            }\n}",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
