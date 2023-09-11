@@ -1480,7 +1480,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Force start epoch",
-        "func": "msg.start_epoch = Math.round(Date.now() / 1000);\nmsg.values.start_epoch = msg.start_epoch;\nflow.set(\"print_start_epoch\", msg.start_epoch);\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced \" + msg.values.start_epoch });",
+        "func": "if (msg == undefined ) {\n    msg = {};\n}\nmsg.start_epoch = Math.round(Date.now() / 1000);\nmsg.values.start_epoch = msg.start_epoch;\nflow.set(\"print_start_epoch\", msg.start_epoch);\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced \" + msg.values.start_epoch });",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
