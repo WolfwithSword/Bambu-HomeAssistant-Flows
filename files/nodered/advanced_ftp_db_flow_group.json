@@ -1518,7 +1518,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Set Topic",
-        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nmsg.payload = msg.start_epoch;\nif(msg.values != undefined) {\n    delete msg.values;\n}\nnode.send([msg, null]);\n\nflow.set(\"print_start_epoch\", msg.payload);\n\nmsg.topic = \"print_start_time\";\nmsg.payload = msg.start_epoch * 1000;\nif (msg.values != undefined) {\n    delete msg.values;\n}\nif(msg.payload != 0 && msg.payload != \"0\") {\n    node.send([null, msg]);\n}\nif(msg.payload != 0 && msg.payload != \"0\") {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}",
+        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nmsg.payload = msg.start_epoch;\nif(msg.values != undefined) {\n    delete msg.values;\n}\nnode.send([msg, null]);\n\nflow.set(\"print_start_epoch\", msg.payload);\n\nmsg.topic = \"print_start_time\";\nmsg.payload = Math.round(Date.now());\nif (msg.values != undefined) {\n    delete msg.values;\n}\nif (msg.start_epoch != 0 && msg.start_epoch != \"0\") {\n    node.send([null, msg]);\n}\nif(msg.start_epoch != 0 && msg.start_epoch != \"0\") {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
