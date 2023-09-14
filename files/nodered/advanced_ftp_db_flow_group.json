@@ -292,7 +292,8 @@
             "1036e9d3d63d4a72",
             "11f9cdb5d2ee29b1",
             "c304cc5c892d73bb",
-            "6943ae17c18c6084"
+            "6943ae17c18c6084",
+            "37aa1c47b14b9c0c"
         ],
         "x": 54,
         "y": 2499,
@@ -511,7 +512,7 @@
         "y": 2780,
         "wires": [
             [
-                "85bdccd86c38d0e0"
+                "37aa1c47b14b9c0c"
             ]
         ]
     },
@@ -2988,7 +2989,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "If IDLE",
-        "func": "if (msg.values.status == \"IDLE\")  {\n    msg.values.status = \"FAILED\";\n}\nnode.send(msg);",
+        "func": "if (msg.values.status == \"IDLE\")  {\n    msg.values.status = \"FAILED\";\n}\nif(msg.values.status == \"PREPARE\") {\n    return;\n}\n\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2999,6 +3000,26 @@
         "wires": [
             [
                 "7f6eec43ae3d2fa0"
+            ]
+        ]
+    },
+    {
+        "id": "37aa1c47b14b9c0c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Prepare = Running",
+        "func": "if (msg.values.status != undefined && msg.values.status==\"PREPARE\"){\n    msg.values.status = \"RUNNING\";\n}\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1730,
+        "y": 2780,
+        "wires": [
+            [
+                "85bdccd86c38d0e0"
             ]
         ]
     },
