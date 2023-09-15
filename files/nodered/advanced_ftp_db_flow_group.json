@@ -2274,7 +2274,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 400,
+        "x": 420,
         "y": 2540,
         "wires": [
             [
@@ -2601,7 +2601,7 @@
         "septopics": true,
         "property": "payload",
         "topi": "topic",
-        "x": 530,
+        "x": 550,
         "y": 2540,
         "wires": [
             [
