@@ -262,7 +262,6 @@
             "7b11af61e6e0ef10",
             "8391500077eba8ae",
             "eeba54db5300affd",
-            "e57e03d60aa57d90",
             "83e2f72cc122faf3",
             "20e12e2dbc0511d2",
             "aedffc8f39c5e784",
@@ -293,7 +292,12 @@
             "11f9cdb5d2ee29b1",
             "c304cc5c892d73bb",
             "6943ae17c18c6084",
-            "37aa1c47b14b9c0c"
+            "37aa1c47b14b9c0c",
+            "634b2847eea9e4c1"
+        ],
+        "x": 54,
+        "y": 2499,
+        "w": 1812,
         ],
         "x": 54,
         "y": 2499,
@@ -2245,40 +2249,14 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "Subscribe",
-        "func": "",
+        "name": "Sub",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
         "outputs": 1,
         "noerr": 0,
-        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 140,
-        "y": 2540,
-        "wires": [
-            [
-                "e57e03d60aa57d90"
-            ]
-        ]
-    },
-    {
-        "id": "e57e03d60aa57d90",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "delay",
-        "pauseType": "delay",
-        "timeout": "500",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 270,
+        "x": 290,
         "y": 2540,
         "wires": [
             [
@@ -3024,6 +3002,26 @@
         ]
     },
     {
+        "id": "634b2847eea9e4c1",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Init",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 170,
+        "y": 2540,
+        "wires": [
+            [
+                "eeba54db5300affd"
+            ]
+        ]
+    },
+    {
         "id": "79ce3199b8eeaa1c",
         "type": "postgresDB",
         "name": "3DPrint DB (PG13)",
@@ -3098,7 +3096,6 @@
             "0f0b9aa41491e74a",
             "2b5fbcfc32a16fa5",
             "9d9e2b832774a598",
-            "929abbcb71cde6a2",
             "bd56371da0a2e632",
             "dc8f60896e88822e",
             "5a5aad687311dcf6",
@@ -3106,11 +3103,12 @@
             "3ead9edd41601385",
             "34a5733e7ccb948d",
             "8a4f1c973014f966",
-            "7cea7009956f5aec"
+            "7cea7009956f5aec",
+            "dcebecadb5c407e4"
         ],
-        "x": 1914,
+        "x": 1894,
         "y": 2499,
-        "w": 692,
+        "w": 712,
         "h": 462
     },
     {
@@ -3419,39 +3417,13 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "name": "Subscribe",
-        "func": "",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
         "outputs": 1,
         "noerr": 0,
-        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2000,
-        "y": 2540,
-        "wires": [
-            [
-                "929abbcb71cde6a2"
-            ]
-        ]
-    },
-    {
-        "id": "929abbcb71cde6a2",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "e2ddb329074d1a53",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "500",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 2150,
+        "x": 2220,
         "y": 2540,
         "wires": [
             [
@@ -3641,6 +3613,26 @@
         ]
     },
     {
+        "id": "dcebecadb5c407e4",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "e2ddb329074d1a53",
+        "name": "Init",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 1990,
+        "y": 2540,
+        "wires": [
+            [
+                "9d9e2b832774a598"
+            ]
+        ]
+    },
+    {
         "id": "615e0a4a63e8487d",
         "type": "group",
         "z": "fbda6ab16491b918",
@@ -3740,7 +3732,6 @@
             "005198128b13fd0b",
             "9327e5ca3160a74e",
             "3f1c8e25f7805121",
-            "d30195b17d06483a",
             "34fb479b5e33f9c7",
             "bc1c9acec2e7b857",
             "a16e19bc9442375f",
@@ -3758,7 +3749,8 @@
             "1839983bc4fa6f32",
             "48ea5ffc822af224",
             "4cf88c06f97c30db",
-            "3b59acc082a9bc99"
+            "3b59acc082a9bc99",
+            "b1311756313d1f50"
         ],
         "x": 54,
         "y": 1739,
@@ -3958,7 +3950,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Check Print File",
-        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\nlet is_gcode = false\nmsg.filename = msg.filename.replace(\".gcode.3mf\", \"\");\nif(msg.filename.endsWith(\".gcode\")) {\n    msg.filename.replace(\".gcode\", \"\");\n    let f = msg.filename;\n    msg.filename = msg.filename.replace(/_plate_[0-9]/, \"\");\n    is_gcode = true\n    let plate = f.match(/_(plate_[0-9])/)[1];\n    flow.set(\"current_platename\", plate);\n}\nfor (var obj of msg.files) {\n    if (!obj.endsWith(\".3mf\")) {\n        continue;\n    }\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj\n        || \"/\" + msg.filename == obj || \"/\"+msg.filename + \".3mf\" == obj\n        || \"/\"+msg.filename + \".gcode.3mf\" == obj)  {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.payload;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
+        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\nlet is_gcode = false\nmsg.filename = msg.filename.replace(\".gcode.3mf\", \"\");\nif(msg.filename.endsWith(\".gcode\")) {\n    msg.filename = msg.filename.replace(\".gcode\", \"\");\n    let f = msg.filename;\n    msg.filename = msg.filename.replace(/_plate_[0-9]/, \"\");\n    is_gcode = true\n    let plate = f.match(/_(plate_[0-9])/)[1];\n    flow.set(\"current_platename\", plate);\n}\nfor (var obj of msg.files) {\n    if (!obj.endsWith(\".3mf\")) {\n        continue;\n    }\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj\n        || \"/\" + msg.filename == obj || \"/\"+msg.filename + \".3mf\" == obj\n        || \"/\"+msg.filename + \".gcode.3mf\" == obj)  {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.payload;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5057,7 +5049,7 @@
         "type": "inject",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "FF + DB INIT",
+        "name": "FF",
         "props": [
             {
                 "p": "filename",
@@ -5070,8 +5062,8 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 170,
-        "y": 1980,
+        "x": 150,
+        "y": 1960,
         "wires": [
             [
                 "9c63753ac1e8be87"
@@ -5277,7 +5269,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Subscribe",
-        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"printer_report_topic\"),\n        \"qos\": 2\n    }\n}\nnode.send(config);",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"printer_report_topic\"),\n        \"qos\": 2\n    }\n}\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5572,7 +5564,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Sub",
-        "func": "flow.set(\"has_ftp_complete\", false);\nlet config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\nflow.set(\"was_http_successful\", false);\nflow.set(\"try_extract_backup\", false);\nnode.send(config);",
+        "func": "flow.set(\"has_ftp_complete\", false);\nlet config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/button/\" + flow.get(\"HA_DEVICE\") + \"/force_ftp_fetch\",\n        \"qos\": 2\n    }\n}\nflow.set(\"was_http_successful\", false);\nflow.set(\"try_extract_backup\", false);\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5596,7 +5588,7 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "onceDelay": "0.2",
+        "onceDelay": "1",
         "topic": "",
         "x": 150,
         "y": 1820,
@@ -5813,39 +5805,13 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Subscribe",
-        "func": "",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
         "outputs": 1,
         "noerr": 0,
-        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 140,
-        "y": 2040,
-        "wires": [
-            [
-                "d30195b17d06483a"
-            ]
-        ]
-    },
-    {
-        "id": "d30195b17d06483a",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "500",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 290,
+        "x": 300,
         "y": 2040,
         "wires": [
             [
@@ -6048,7 +6014,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Status",
-        "func": "if (msg.statusCode != undefined && msg.statusCode == 200) {\n    node.send(msg);\n    flow.set(\"was_http_successful\", true);\n}\nelse {\n    node.warn(\"Error with HTTP GET: \\n\"+ msg);\n    flow.set(\"was_http_successful\", false);\n}",
+        "func": "if (msg.statusCode != undefined && msg.statusCode == 200) {\n    node.send(msg);\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Success\" });\n    flow.set(\"was_http_successful\", true);\n}\nelse {\n    node.warn(\"Error with HTTP GET: \\n\"+ msg);\n    flow.set(\"was_http_successful\", false);\n    node.status({ fill: \"red\", shape: \"ring\", text: \"ERROR\" });\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -6247,6 +6213,26 @@
         "wires": [
             [
                 "82eb71a02f89ed73"
+            ]
+        ]
+    },
+    {
+        "id": "b1311756313d1f50",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Init",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 150,
+        "y": 2040,
+        "wires": [
+            [
+                "3f1c8e25f7805121"
             ]
         ]
     }
