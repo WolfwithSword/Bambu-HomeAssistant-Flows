@@ -4259,7 +4259,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Get Plate",
-        "func": "if (msg.decompress_data != undefined) {\n    msg.payload = msg.decompress_data;\n}\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\"Metadata/\", \"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nflow.set(\"current_platename\", plate_name);\nnode.send(msg); \nnode.status({ fill: \"blue\", shape: \"ring\", text: plate_name });\n",
+        "func": "if (msg.decompress_data != undefined) {\n    msg.payload = msg.decompress_data;\n}\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\"Metadata/\", \"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\nplate_name = plate_name.match(/_(plate_[0-9])/)[1];\n\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nflow.set(\"current_platename\", plate_name);\nnode.send(msg); \nnode.status({ fill: \"blue\", shape: \"ring\", text: plate_name });\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
