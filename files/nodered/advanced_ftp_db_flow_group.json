@@ -3746,7 +3746,11 @@
             "48ea5ffc822af224",
             "4cf88c06f97c30db",
             "3b59acc082a9bc99",
-            "b1311756313d1f50"
+            "b1311756313d1f50",
+            "15e3ceb662c8eb6a",
+            "ac7ad51aa0ac7ebc",
+            "ab842986c460b6e3",
+            "32972334a68e7852"
         ],
         "x": 54,
         "y": 1739,
@@ -3906,7 +3910,7 @@
         "type": "api-current-state",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "Current Task Filename",
+        "name": "Current Task",
         "server": "ed9339d3bdf92870",
         "version": 3,
         "outputs": 1,
@@ -3932,7 +3936,7 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1240,
+        "x": 1330,
         "y": 1780,
         "wires": [
             [
@@ -3946,7 +3950,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Check Print File",
-        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\nlet is_gcode = false\nmsg.filename = msg.filename.replace(\".gcode.3mf\", \"\");\nif(msg.filename.endsWith(\".gcode\")) {\n    msg.filename = msg.filename.replace(\".gcode\", \"\");\n    let f = msg.filename;\n    msg.filename = msg.filename.replace(/_plate_[0-9]/, \"\");\n    is_gcode = true\n    let plate = f.match(/_(plate_[0-9])/)[1];\n    flow.set(\"current_platename\", plate);\n}\nfor (var obj of msg.files) {\n    if (!obj.endsWith(\".3mf\")) {\n        continue;\n    }\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj\n        || \"/\" + msg.filename == obj || \"/\"+msg.filename + \".3mf\" == obj\n        || \"/\"+msg.filename + \".gcode.3mf\" == obj)  {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.payload;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
+        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\nlet is_gcode = false\nmsg.filename = msg.filename.replace(\".gcode.3mf\", \"\");\nif(msg.filename.endsWith(\".gcode\")) {\n    msg.filename = msg.filename.replace(\".gcode\", \"\");\n    let f = msg.filename;\n    msg.filename = msg.filename.replace(/_plate_[1-9][0-9]?[0-9]?/, \"\");\n    is_gcode = true\n    let plate = f.match(/_?(plate_[1-9][0-9]?[0-9]?)/)[1];\n    flow.set(\"current_platename\", plate);\n}\nfor (var obj of msg.files) {\n    if (!obj.endsWith(\".3mf\")) {\n        continue;\n    }\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj\n        || \"/cache\" + msg.filename == obj || \"/cache\" + msg.filename + \".3mf\" == obj\n        || \"/cache\" + msg.filename + \".gcode.3mf\" == obj\n        || \"/\" + msg.filename == obj || \"/\"+msg.filename + \".3mf\" == obj\n        || \"/\"+msg.filename + \".gcode.3mf\" == obj)  {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.filename;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -4190,7 +4194,8 @@
                 "93d2a7632b0f6d50",
                 "9bad8e057ee821f8",
                 "ab9d3fbde618bd0f",
-                "1b3a93f1f0dd0a50"
+                "1b3a93f1f0dd0a50",
+                "15e3ceb662c8eb6a"
             ]
         ]
     },
@@ -5315,7 +5320,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Local?",
-        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }, null]);\n            }\n  else if (msg.payload.print.command == \"project_file\"\n    && msg.payload.print.url != undefined\n    && String(msg.payload.print.url).startsWith(\"http\")) {\n        node.send([null, null, msg]);\n    }\n}",
+        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\"ftp:/\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }, null]);\n            }\n  else if (msg.payload.print.command == \"project_file\"\n    && msg.payload.print.url != undefined\n    && String(msg.payload.print.url).startsWith(\"http\")) {\n        node.send([null, null, msg]);\n    }\n}",
         "outputs": 3,
         "noerr": 0,
         "initialize": "",
@@ -5341,7 +5346,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Filename?",
-        "func": "let current_filename = flow.get(\"current_filename\");\n\nif(msg.retried != undefined && !msg.retried) {\n    flow.set(\"current_filename\", \"\");\n    msg.retried = true;\n}\nif(current_filename == undefined || current_filename == null || current_filename == \"\") {\n    // via ha\n    if(msg.payload != undefined) {\n        msg.old_payload = msg.payload;\n    }\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_subtask\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse if (current_filename.startsWith(\"http\")) {\n    // p1p cloud\n}\nelse {\n    msg.filename = current_filename.replace(\".gcode.3mf\", \"\");\n    var found = false;\n    for (var obj of msg.files) {\n        if (msg.filename == obj || msg.filename + \".3mf\" == obj\n            || msg.filename + \".gcode.3mf\" == obj) {\n            msg.filename = \"/\" + obj;\n            msg.payload = msg.filename;\n            found = true;\n            break;\n        }\n        else if (\"/cache/\" + msg.filename == obj || \"/cache/\" + msg.filename + \".3mf\" == obj\n            || \"/cache/\" + msg.filename + \".gcode.3mf\" == obj) {\n            msg.filename = obj;\n            msg.payload = msg.filename;\n            found = true;\n            break;\n        }\n    }\n    if (!found) {\n        // try HA approach just in case;\n        node.send([msg, null]);\n    }\n    else {\n        msg.retried = false;\n        node.send([null, msg]);\n        // use filename from flow\n    }\n}\n",
+        "func": "let current_filename = flow.get(\"current_filename\");\n\nif(msg.retried != undefined && !msg.retried) {\n    flow.set(\"current_filename\", \"\");\n    msg.retried = true;\n}\nif(current_filename == undefined || current_filename == null || current_filename == \"\") {\n    // via ha\n    if(msg.payload != undefined) {\n        msg.old_payload = msg.payload;\n    }\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_subtask\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse if (current_filename.startsWith(\"http\")) {\n    // p1p cloud\n}\nelse {\n    msg.filename = current_filename.replace(\".gcode.3mf\", \"\");\n    var found = false;\n    for (var obj of msg.files) {\n        if (!obj.endsWith(\".3mf\")) {\n            continue;\n        }\n        if (msg.filename == obj || msg.filename + \".3mf\" == obj\n            || msg.filename + \".gcode.3mf\" == obj) {\n            msg.filename = \"/\" + obj;\n            msg.payload = msg.filename;\n            node.send(msg)\n            let msgText = \"Found - \" + msg.payload;\n            node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n            found = true;\n            break;\n        }\n        else if (\"/cache/\" + msg.filename == obj || \"/cache/\" + msg.filename + \".3mf\" == obj\n            || \"/cache/\" + msg.filename + \".gcode.3mf\" == obj\n            || \"/cache\" + msg.filename == obj || \"/cache\" + msg.filename + \".3mf\" == obj\n            || \"/cache\" + msg.filename + \".gcode.3mf\" == obj\n            || \"/\" + msg.filename == obj || \"/\" + msg.filename + \".3mf\" == obj\n            || \"/\" + msg.filename + \".gcode.3mf\" == obj) {\n\n            msg.filename = obj;\n            msg.payload = msg.filename;\n            node.send(msg)\n            let msgText = \"Found - \" + msg.payload;\n            node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n            found = true;\n            break;\n        }\n    }\n    if (!found) {\n        // try HA approach just in case;\n        node.send([msg, null]);\n    }\n    else {\n        msg.retried = false;\n        node.send([null, msg]);\n        // use filename from flow\n    }\n}\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -5351,7 +5356,7 @@
         "y": 1800,
         "wires": [
             [
-                "5f893cfbc9c8b3da"
+                "32972334a68e7852"
             ],
             [
                 "a976f52574ef2598"
@@ -5615,7 +5620,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1410,
+        "x": 1470,
         "y": 1780,
         "wires": [
             [
@@ -5631,9 +5636,9 @@
         "type": "delay",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "",
+        "name": "delay",
         "pauseType": "delay",
-        "timeout": "10",
+        "timeout": "8",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -5644,7 +5649,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1560,
+        "x": 1590,
         "y": 1780,
         "wires": [
             [
@@ -5685,7 +5690,7 @@
         "g": "615e0a4a63e8487d",
         "name": "",
         "pauseType": "delay",
-        "timeout": "10",
+        "timeout": "5",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -5774,7 +5779,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1690,
+        "x": 1710,
         "y": 1780,
         "wires": [
             [
@@ -6229,6 +6234,87 @@
         "wires": [
             [
                 "3f1c8e25f7805121"
+            ]
+        ]
+    },
+    {
+        "id": "15e3ceb662c8eb6a",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Extract Gcode",
+        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/plate_\"+msg.plate_id+\".gcode\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/print.gcode\";\n    node.send(msg);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 2220,
+        "wires": [
+            [
+                "ac7ad51aa0ac7ebc"
+            ]
+        ]
+    },
+    {
+        "id": "ac7ad51aa0ac7ebc",
+        "type": "base64",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "action": "",
+        "property": "payload",
+        "x": 1360,
+        "y": 2220,
+        "wires": [
+            [
+                "ab842986c460b6e3"
+            ]
+        ]
+    },
+    {
+        "id": "ab842986c460b6e3",
+        "type": "file",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Write GCode",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "base64",
+        "x": 1510,
+        "y": 2220,
+        "wires": [
+            []
+        ],
+        "info": "This is a backup approach which writes \r\nthe file locally into the NR instance.\r\n\r\n"
+    },
+    {
+        "id": "32972334a68e7852",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1180,
+        "y": 1780,
+        "wires": [
+            [
+                "5f893cfbc9c8b3da"
             ]
         ]
     }
