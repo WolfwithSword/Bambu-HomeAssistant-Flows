@@ -42,8 +42,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.5",
-        "info": "Version 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.0.6",
+        "info": "Version 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1700,
         "wires": []
@@ -293,12 +293,25 @@
             "c304cc5c892d73bb",
             "6943ae17c18c6084",
             "37aa1c47b14b9c0c",
-            "634b2847eea9e4c1"
+            "634b2847eea9e4c1",
+            "5470111ac122b91b",
+            "d1ec5f30cd5b88f4",
+            "924dadf7d4e2df8f",
+            "1cce906316702a87",
+            "7dfc4e9a36c335fb",
+            "ae3c93f82649567e",
+            "4d4e6202ea8e0feb",
+            "426f511209068038",
+            "877e0a49ee35b01b",
+            "bdd3b357333ecccb",
+            "840551d3791478d9",
+            "fb4417c1c1663037",
+            "0bf4156fbf9943b1"
         ],
         "x": 54,
         "y": 2499,
         "w": 1812,
-        "h": 662
+        "h": 742
     },
     {
         "id": "c207be711ef10b6a",
@@ -306,7 +319,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Initialize",
-        "query": "ALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS material varchar(10);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS plate_type varchar(15);\n\nCREATE TABLE IF NOT EXISTS prints (\n    id SERIAL,\n    start_epoch numeric PRIMARY KEY,\n    printer varchar(25) NOT NULL,\n    printer_serial varchar(20) NOT NULL,\n    name varchar(75) NOT NULL,\n    start_time timestamp DEFAULT (now() at time zone 'utc'),\n    end_time timestamp,\n    initial_kwh numeric DEFAULT 0.0,\n    final_kwh numeric DEFAULT 0.0,\n    kwh numeric GENERATED ALWAYS AS\n  \t\t(\n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE final_kwh - initial_kwh\n            end\n      ) STORED,\n    status varchar(10),\n    electric_rate numeric NOT NULL,\n    electric_cost numeric GENERATED ALWAYS AS ( \n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE ((electric_rate / 100) * (final_kwh - initial_kwh))\n            end\n      ) STORED,\n    material_used numeric default 0.0,\n    material_type varchar(10) default 'filament',\n    material_price numeric default 0.0,\n    material_cost numeric GENERATED ALWAYS AS (\n        material_used * (material_price / 1000)\n    ) STORED,\n    material_description varchar(50),\n    material varchar(10),\n    plate_type varchar(15)\n);",
+        "query": "ALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS material varchar(10);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS plate_type varchar(15);\n\nCREATE TABLE IF NOT EXISTS prints (\n    id SERIAL,\n    start_epoch numeric PRIMARY KEY,\n    printer varchar(25) NOT NULL,\n    printer_serial varchar(20) NOT NULL,\n    name varchar(75) NOT NULL,\n    start_time timestamp DEFAULT (now() at time zone 'utc'),\n    end_time timestamp,\n    initial_kwh numeric DEFAULT 0.0,\n    final_kwh numeric DEFAULT 0.0,\n    kwh numeric GENERATED ALWAYS AS\n  \t\t(\n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE final_kwh - initial_kwh\n            end\n      ) STORED,\n    status varchar(10),\n    electric_rate numeric NOT NULL,\n    electric_cost numeric GENERATED ALWAYS AS ( \n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE ((electric_rate / 100) * (final_kwh - initial_kwh))\n            end\n      ) STORED,\n    material_used numeric default 0.0,\n    material_type varchar(10) default 'filament',\n    material_price numeric default 0.0,\n    material_cost numeric GENERATED ALWAYS AS (\n        material_used * (material_price / 1000)\n    ) STORED,\n    material_description varchar(50),\n    material varchar(10),\n    plate_type varchar(15)\n);\n\n\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_price;\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_cost;\nALTER TABLE prints ADD COLUMN IF NOT EXISTS material_used_cost numeric default 0.0;",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -1180,7 +1193,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Update",
-        "query": "UPDATE prints SET\n    material_used = '{{msg.payload}}' * ('{{msg.progress}}' / 100.0)\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "query": "UPDATE prints SET\n    material_used = '{{msg.used}}' * ('{{msg.progress}}' / 100.0),\n    material_used_cost = '{{msg.cost}}' * ('{{msg.progress}}' / 100.0)\n    \nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -1198,7 +1211,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Get Material Used",
-        "query": "SELECt material_used FROM prints\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "query": "SELECT material_used, material_used_cost FROM prints\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -1216,7 +1229,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Parse Amt",
-        "func": "msg.payload = parseFloat(msg.payload.rows[0].material_used);\n\nnode.send(msg);",
+        "func": "msg.used = parseFloat(msg.payload.rows[0].material_used);\nmsg.cost = parseFloat(msg.payload.rows[0].material_used_cost)\n\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1259,7 +1272,7 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1490,
+        "x": 1250,
         "y": 3060,
         "wires": [
             []
@@ -1275,7 +1288,7 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1470,
+        "x": 1230,
         "y": 3020,
         "wires": [
             []
@@ -1324,7 +1337,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1290,
+        "x": 1050,
         "y": 3020,
         "wires": [
             [
@@ -1425,7 +1438,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1280,
+        "x": 1040,
         "y": 3060,
         "wires": [
             [
@@ -1468,7 +1481,7 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1180,
+        "x": 960,
         "y": 3120,
         "wires": [
             [
@@ -1512,8 +1525,8 @@
         "correl": "",
         "expiry": "",
         "broker": "489094618c340eef",
-        "x": 1450,
-        "y": 2980,
+        "x": 1410,
+        "y": 2940,
         "wires": []
     },
     {
@@ -1552,7 +1565,7 @@
         "finalize": "",
         "libs": [],
         "x": 1220,
-        "y": 2940,
+        "y": 2920,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1571,8 +1584,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1230,
-        "y": 2980,
+        "x": 1210,
+        "y": 2960,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1649,8 +1662,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1100,
-        "y": 2940,
+        "x": 1060,
+        "y": 2900,
         "wires": [
             [
                 "239b69ba6de0f3b0",
@@ -1723,8 +1736,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1360,
-        "y": 2980,
+        "x": 1320,
+        "y": 2940,
         "wires": [
             [
                 "b292c53d06fe5323"
@@ -3018,6 +3031,387 @@
         ]
     },
     {
+        "id": "5470111ac122b91b",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "25",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1760,
+        "y": 2840,
+        "wires": [
+            [
+                "d1ec5f30cd5b88f4"
+            ]
+        ]
+    },
+    {
+        "id": "d1ec5f30cd5b88f4",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Set Entity Id",
+        "func": "if(msg.cost == undefined) {\n    msg.cost = msg.payload;\n}\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1750,
+        "y": 2880,
+        "wires": [
+            [
+                "924dadf7d4e2df8f"
+            ]
+        ]
+    },
+    {
+        "id": "924dadf7d4e2df8f",
+        "type": "api-current-state",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Start Epoch",
+        "server": "ed9339d3bdf92870",
+        "version": 3,
+        "outputs": 2,
+        "halt_if": "0",
+        "halt_if_type": "num",
+        "halt_if_compare": "is_not",
+        "entity_id": "x",
+        "state_type": "num",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "start_epoch",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 1750,
+        "y": 2920,
+        "wires": [
+            [
+                "7dfc4e9a36c335fb"
+            ],
+            [
+                "1cce906316702a87"
+            ]
+        ]
+    },
+    {
+        "id": "1cce906316702a87",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "From Flow",
+        "rules": [
+            {
+                "t": "set",
+                "p": "start_epoch",
+                "pt": "msg",
+                "to": "print_start_epoch",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1670,
+        "y": 2960,
+        "wires": [
+            [
+                "7dfc4e9a36c335fb"
+            ]
+        ]
+    },
+    {
+        "id": "7dfc4e9a36c335fb",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "x": 1800,
+        "y": 2960,
+        "wires": [
+            [
+                "ae3c93f82649567e"
+            ]
+        ]
+    },
+    {
+        "id": "ae3c93f82649567e",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "property": "start_epoch",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1670,
+        "y": 3000,
+        "wires": [
+            [
+                "4d4e6202ea8e0feb"
+            ],
+            [
+                "5470111ac122b91b",
+                "29ce3287b0fc9101"
+            ]
+        ]
+    },
+    {
+        "id": "4d4e6202ea8e0feb",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Insert Update (Mat Cost)",
+        "query": "UPDATE prints SET\n    material_used_cost = '{{msg.cost}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 1710,
+        "y": 3040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "426f511209068038",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Print Cost In",
+        "links": [
+            "e5bde629696c68c3"
+        ],
+        "x": 1645,
+        "y": 2840,
+        "wires": [
+            [
+                "5470111ac122b91b"
+            ]
+        ]
+    },
+    {
+        "id": "877e0a49ee35b01b",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Update Material Used Costs [READ NOTES]",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 510,
+        "y": 3200,
+        "wires": [
+            [
+                "840551d3791478d9"
+            ]
+        ]
+    },
+    {
+        "id": "bdd3b357333ecccb",
+        "type": "comment",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "NOTES",
+        "info": "Pressing this button will auto update\nall prints in the database.\n\nA new column was introduced in 2.0.6\nfor material_used_cost,\nparsed from the gcode file\n\nSince all previous prints will\nhave it at 0, you can optionally choose\nto press this inject node to forcefully\nset the cost of each based on their\nmaterial used, and an AVERAGE cost for\nthe filament type\n\nPLEASE SET the average costs per filament\nmaterial type in the \"COSTS\" node\n\nthis will permanently update all where\nthe material used cost is 0.0\n\n\nUnfortunately, this list is limited to\nwhatever ends up in the database from\nBambu's filament settings. So nothing for\nPLA+ or such.\n\n----\nEXAMPLE SCENARIO BELOW PLEASE READ\n----\nFor an example of calculating averages,\nlet's say I printed 500g (0.5kg) \nof PLA, 1kg of polymaker CosPLA,\nand 3.2kg of PLA+ and\nthat is all in the database as \"PLA\",\ntotalling 4.7kg\n\nIf my normal PLA costs $28.00 per KG,\nCosPLA costs $33.00 per KG,\nand PLA $30 per KG,\n\nin total I have 4.7kg of PLA in the DB\nbut the cost per kg varies\n\nTo calculate the average per,\nbefore adding:\n\n[variant cost]: ( [amount of variant in kg] / [total weight of material in db in kg] ) * [cost per kg of variant]\n[total = sum of all variant costs]\n\nPLA: (0.5 / 4.7) * 28 = 2.97\ncosPLA: (1 / 4.7) * 33 = 7.02\nPLA+: (3.2 / 4.7) * 30 = 20.43\n\nAdd them together and my average\ncost for PLA printed in the past was\n$30.42\n\nSo for the COSTS node to the right,\nfor PLA I would put in\n\n30.42\n\n*Alternatively* if you know you spent $28\nper kg of PLA, and rarely deviate, you can\njust put 28.00\n\n\n====\nWhen you first import this, all values are 0\n for a predefined list of materials \n this way if you run it, nothing changes\n\nnot all materials may be in the list. If yours isn't\nthen add it as msg.[name] and set the type to a number,\nthen insert the value.\n\nmaterials that will work are ones that you can set from\nwithin bambu studio as a filament type.\n\nTHIS WILL BE A ROUGH CALCULATION\nand not 100% perfect, but is better than having all 0's\n",
+        "x": 250,
+        "y": 3200,
+        "wires": []
+    },
+    {
+        "id": "840551d3791478d9",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "COSTS",
+        "rules": [
+            {
+                "t": "set",
+                "p": "PLA",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "ABS",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PETG",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "ASA",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PLA-CF",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PA-CF",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PETG-CF",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PET-CF",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "TPU",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PA",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PC",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PVA",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "HIPS",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "PLA-AERO",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 760,
+        "y": 3200,
+        "wires": [
+            [
+                "fb4417c1c1663037"
+            ]
+        ]
+    },
+    {
+        "id": "fb4417c1c1663037",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Org",
+        "func": "let data = {}\nfor (var key of Object.keys(msg)) {\n    if(key != \"_msgid\") {\n        data[key] = parseFloat(msg[key]);\n    }\n}\nif (data != {}) {\n    for (var key of Object.keys(data)) {\n        if (data[key] > 0) {\n            node.send({\"material\": key, \"avg\": data[key]});\n        }\n    }\n    \n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 3200,
+        "wires": [
+            [
+                "0bf4156fbf9943b1"
+            ]
+        ]
+    },
+    {
+        "id": "0bf4156fbf9943b1",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Insert Update",
+        "query": "UPDATE prints SET\n    material_used_cost = ((material_used * '{{msg.avg}}') / 1000.0)\nWHERE \n    material_used_cost = 0\n    AND material = '{{msg.material}}';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 1060,
+        "y": 3200,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "79ce3199b8eeaa1c",
         "type": "postgresDB",
         "name": "3DPrint DB (PG13)",
@@ -3750,7 +4144,11 @@
             "15e3ceb662c8eb6a",
             "ac7ad51aa0ac7ebc",
             "ab842986c460b6e3",
-            "32972334a68e7852"
+            "32972334a68e7852",
+            "f3b1eca3de35dadb",
+            "b866b5fd015b735f",
+            "5550a0cc1cb9c55c",
+            "e5bde629696c68c3"
         ],
         "x": 54,
         "y": 1739,
@@ -6286,9 +6684,11 @@
         "overwriteFile": "true",
         "encoding": "base64",
         "x": 1510,
-        "y": 2220,
+        "y": 2200,
         "wires": [
-            []
+            [
+                "b866b5fd015b735f"
+            ]
         ],
         "info": "This is a backup approach which writes \r\nthe file locally into the NR instance.\r\n\r\n"
     },
@@ -6317,5 +6717,86 @@
                 "5f893cfbc9c8b3da"
             ]
         ]
+    },
+    {
+        "id": "f3b1eca3de35dadb",
+        "type": "file in",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "filename": "filename",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1720,
+        "y": 2240,
+        "wires": [
+            [
+                "5550a0cc1cb9c55c"
+            ]
+        ]
+    },
+    {
+        "id": "b866b5fd015b735f",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1580,
+        "y": 2240,
+        "wires": [
+            [
+                "f3b1eca3de35dadb"
+            ]
+        ]
+    },
+    {
+        "id": "5550a0cc1cb9c55c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Parse GCode",
+        "func": "msg.payload = msg.payload.split(\"\\n\").slice(-7).join(\"\\n\");\nlet match = msg.payload.match(/; filament cost = ([0-9]+.[0-9]+)/)\nif (match != undefined && match.length > 1 && parseFloat(match[1]) != undefined){\n    msg.cost = parseFloat(match[1]);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost});\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1720,
+        "y": 2280,
+        "wires": [
+            [
+                "e5bde629696c68c3"
+            ]
+        ]
+    },
+    {
+        "id": "e5bde629696c68c3",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Print Cost Out",
+        "mode": "link",
+        "links": [
+            "426f511209068038"
+        ],
+        "x": 1895,
+        "y": 2280,
+        "wires": []
     }
 ]

@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.5.1"
+      "version": "10.0.3"
     },
     {
       "type": "datasource",
@@ -104,7 +104,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4.8,
+        "w": 3.4285714285714284,
         "x": 0,
         "y": 1
       },
@@ -124,7 +124,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "10.0.3",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -214,7 +214,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4.8,
+        "w": 3.4285714285714284,
         "x": 0,
         "y": 7
       },
@@ -234,7 +234,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "10.0.3",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -310,7 +310,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4.8,
+        "w": 3.4285714285714284,
         "x": 0,
         "y": 13
       },
@@ -330,7 +330,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "10.0.3",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -343,6 +343,102 @@
           "format": "table",
           "rawQuery": true,
           "rawSql": "select \r\n      sum(kwh) as \"KwH\",\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "$materials",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 75,
+      "panels": [],
+      "title": "Material Cost By Material",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3.4285714285714284,
+        "x": 0,
+        "y": 19
+      },
+      "id": 94,
+      "maxPerRow": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.3",
+      "repeat": "materials",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select \r\n      sum(material_used_cost),\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material",
           "refId": "A",
           "sql": {
             "columns": [
@@ -423,6 +519,30 @@
                 "value": "kwatth"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Amount"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "massg"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Cost/"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              }
+            ]
           }
         ]
       },
@@ -430,7 +550,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 24
       },
       "id": 56,
       "options": {
@@ -446,7 +566,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "10.0.3",
       "targets": [
         {
           "datasource": {
@@ -456,7 +576,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum(material_used) as \"amount\", \r\n      (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\",\r\n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) else EXTRACT(EPOCH FROM (end_time - start_time))end) as \"duration\",\r\n      sum(kwh) as \"KwH\",\r\n       material from prints where $__timeFilter(start_time) and material is not null and printer = '${printers}' group by material, material_type",
+          "rawSql": "select \r\n      sum(material_used) as \"amount\", \r\n      (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\",\r\n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) else EXTRACT(EPOCH FROM (end_time - start_time))end) as \"duration\",\r\n      sum(kwh) as \"KwH\",\r\n      sum(material_used_cost) as \"Material Cost\",\r\n       material from prints where $__timeFilter(start_time) and material is not null and printer = '${printers}' group by material, material_type",
           "refId": "A",
           "sql": {
             "columns": [
@@ -578,6 +698,6 @@
   "timezone": "",
   "title": "Printer Filament Stats",
   "uid": "J9QyupI2sk",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }

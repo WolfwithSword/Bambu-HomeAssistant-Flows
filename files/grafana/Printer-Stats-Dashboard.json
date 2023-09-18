@@ -232,7 +232,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 410
+                "value": 355
               }
             ]
           },
@@ -257,6 +257,72 @@
               {
                 "id": "custom.width",
                 "value": 199
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Plate"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "cool_plate": {
+                        "index": 1,
+                        "text": "Cool Plate"
+                      },
+                      "hot_plate": {
+                        "index": 0,
+                        "text": "Hot Plate"
+                      },
+                      "textured_plate": {
+                        "index": 2,
+                        "text": "Textured Plate"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Cost/"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Material Used"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 172
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Material"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 164
               }
             ]
           }
@@ -290,7 +356,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as kwh,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration,\r\n      prints.material_used, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", material\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored}) and \r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) > ${minkwh}\r\nORDER BY prints.start_time DESC",
+          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as kwh,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration,\r\n      prints.material_used, prints.material_used_cost, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", material, plate_type\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored}) and \r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) > ${minkwh}\r\nORDER BY prints.start_time DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -357,7 +423,9 @@
               "material": "Material",
               "material_type": "Type",
               "material_used": "Material Used",
+              "material_used_cost": "Material Cost",
               "name": "File",
+              "plate_type": "Plate",
               "printer": "Printer",
               "start_epoch": "",
               "start_time": "Start Time",
@@ -389,6 +457,21 @@
             },
             "indexByName": {},
             "renameByName": {}
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Total Print Cost",
+            "binary": {
+              "left": "Material Cost",
+              "reducer": "sum",
+              "right": "Electric Cost"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
           }
         }
       ],
@@ -452,7 +535,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 12
+        "y": 37
       },
       "id": 6,
       "options": {
@@ -564,7 +647,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 12
+        "y": 37
       },
       "id": 5,
       "options": {
@@ -674,7 +757,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 12
+        "y": 37
       },
       "id": 8,
       "options": {
@@ -876,7 +959,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 53
       },
       "id": 9,
       "options": {
@@ -911,7 +994,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as \"kwh\",\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration ,\r\n      prints.material_used, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\"\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored})",
+          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as \"kwh\",\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration ,\r\n      prints.material_used, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", material\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored})",
           "refId": "A",
           "sql": {
             "columns": [
@@ -994,6 +1077,7 @@
               "end_time": "",
               "initial_kwh": "",
               "kwh": "kWh",
+              "material": "Material",
               "name": "File",
               "printer": "Printer",
               "start_epoch": "",
@@ -1184,7 +1268,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 66
       },
       "id": 11,
       "options": {
@@ -1344,7 +1428,8 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 37,
+  "revision": 1,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -1398,16 +1483,21 @@
             "selected": false,
             "text": "filament_baker_gcode_prepare.gcode",
             "value": "filament_baker_gcode_prepare.gcode"
+          },
+          {
+            "selected": false,
+            "text": "auto_cali_for_user_param.gcode",
+            "value": "auto_cali_for_user_param.gcode"
           }
         ],
-        "query": "filament_unload.gcode,filament_baker_gcode_prepare.gcode",
+        "query": "filament_unload.gcode,filament_baker_gcode_prepare.gcode,auto_cali_for_user_param.gcode",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "0",
           "value": "0"
         },
@@ -1424,17 +1514,37 @@
         "query": "0",
         "skipUrlSync": false,
         "type": "textbox"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_3D_PRINTS - PG13}"
+        },
+        "definition": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Materials",
+        "multi": true,
+        "name": "materials",
+        "options": [],
+        "query": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-90d",
+    "from": "now-2y",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Printer Stats",
   "uid": "XPQuII2Vk",
-  "version": 16,
+  "version": 45,
   "weekStart": ""
 }
