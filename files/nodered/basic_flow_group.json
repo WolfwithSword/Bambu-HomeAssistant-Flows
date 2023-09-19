@@ -436,7 +436,7 @@
         "z": "fbda6ab16491b918",
         "g": "447d3cc9dac791a2",
         "name": "Remove Useless",
-        "func": "function removeUseless(object, key) {\n    if(object[key] != undefined) {\n        delete object[key];\n    }\n}\n\nlet keys = [\n    \"command\",\n    \"force_upgrade\",\n    \"online\",\n    //\"ams_rfid_status\",\n    //\"ams_status\",\n    \"manufacturer\",\n    \"sequence_id\",\n    \"filam_bak\",\n    \"cali_version\",\n    \"maintain\",\n    \"msg\", //\n    \"fan_gear\",\n    \"mess_production_state\",\n    \"s_obj\",\n    \"queue_est\",\n    \"queue_sts\",\n    \"fail_reason\",\n    \"link_th_state\",\n    \"link_ams_state\"\n];\nif(msg.payload != undefined) {\n    for(var key of keys) {\n        removeUseless(msg.payload, key);\n    }\n}\nnode.send(msg);",
+        "func": "function removeUseless(object, key) {\n    if(object[key] != undefined) {\n        delete object[key];\n    }\n}\n\nlet keys = [\n    \"command\",\n    \"force_upgrade\",\n    \"online\",\n    //\"ams_rfid_status\",\n    //\"ams_status\",\n    \"manufacturer\",\n    \"sequence_id\",\n    \"filam_bak\",\n    \"cali_version\",\n    \"maintain\",\n    \"msg\", //\n    \"fan_gear\",\n    \"mess_production_state\",\n    \"s_obj\",\n    \"queue_est\",\n    \"queue_sts\",\n    \"fail_reason\",\n    \"link_th_state\",\n    \"link_ams_state\",\n    \"t_utc\"\n];\nif(msg.payload != undefined) {\n    for(var key of keys) {\n        removeUseless(msg.payload, key);\n    }\n}\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
