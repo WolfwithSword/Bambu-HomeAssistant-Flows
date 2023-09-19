@@ -6771,7 +6771,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Parse GCode",
-        "func": "msg.payload = msg.payload.split(\"\\n\").slice(-7).join(\"\\n\");\nlet match = msg.payload.match(/; filament cost = ([0-9]+.[0-9]+)/)\nif (match != undefined && match.length > 1 && parseFloat(match[1]) != undefined){\n    msg.cost = parseFloat(match[1]);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost});\n}",
+        "func": "msg.payload = msg.payload.split(\"\\n\").slice(-7).join(\"\\n\");\nlet match = msg.payload.match(/; filament cost = ([0-9]+.[0-9]+)/)\nif (match != undefined && match.length > 1 && parseFloat(match[1]) != undefined){\n    msg.cost = parseFloat(match[1]);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost});\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\"});\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
