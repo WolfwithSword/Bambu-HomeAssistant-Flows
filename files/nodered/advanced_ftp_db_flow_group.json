@@ -24,7 +24,7 @@
         "x": 28,
         "y": 1659,
         "w": 2604,
-        "h": 1528
+        "h": 1608
     },
     {
         "id": "b3dce1cde1787caf",
@@ -6503,7 +6503,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Printer State",
-        "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\n",
+        "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n    else {\n        return;\n    }\n}\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
