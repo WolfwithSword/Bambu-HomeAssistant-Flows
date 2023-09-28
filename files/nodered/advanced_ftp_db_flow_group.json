@@ -4148,7 +4148,11 @@
             "f3b1eca3de35dadb",
             "b866b5fd015b735f",
             "5550a0cc1cb9c55c",
-            "e5bde629696c68c3"
+            "e5bde629696c68c3",
+            "d64e04129b153b23",
+            "d0c8110b3e5249f4",
+            "6dbc7a3a5001c0ba",
+            "6a12ca3e9a532505"
         ],
         "x": 54,
         "y": 1739,
@@ -4638,6 +4642,12 @@
                 "propertyType": "msg",
                 "value": "",
                 "valueType": "entityState"
+            },
+            {
+                "property": "from_ha",
+                "propertyType": "msg",
+                "value": "true",
+                "valueType": "bool"
             }
         ],
         "for": "0",
@@ -4662,8 +4672,8 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Get Plate",
-        "func": "if (msg.decompress_data != undefined) {\n    msg.payload = msg.decompress_data;\n}\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\"Metadata/\", \"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\n\nlet match = plate_name.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n\nif(match != undefined && match.length > 1) {\n    plate_name = match[1];\n}\n\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nflow.set(\"current_platename\", plate_name);\nnode.send(msg); \nnode.status({ fill: \"blue\", shape: \"ring\", text: plate_name });\n",
-        "outputs": 1,
+        "func": "if (msg.decompress_data != undefined) {\n    msg.payload = msg.decompress_data;\n}\nlet plate_name = msg.gcode_file;\nplate_name = plate_name.replace(\"/data/Metadata/\",\"\")\nplate_name = plate_name.replace(\"Metadata/\", \"\")\nplate_name = plate_name.replace(\".gcode\", \"\")\nplate_name = plate_name.replace(\".3mf\", \"\");\nplate_name = plate_name.replace(\"Plate \", \"plate_\");\n\nlet match = plate_name.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n\nif(match != undefined && match.length > 1) {\n    plate_name = match[1];\n    node.send([null, {\"payload\":plate_name, \"topic\": \"plate_name\"}, null]);\n}\nelse if(msg.from_ha != undefined && msg.from_ha) {\n    // invalid name from HA\n    // attempt extract print xml file and hope it has only one plate\n    delete msg.from_ha;\n    node.send([null, null, msg]);\n}\n\nlet plate_id = parseInt(plate_name.replace(\"plate_\", \"\"));\n\nmsg.plate_name = plate_name;\nmsg.plate_id = plate_id;\nflow.set(\"plate_id\", plate_id);\nflow.set(\"current_platename\", plate_name);\nnode.send([msg, null, null]) \nnode.status({ fill: \"blue\", shape: \"ring\", text: plate_name });",
+        "outputs": 3,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -4673,6 +4683,12 @@
         "wires": [
             [
                 "882cd28a46933aba"
+            ],
+            [
+                "d0c8110b3e5249f4"
+            ],
+            [
+                "9bad8e057ee821f8"
             ]
         ]
     },
@@ -4931,7 +4947,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Cloud?",
-        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nflow.set(\"was_http_successful\", false);\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    flow.set(\"current_platename\", plate);\n                    node.send([null, {\"payload\": plate, \"topic\": \"plate_name\"}], null);\n                  }\n\n                  delete msg.payload;\n                  node.send([msg, null, null]);\n            }\n            else if (msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && !String(msg.payload.print.url).startsWith(\"http\")) {\n                node.send([null, null, msg]);\n              }\n\n}",
+        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nflow.set(\"was_http_successful\", false);\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    let match = plate.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n                    if (match != undefined && match.length > 1) {\n                      plate = match[1];\n                    }\n                    flow.set(\"current_platename\", plate);\n                    node.send([null, {\"payload\": plate, \"topic\": \"plate_name\"}], null);\n                  }\n\n                  delete msg.payload;\n                  node.send([msg, null, null]);\n            }\n            else if (msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && !String(msg.payload.print.url).startsWith(\"http\")) {\n                node.send([null, null, msg]);\n              }\n\n}",
         "outputs": 3,
         "noerr": 0,
         "initialize": "",
@@ -5718,7 +5734,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Local?",
-        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\"ftp:/\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }, null]);\n            }\n  else if (msg.payload.print.command == \"project_file\"\n    && msg.payload.print.url != undefined\n    && String(msg.payload.print.url).startsWith(\"http\")) {\n        node.send([null, null, msg]);\n    }\n}",
+        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\"ftp:/\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  let match = plate.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n                  if (match != undefined && match.length > 1) {\n                    plate = match[1];\n                  }\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }, null]);\n            }\n  else if (msg.payload.print.command == \"project_file\"\n    && msg.payload.print.url != undefined\n    && String(msg.payload.print.url).startsWith(\"http\")) {\n        node.send([null, null, msg]);\n    }\n}",
         "outputs": 3,
         "noerr": 0,
         "initialize": "",
@@ -5728,7 +5744,7 @@
         "y": 2320,
         "wires": [
             [
-                "32224e154dd11042"
+                "6a12ca3e9a532505"
             ],
             [
                 "1839983bc4fa6f32"
@@ -6400,7 +6416,7 @@
         "y": 1900,
         "wires": [
             [
-                "84f691a521695fd2"
+                "32224e154dd11042"
             ],
             [
                 "ce55f73a8f638a6d"
@@ -6458,7 +6474,7 @@
         "g": "615e0a4a63e8487d",
         "name": "",
         "pauseType": "delay",
-        "timeout": "1",
+        "timeout": "15",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -6489,7 +6505,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1180,
+        "x": 1420,
         "y": 2400,
         "wires": [
             [
@@ -6509,7 +6525,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1190,
+        "x": 1430,
         "y": 2440,
         "wires": [
             [
@@ -6522,8 +6538,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "x": 1060,
-        "y": 2400,
+        "x": 1300,
+        "y": 2420,
         "wires": [
             [
                 "58964f0865d26681",
@@ -6540,7 +6556,7 @@
         "y": 2360,
         "wires": [
             [
-                "dc395c3ab15fc5b7"
+                "6dbc7a3a5001c0ba"
             ]
         ]
     },
@@ -6559,7 +6575,7 @@
         "correl": "",
         "expiry": "",
         "broker": "489094618c340eef",
-        "x": 1390,
+        "x": 1630,
         "y": 2420,
         "wires": []
     },
@@ -6771,7 +6787,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Parse GCode",
-        "func": "msg.payload = msg.payload.split(\"\\n\").slice(-7).join(\"\\n\");\nlet match = msg.payload.match(/; filament cost = ([0-9]+.[0-9]+)/)\nif (match != undefined && match.length > 1 && parseFloat(match[1]) != undefined){\n    msg.cost = parseFloat(match[1]);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost});\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\"});\n}",
+        "func": "let lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if(l.startsWith(\"; filament cost =\")) {\n        line = l;\n        break; \n    }\n}\nlet match = line.match(/([0-9]+.[0-9]+)/)\nif (match != undefined && match.length > 1 && parseFloat(match[1]) != undefined){\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n        if (i > 0) {\n            x += parseFloat(match[i])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost});\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\"});\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -6798,5 +6814,77 @@
         "x": 1895,
         "y": 2280,
         "wires": []
+    },
+    {
+        "id": "d64e04129b153b23",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "adv_mqtt-out",
+        "links": [
+            "d0c8110b3e5249f4",
+            "6dbc7a3a5001c0ba"
+        ],
+        "x": 1255,
+        "y": 2420,
+        "wires": [
+            [
+                "dc395c3ab15fc5b7"
+            ]
+        ]
+    },
+    {
+        "id": "d0c8110b3e5249f4",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "adv_mqtt-in",
+        "mode": "link",
+        "links": [
+            "d64e04129b153b23"
+        ],
+        "x": 1945,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "6dbc7a3a5001c0ba",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "adv_mqtt-in",
+        "mode": "link",
+        "links": [
+            "d64e04129b153b23"
+        ],
+        "x": 785,
+        "y": 2360,
+        "wires": []
+    },
+    {
+        "id": "6a12ca3e9a532505",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 760,
+        "y": 2240,
+        "wires": [
+            [
+                "32224e154dd11042"
+            ]
+        ]
     }
 ]
