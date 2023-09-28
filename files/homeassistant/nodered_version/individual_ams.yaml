@@ -142,7 +142,7 @@ elements:
           left: 8%
           font-size: 0.75em
           color: rgba(0,0,0,0)
-      - entity: sensor.{HA_AMS_DEVICE_NAME}_humidity
+      - entity: sensor.{HA_AMS_DEVICE_NAME}_humidity_level
         type: state-badge
         style:
           top: 22%

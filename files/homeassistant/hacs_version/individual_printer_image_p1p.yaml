@@ -5,7 +5,7 @@ elements:
   - type: conditional
     conditions:
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
-        state_not: Offline
+        state_not: offline
     elements:
       - entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
         type: state-icon
@@ -25,7 +25,7 @@ elements:
       - type: conditional
         conditions:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
-            state: Running
+            state: running
         elements:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress
             type: state-badge

@@ -9,7 +9,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_1
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -41,7 +41,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_2
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -73,7 +73,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_3
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -105,7 +105,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_4
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_4'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_4'].state != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -133,7 +133,7 @@ elements:
   - type: conditional
     conditions:
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
-        state_not: Offline
+        state_not: offline
     elements:
       - entity: sensor.{HA_AMS_DEVICE_NAME}_temperature
         type: state-badge
