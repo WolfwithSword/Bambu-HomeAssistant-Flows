@@ -43,7 +43,7 @@ cards:
           action: call-service
           service: select.select_option
           data:
-            option: Silent
+            option: silent
           target:
             entity_id: select.{HA_PRINTER_DEVICE_NAME}_printing_speed
         style: |
@@ -63,7 +63,7 @@ cards:
           action: call-service
           service: select.select_option
           data:
-            option: Standard
+            option: standard
           target:
             entity_id: select.{HA_PRINTER_DEVICE_NAME}_printing_speed
         style: |
@@ -82,7 +82,7 @@ cards:
           action: call-service
           service: select.select_option
           data:
-            option: Sport
+            option: sport
           target:
             entity_id: select.{HA_PRINTER_DEVICE_NAME}_printing_speed
         style: |
@@ -101,7 +101,7 @@ cards:
           action: call-service
           service: select.select_option
           data:
-            option: Ludicrous
+            option: ludicrous
           target:
             entity_id: select.{HA_PRINTER_DEVICE_NAME}_printing_speed
         style: |
