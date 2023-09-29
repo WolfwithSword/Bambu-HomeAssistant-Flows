@@ -6787,7 +6787,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Parse GCode",
-        "func": "let lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if(l.startsWith(\"; filament cost =\")) {\n        line = l;\n        break; \n    }\n}\nlet match = line.match(/([0-9]+.[0-9]+)/)\nif (match != undefined && match.length > 1 && parseFloat(match[1]) != undefined){\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n        if (i > 0) {\n            x += parseFloat(match[i])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost});\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\"});\n}",
+        "func": "let lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        break;\n    }\n}\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
