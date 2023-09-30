@@ -210,7 +210,6 @@
             "1707d16455cba415",
             "c07ce3f59a10aac7",
             "9f2d2e2411d850db",
-            "7ede0a3eb2a13c94",
             "c7c9f6fcbdd71a9f",
             "6e251ea8ba446823",
             "fa51361c222215dd",
@@ -306,7 +305,13 @@
             "bdd3b357333ecccb",
             "840551d3791478d9",
             "fb4417c1c1663037",
-            "0bf4156fbf9943b1"
+            "0bf4156fbf9943b1",
+            "432f0dd8fcdc8358",
+            "7f29777d2e10448a",
+            "adea5317e157380b",
+            "c34504c0437d948b",
+            "7601c6459218c91a",
+            "6715f9a179dc6151"
         ],
         "x": 54,
         "y": 2499,
@@ -1067,51 +1072,6 @@
             ],
             [
                 "231456032b28ba12"
-            ]
-        ]
-    },
-    {
-        "id": "7ede0a3eb2a13c94",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Progress %",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 1,
-        "halt_if": "",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "num",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "progress",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            },
-            {
-                "property": "entity",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entity"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 610,
-        "y": 2700,
-        "wires": [
-            [
-                "7b11af61e6e0ef10"
             ]
         ]
     },
@@ -2198,18 +2158,18 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_progress\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "name": "progress %",
+        "func": "msg.progress = parseInt(flow.get(\"print_progress_pct\"));\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.progress });\nnode.send(msg);\nflow.set(\"print_progress_pct\", 0);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 590,
-        "y": 2660,
+        "y": 2680,
         "wires": [
             [
-                "7ede0a3eb2a13c94"
+                "7b11af61e6e0ef10"
             ]
         ]
     },
@@ -2393,7 +2353,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Start / End or Pause / Resume",
-        "func": "let entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\n\nif (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        node.send([null, null, msg, null]);\n        node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Resumed\" });\n    }\n    else {\n\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\" && msg.current_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n                node.send([null, msg, null, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Paused\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg, null, {\"start_epoch\": 0, \"payload\": {\"entityId\": entityId, \"entity_id\": entityId}}]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if ( (msg.previous_state == \"RUNNING\" || msg.previous_state == \"FINISH\" || msg.previous_state == \"FAILED\") && msg.current_state == \"IDLE\") {\n                // ended and is idle\n                msg.payload = \"FAILED\";\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Ended\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null, null, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n}\nelse {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state +\" -> \"+ msg.current_state });\n    if (msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\" || msg.current_state == \"FAILED\") {\n        node.send([null, null, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n    }\n}\nif(msg.current_state == \"OFFLINE\" && msg.previous_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Offline\"});\n}\nelse if(msg.current_state == \"IDLE\" && msg.previous_state == \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Online\" });\n}\nelse if (msg.current_state != \"IDLE\" && msg.previous_state == \"OFFLINE\" && msg.current_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Recovered from Offline Status\" });\n}",
+        "func": "let entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\n\nif (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        node.send([null, null, msg, null]);\n        node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Resumed\" });\n    }\n    else {\n\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\" && msg.current_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n                node.send([null, msg, null, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Paused\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg, null, {\"start_epoch\": 0, \"payload\": {\"entityId\": entityId, \"entity_id\": entityId}}]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if ( (msg.previous_state == \"RUNNING\" || msg.previous_state == \"FINISH\" || msg.previous_state == \"FAILED\") && msg.current_state == \"IDLE\") {\n                // ended and is idle\n                msg.payload = \"FAILED\";\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Ended\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null, null, null]);\n                flow.set(\"print_progress_pct\", 0)\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n}\nelse {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state +\" -> \"+ msg.current_state });\n    if (msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\" || msg.current_state == \"FAILED\") {\n        node.send([null, null, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n    }\n}\nif(msg.current_state == \"OFFLINE\" && msg.previous_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Offline\"});\n}\nelse if(msg.current_state == \"IDLE\" && msg.previous_state == \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Online\" });\n}\nelse if (msg.current_state != \"IDLE\" && msg.previous_state == \"OFFLINE\" && msg.current_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Recovered from Offline Status\" });\n}",
         "outputs": 4,
         "noerr": 0,
         "initialize": "",
@@ -3409,6 +3369,133 @@
         "y": 3200,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "432f0dd8fcdc8358",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 530,
+        "y": 2980,
+        "wires": [
+            [
+                "7f29777d2e10448a"
+            ]
+        ]
+    },
+    {
+        "id": "7f29777d2e10448a",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 650,
+        "y": 2980,
+        "wires": [
+            [
+                "adea5317e157380b"
+            ]
+        ]
+    },
+    {
+        "id": "adea5317e157380b",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Store Print Progress",
+        "func": "flow.set(\"print_progress_pct\", msg.payload);\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload });",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 3000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c34504c0437d948b",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Init",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 150,
+        "y": 2980,
+        "wires": [
+            [
+                "7601c6459218c91a"
+            ]
+        ]
+    },
+    {
+        "id": "7601c6459218c91a",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Sub",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_progress/state\",\n        \"qos\": 2\n    }\n}\n\nflow.set(\"print_progress_pct\", 0)\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 2980,
+        "wires": [
+            [
+                "6715f9a179dc6151"
+            ]
+        ]
+    },
+    {
+        "id": "6715f9a179dc6151",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 400,
+        "y": 2980,
+        "wires": [
+            [
+                "432f0dd8fcdc8358"
+            ]
         ]
     },
     {
