@@ -12,16 +12,10 @@
   "__elements": {},
   "__requires": [
     {
-      "type": "panel",
-      "id": "barchart",
-      "name": "Bar chart",
-      "version": ""
-    },
-    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.3.6"
+      "version": "10.0.3"
     },
     {
       "type": "datasource",
@@ -72,6 +66,417 @@
   "liveNow": false,
   "panels": [
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 25,
+      "panels": [],
+      "title": "Amounts By Material",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "dthms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3.4285714285714284,
+        "x": 0,
+        "y": 1
+      },
+      "id": 31,
+      "maxPerRow": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.3",
+      "repeat": "materials",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\r\n        (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", (b->>'type')::text as material\r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, material_type, progress_done, material as most_mat, material_used\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material, material_type",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "$materials",
+      "transformations": [
+        {
+          "id": "configFromData",
+          "options": {
+            "configRefId": "A",
+            "mappings": [
+              {
+                "fieldName": "material_unit",
+                "handlerKey": "unit"
+              }
+            ]
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 17,
+      "panels": [],
+      "title": "Hours By Material",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "dthms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3.4285714285714284,
+        "x": 0,
+        "y": 7
+      },
+      "id": 19,
+      "maxPerRow": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.3",
+      "repeat": "materials",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select \r\n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) else EXTRACT(EPOCH FROM (end_time - start_time))end),\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "$materials",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 42,
+      "panels": [],
+      "title": "KwH Per Material",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3.4285714285714284,
+        "x": 0,
+        "y": 13
+      },
+      "id": 40,
+      "maxPerRow": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.3",
+      "repeat": "materials",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select \r\n      sum(kwh) as \"KwH\",\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "$materials",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 67,
+      "panels": [],
+      "title": "Filament Cost By Material",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_3D_PRINTS - PG13}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3.4285714285714284,
+        "x": 0,
+        "y": 19
+      },
+      "id": 86,
+      "maxPerRow": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.3",
+      "repeat": "materials",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_3D_PRINTS - PG13}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_cost')::float = 0.0 and material_used_cost > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used_cost  ELSE ( (b->>'used_cost')::float * (progress_done / 100) ) END),\r\n      (b->>'type')::text as material \r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b , progress_done, material_used_cost, material as most_mat\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "$materials",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 15,
+      "panels": [],
+      "title": "Base",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "postgres",
         "uid": "${DS_3D_PRINTS - PG13}"
@@ -83,7 +488,9 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
             "inspect": false
           },
           "mappings": [],
@@ -114,23 +521,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 231
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Electric Cost"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "currencyUSD"
-              },
-              {
-                "id": "custom.width",
-                "value": 246
+                "value": 141
               }
             ]
           },
@@ -143,6 +534,10 @@
               {
                 "id": "unit",
                 "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 248
               }
             ]
           },
@@ -162,7 +557,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 180
+                "value": 163
               }
             ]
           },
@@ -203,12 +598,14 @@
                 ]
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-text"
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
               },
               {
                 "id": "custom.width",
-                "value": 248
+                "value": 156
               }
             ]
           },
@@ -256,7 +653,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 199
+                "value": 242
               }
             ]
           },
@@ -287,6 +684,10 @@
                     "type": "value"
                   }
                 ]
+              },
+              {
+                "id": "custom.width",
+                "value": 154
               }
             ]
           },
@@ -325,6 +726,90 @@
                 "value": 164
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 288
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Electric Cost"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 166
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mat. Amt"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 140
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mat. Cost"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 128
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Majority Mat."
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 128
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Material Data"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 186
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "progress_done"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
           }
         ]
       },
@@ -332,11 +817,13 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 25
       },
       "id": 2,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "fields": "",
           "reducer": [
             "sum"
@@ -346,7 +833,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.3.6",
+      "pluginVersion": "10.0.3",
       "targets": [
         {
           "datasource": {
@@ -356,7 +843,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as kwh,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration,\r\n      prints.material_used, prints.material_used_cost, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", material, plate_type\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored}) and \r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) > ${minkwh}\r\nORDER BY prints.start_time DESC",
+          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as kwh,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration,\r\n      prints.material_used, prints.material_used_cost, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", material, plate_type, filament_data, progress_done\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored}) and \r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) > ${minkwh}\r\nORDER BY prints.start_time DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -450,16 +937,6 @@
           }
         },
         {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "material_unit": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
           "id": "calculateField",
           "options": {
             "alias": "Total Print Cost",
@@ -472,6 +949,52 @@
             "reduce": {
               "reducer": "sum"
             }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "material_unit": true
+            },
+            "indexByName": {
+              "Duration": 3,
+              "Electric Cost": 9,
+              "File": 2,
+              "Material": 6,
+              "Material Cost": 8,
+              "Material Used": 7,
+              "Plate": 12,
+              "Printer": 0,
+              "Start Time": 1,
+              "Status": 4,
+              "Total Print Cost": 14,
+              "filament_data": 5,
+              "kWh": 10,
+              "material_unit": 11,
+              "progress_done": 13
+            },
+            "renameByName": {
+              "Electric Cost": "",
+              "File": "Name",
+              "Material": "Majority Mat.",
+              "Material Cost": "Mat. Cost",
+              "Material Used": "Mat. Amt",
+              "filament_data": "Material Data",
+              "progress_done": "% Complete"
+            }
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "destinationType": "other",
+                "targetField": "filament_data"
+              }
+            ],
+            "fields": {}
           }
         }
       ],
@@ -494,8 +1017,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -532,8 +1054,8 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
+        "h": 6,
+        "w": 6,
         "x": 0,
         "y": 37
       },
@@ -550,7 +1072,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.6",
+      "pluginVersion": "10.0.3",
       "targets": [
         {
           "datasource": {
@@ -603,8 +1125,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -644,12 +1165,12 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 8,
+        "h": 6,
+        "w": 6,
+        "x": 6,
         "y": 37
       },
-      "id": 5,
+      "id": 112,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -664,7 +1185,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.6",
+      "pluginVersion": "10.0.3",
       "targets": [
         {
           "datasource": {
@@ -716,8 +1237,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -754,9 +1274,9 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
+        "h": 6,
+        "w": 6,
+        "x": 12,
         "y": 37
       },
       "id": 8,
@@ -772,7 +1292,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.6",
+      "pluginVersion": "10.0.3",
       "targets": [
         {
           "datasource": {
@@ -819,33 +1339,13 @@
           "color": {
             "mode": "thresholds"
           },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
+          "decimals": 3,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "transparent",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -854,137 +1354,54 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "kWh"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "kwatth"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Electric Cost"
+              "options": "Cost"
             },
             "properties": [
               {
                 "id": "unit",
                 "value": "currencyUSD"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Start Time"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dateTimeAsLocal"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Duration"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dthms"
               },
               {
-                "id": "decimals",
-                "value": 0
+                "id": "decimals"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Status"
-            },
-            "properties": [
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "options": {
-                      "FAILED": {
-                        "color": "super-light-red",
-                        "index": 1,
-                        "text": "Failure"
-                      },
-                      "FINISH": {
-                        "color": "light-green",
-                        "index": 0,
-                        "text": "Success"
-                      },
-                      "PAUSE": {
-                        "color": "light-purple",
-                        "index": 3,
-                        "text": "Paused"
-                      },
-                      "RUNNING": {
-                        "color": "light-blue",
-                        "index": 2,
-                        "text": "In Progress"
-                      }
-                    },
-                    "type": "value"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Duration"
+              "options": "Amount"
             },
             "properties": [
               {
                 "id": "unit",
-                "value": "dtdhms"
+                "value": "massg"
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 13,
-        "w": 24,
-        "x": 0,
-        "y": 53
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 37
       },
-      "id": 9,
+      "id": 5,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "colorByField": "Status",
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
         "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
-        "xField": "File",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "10.0.3",
       "targets": [
         {
           "datasource": {
@@ -994,17 +1411,12 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as \"kwh\",\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration ,\r\n      prints.material_used, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", material\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored})",
+          "rawSql": "      select \r\n      sum(((b->>'used_g')::float * (progress_done / 100)))as \"Amount\", sum(((b->>'used_cost')::float) * (progress_done / 100)) as \"Cost\",  (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\"\r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, material_type, progress_done\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo group by material_type\r\n      ",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "parameters": [
-                  {
-                    "name": "*",
-                    "type": "functionParameter"
-                  }
-                ],
+                "parameters": [],
                 "type": "function"
               }
             ],
@@ -1017,414 +1429,13 @@
               }
             ],
             "limit": 50
-          },
-          "table": "prints"
-        }
-      ],
-      "title": "List of Prints",
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "destinationType": "string",
-                "targetField": "duration"
-              },
-              {
-                "destinationType": "string",
-                "targetField": "kwh"
-              }
-            ],
-            "fields": {}
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "duration": false,
-              "electric_rate": true,
-              "end_time": true,
-              "final_kwh": true,
-              "id": true,
-              "initial_kwh": true,
-              "kwh": false,
-              "printer": true,
-              "printer_serial": true,
-              "start_epoch": true
-            },
-            "indexByName": {
-              "duration": 6,
-              "electric_cost": 13,
-              "electric_rate": 12,
-              "end_time": 7,
-              "final_kwh": 9,
-              "id": 0,
-              "initial_kwh": 8,
-              "kwh": 11,
-              "name": 5,
-              "printer": 2,
-              "printer_serial": 4,
-              "start_epoch": 1,
-              "start_time": 3,
-              "status": 10
-            },
-            "renameByName": {
-              "duration": "Duration",
-              "electric_cost": "Electric Cost",
-              "electric_rate": "",
-              "end_time": "",
-              "initial_kwh": "",
-              "kwh": "kWh",
-              "material": "Material",
-              "name": "File",
-              "printer": "Printer",
-              "start_epoch": "",
-              "start_time": "Start Time",
-              "status": "Status"
-            }
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "material_used"
-            },
-            "configRefId": "A",
-            "mappings": [
-              {
-                "fieldName": "material_unit",
-                "handlerKey": "unit"
-              }
-            ]
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "material_unit": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "material_used": "Material Used"
-            }
           }
         }
       ],
+      "title": "Printing Costs (Material)",
+      "transformations": [],
       "transparent": true,
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "${DS_3D_PRINTS - PG13}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "transparent",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "kWh"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "kwatth"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Electric Cost"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "currencyUSD"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Start Time"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dateTimeAsLocal"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Duration"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dthms"
-              },
-              {
-                "id": "decimals",
-                "value": 0
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Status"
-            },
-            "properties": [
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "options": {
-                      "FAILED": {
-                        "color": "super-light-red",
-                        "index": 1,
-                        "text": "Failure"
-                      },
-                      "FINISH": {
-                        "color": "light-green",
-                        "index": 0,
-                        "text": "Success"
-                      },
-                      "PAUSE": {
-                        "color": "light-purple",
-                        "index": 3,
-                        "text": "Paused"
-                      },
-                      "RUNNING": {
-                        "color": "light-blue",
-                        "index": 2,
-                        "text": "In Progress"
-                      }
-                    },
-                    "type": "value"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Duration"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dtdhms"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 13,
-        "w": 24,
-        "x": 0,
-        "y": 66
-      },
-      "id": 11,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "colorByField": "Status",
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "horizontal",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "xField": "File",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "${DS_3D_PRINTS - PG13}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as \"kwh\",\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration ,\r\n      prints.material_used, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\"\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored})",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "*",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "prints"
-        }
-      ],
-      "title": "List of Prints",
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "destinationType": "string",
-                "targetField": "duration"
-              },
-              {
-                "destinationType": "string",
-                "targetField": "kwh"
-              }
-            ],
-            "fields": {}
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "duration": false,
-              "electric_rate": true,
-              "end_time": true,
-              "final_kwh": true,
-              "id": true,
-              "initial_kwh": true,
-              "kwh": false,
-              "printer": true,
-              "printer_serial": true,
-              "start_epoch": true
-            },
-            "indexByName": {
-              "duration": 6,
-              "electric_cost": 13,
-              "electric_rate": 12,
-              "end_time": 7,
-              "final_kwh": 9,
-              "id": 0,
-              "initial_kwh": 8,
-              "kwh": 11,
-              "name": 5,
-              "printer": 2,
-              "printer_serial": 4,
-              "start_epoch": 1,
-              "start_time": 3,
-              "status": 10
-            },
-            "renameByName": {
-              "duration": "Duration",
-              "electric_cost": "Electric Cost",
-              "electric_rate": "",
-              "end_time": "",
-              "initial_kwh": "",
-              "kwh": "kWh",
-              "name": "File",
-              "printer": "Printer",
-              "start_epoch": "",
-              "start_time": "Start Time",
-              "status": "Status"
-            }
-          }
-        },
-        {
-          "id": "configFromData",
-          "options": {
-            "applyTo": {
-              "id": "byName",
-              "options": "material_used"
-            },
-            "configRefId": "A",
-            "mappings": [
-              {
-                "fieldName": "material_unit",
-                "handlerKey": "unit"
-              }
-            ]
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "material_unit": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "material_used": "Material Used"
-            }
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "barchart"
+      "type": "stat"
     }
   ],
   "refresh": "30s",
@@ -1440,14 +1451,14 @@
           "type": "postgres",
           "uid": "${DS_3D_PRINTS - PG13}"
         },
-        "definition": "select distinct printer from energy_reading;",
+        "definition": "select distinct printer from prints where material_type = 'filament';",
         "hide": 0,
         "includeAll": false,
         "label": "Printer",
         "multi": false,
         "name": "printers",
         "options": [],
-        "query": "select distinct printer from energy_reading;",
+        "query": "select distinct printer from prints where material_type = 'filament';",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1521,14 +1532,14 @@
           "type": "postgres",
           "uid": "${DS_3D_PRINTS - PG13}"
         },
-        "definition": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
+        "definition": "select distinct(b->>'type') from (select JSONB_ARRAY_ELEMENTS(filament_data) as b from prints where jsonb_array_length( filament_data ) != 0 and printer = '${printers}' ) as foo",
         "hide": 0,
         "includeAll": true,
         "label": "Materials",
         "multi": true,
         "name": "materials",
         "options": [],
-        "query": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
+        "query": "select distinct(b->>'type') from (select JSONB_ARRAY_ELEMENTS(filament_data) as b from prints where jsonb_array_length( filament_data ) != 0 and printer = '${printers}' ) as foo",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1545,6 +1556,6 @@
   "timezone": "",
   "title": "Printer Stats",
   "uid": "XPQuII2Vk",
-  "version": 45,
+  "version": 56,
   "weekStart": ""
 }

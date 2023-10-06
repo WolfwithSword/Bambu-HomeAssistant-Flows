@@ -136,7 +136,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum(material_used),\r\n      (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\",\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material, material_type",
+          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\r\n        (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", (b->>'type')::text as material\r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, material_type, progress_done, material as most_mat, material_used\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material, material_type",
           "refId": "A",
           "sql": {
             "columns": [
@@ -438,7 +438,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum(material_used_cost),\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material",
+          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_cost')::float = 0.0 and material_used_cost > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used_cost  ELSE ( (b->>'used_cost')::float * (progress_done / 100) ) END),\r\n      (b->>'type')::text as material \r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b , progress_done, material_used_cost, material as most_mat\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material",
           "refId": "A",
           "sql": {
             "columns": [
@@ -547,7 +547,7 @@
         ]
       },
       "gridPos": {
-        "h": 11,
+        "h": 17,
         "w": 24,
         "x": 0,
         "y": 24
@@ -576,7 +576,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum(material_used) as \"amount\", \r\n      (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\",\r\n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) else EXTRACT(EPOCH FROM (end_time - start_time))end) as \"duration\",\r\n      sum(kwh) as \"KwH\",\r\n      sum(material_used_cost) as \"Material Cost\",\r\n       material from prints where $__timeFilter(start_time) and material is not null and printer = '${printers}' group by material, material_type",
+          "rawSql": "select\r\n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and (b->>'type')::text = most_mat and material_used > 0 THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END) as \"amount\",\r\n      (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\",\r\n      sum(case when status = 'RUNNING' or status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) else EXTRACT(EPOCH FROM (end_time - start_time))end) as \"duration\",\r\n      sum(kwh) as \"KwH\",\r\n      sum(( (b->>'used_cost')::float * (progress_done / 100) ))as \"Material Cost\",\r\n       (b->>'type')::text as material from \r\n       (select jsonb_array_elements(filament_data) as b, material_type, status, start_time, end_time, kwh, progress_done, material as most_mat, material_used\r\n       from prints where $__timeFilter(start_time) and material is not null and printer = '${printers}') as foo group by material, material_type",
           "refId": "A",
           "sql": {
             "columns": [
@@ -654,14 +654,14 @@
           "type": "postgres",
           "uid": "${DS_3D_PRINTS - PG13}"
         },
-        "definition": "select distinct printer from energy_reading;",
+        "definition": "select distinct printer from prints where material_type = 'filament';",
         "hide": 0,
         "includeAll": false,
         "label": "Printer",
         "multi": false,
         "name": "printers",
         "options": [],
-        "query": "select distinct printer from energy_reading;",
+        "query": "select distinct printer from prints where material_type = 'filament';",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -675,13 +675,33 @@
           "uid": "${DS_3D_PRINTS - PG13}"
         },
         "definition": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Materials bkp",
+        "multi": true,
+        "name": "materials_bkp",
+        "options": [],
+        "query": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_3D_PRINTS - PG13}"
+        },
+        "definition": "select distinct(b->>'type') from (select JSONB_ARRAY_ELEMENTS(filament_data) as b from prints where jsonb_array_length( filament_data ) != 0 and printer = '${printers}' ) as foo",
         "hide": 0,
         "includeAll": true,
         "label": "Materials",
         "multi": true,
         "name": "materials",
         "options": [],
-        "query": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
+        "query": "select distinct(b->>'type') from (select JSONB_ARRAY_ELEMENTS(filament_data) as b from prints where jsonb_array_length( filament_data ) != 0 and printer = '${printers}' ) as foo",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -698,6 +718,6 @@
   "timezone": "",
   "title": "Printer Filament Stats",
   "uid": "J9QyupI2sk",
-  "version": 4,
+  "version": 15,
   "weekStart": ""
 }

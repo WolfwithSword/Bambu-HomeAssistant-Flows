@@ -19,12 +19,13 @@
             "6f2c54fec1df77f9",
             "a3e765e96362759b",
             "e2ddb329074d1a53",
-            "615e0a4a63e8487d"
+            "615e0a4a63e8487d",
+            "1536199568f3f2d7"
         ],
         "x": 28,
         "y": 1659,
         "w": 2604,
-        "h": 1608
+        "h": 1648
     },
     {
         "id": "b3dce1cde1787caf",
@@ -42,8 +43,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.6",
-        "info": "Version 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.0.7",
+        "info": "Version 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1700,
         "wires": []
@@ -103,6 +104,13 @@
                 "pt": "flow",
                 "to": "/data/fetched/",
                 "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "remove_unused_filaments",
+                "pt": "flow",
+                "to": "true",
+                "tot": "bool"
             }
         ],
         "action": "",
@@ -208,7 +216,6 @@
             "6a4ba58e99355e4c",
             "c5c99a5cfe9da632",
             "1707d16455cba415",
-            "c07ce3f59a10aac7",
             "9f2d2e2411d850db",
             "c7c9f6fcbdd71a9f",
             "6e251ea8ba446823",
@@ -239,9 +246,6 @@
             "ac28bca5d1b05769",
             "2e90a12c29779bff",
             "13ab87bca0a9499a",
-            "8d19d0768126d960",
-            "302a329fbabf8e92",
-            "94f08b2a34e68dd4",
             "f2fd88c2be22e11f",
             "3d26204dd2cb5b43",
             "53d8b5de5daaa9ba",
@@ -250,11 +254,8 @@
             "1f420b4921e3d087",
             "33269b09bb9a4a3b",
             "bd69f6023cb00184",
-            "e81aee378a4539c5",
-            "9a89138f9553f880",
             "fb700d6d896b4e38",
             "87659026e1b64e10",
-            "e2407320c2160d63",
             "27e8750d79dc7117",
             "de0f8d6c3213410d",
             "51c6377e70811e9a",
@@ -283,9 +284,6 @@
             "1ec91432ced6f4f0",
             "231456032b28ba12",
             "d7dea15d1c35da3f",
-            "42748eba9e5a195d",
-            "93e890cf1aad18d6",
-            "a08f5a0473621012",
             "43c56dfada7aeada",
             "1036e9d3d63d4a72",
             "11f9cdb5d2ee29b1",
@@ -293,13 +291,6 @@
             "6943ae17c18c6084",
             "37aa1c47b14b9c0c",
             "634b2847eea9e4c1",
-            "5470111ac122b91b",
-            "d1ec5f30cd5b88f4",
-            "924dadf7d4e2df8f",
-            "1cce906316702a87",
-            "7dfc4e9a36c335fb",
-            "ae3c93f82649567e",
-            "4d4e6202ea8e0feb",
             "426f511209068038",
             "877e0a49ee35b01b",
             "bdd3b357333ecccb",
@@ -311,12 +302,23 @@
             "adea5317e157380b",
             "c34504c0437d948b",
             "7601c6459218c91a",
-            "6715f9a179dc6151"
+            "6715f9a179dc6151",
+            "da9b07585f729c89",
+            "7528cf90e65b64b2",
+            "d2d26eb313e9f45f",
+            "f436594fa28f7864",
+            "0c8657af20f117ae",
+            "3eac6b751d4e8365",
+            "94d6b55f603d73c4",
+            "b790b08e7727c55b",
+            "c30c2bb43770649b",
+            "10407d83408bc1bf",
+            "d549297664c2cb31"
         ],
         "x": 54,
         "y": 2499,
-        "w": 1812,
-        "h": 742
+        "w": 1792,
+        "h": 782
     },
     {
         "id": "c207be711ef10b6a",
@@ -324,7 +326,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Initialize",
-        "query": "ALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS material varchar(10);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS plate_type varchar(15);\n\nCREATE TABLE IF NOT EXISTS prints (\n    id SERIAL,\n    start_epoch numeric PRIMARY KEY,\n    printer varchar(25) NOT NULL,\n    printer_serial varchar(20) NOT NULL,\n    name varchar(75) NOT NULL,\n    start_time timestamp DEFAULT (now() at time zone 'utc'),\n    end_time timestamp,\n    initial_kwh numeric DEFAULT 0.0,\n    final_kwh numeric DEFAULT 0.0,\n    kwh numeric GENERATED ALWAYS AS\n  \t\t(\n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE final_kwh - initial_kwh\n            end\n      ) STORED,\n    status varchar(10),\n    electric_rate numeric NOT NULL,\n    electric_cost numeric GENERATED ALWAYS AS ( \n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE ((electric_rate / 100) * (final_kwh - initial_kwh))\n            end\n      ) STORED,\n    material_used numeric default 0.0,\n    material_type varchar(10) default 'filament',\n    material_price numeric default 0.0,\n    material_cost numeric GENERATED ALWAYS AS (\n        material_used * (material_price / 1000)\n    ) STORED,\n    material_description varchar(50),\n    material varchar(10),\n    plate_type varchar(15)\n);\n\n\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_price;\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_cost;\nALTER TABLE prints ADD COLUMN IF NOT EXISTS material_used_cost numeric default 0.0;",
+        "query": "ALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS material varchar(10);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS plate_type varchar(15);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS filament_data jsonb default '[]';\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS progress_done numeric default 100;\n\nCREATE TABLE IF NOT EXISTS prints (\n    id SERIAL,\n    start_epoch numeric PRIMARY KEY,\n    printer varchar(25) NOT NULL,\n    printer_serial varchar(20) NOT NULL,\n    name varchar(75) NOT NULL,\n    start_time timestamp DEFAULT (now() at time zone 'utc'),\n    end_time timestamp,\n    initial_kwh numeric DEFAULT 0.0,\n    final_kwh numeric DEFAULT 0.0,\n    kwh numeric GENERATED ALWAYS AS\n  \t\t(\n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE final_kwh - initial_kwh\n            end\n      ) STORED,\n    status varchar(10),\n    electric_rate numeric NOT NULL,\n    electric_cost numeric GENERATED ALWAYS AS ( \n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE ((electric_rate / 100) * (final_kwh - initial_kwh))\n            end\n      ) STORED,\n    material_used numeric default 0.0,\n    material_type varchar(10) default 'filament',\n    material_price numeric default 0.0,\n    material_cost numeric GENERATED ALWAYS AS (\n        material_used * (material_price / 1000)\n    ) STORED,\n    material_description varchar(50),\n    material varchar(10),\n    plate_type varchar(15),\n    filament_data jsonb default '[]',\n    progress_done numeric default 100\n);\n\n\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_price;\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_cost;\nALTER TABLE prints ADD COLUMN IF NOT EXISTS material_used_cost numeric default 0.0;",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -540,7 +542,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Initial",
-        "query": "INSERT INTO prints (\n    start_epoch,\n    printer,\n    printer_serial,\n    name,\n    initial_kwh,\n    status,\n    electric_rate\n) VALUES (\n    '{{msg.values.start_epoch}}',\n    '{{msg.values.printer}}',\n    '{{msg.values.printer_serial}}',\n    '{{msg.values.name}}',\n    '{{msg.values.initial_kwh}}',\n    '{{msg.values.status}}',\n    '{{msg.values.electric_rate}}'\n) ON CONFLICT DO NOTHING;",
+        "query": "INSERT INTO prints (\n    start_epoch,\n    printer,\n    printer_serial,\n    name,\n    initial_kwh,\n    status,\n    electric_rate,\n    progress_done\n) SELECT \n    '{{msg.values.start_epoch}}',\n    '{{msg.values.printer}}',\n    '{{msg.values.printer_serial}}',\n    '{{msg.values.name}}',\n    '{{msg.values.initial_kwh}}',\n    '{{msg.values.status}}',\n    '{{msg.values.electric_rate}}',\n    0\n WHERE NOT EXISTS (select 1 from prints where start_epoch = '{{msg.values.start_epoch}}' and printer = '{{msg.values.printer}}');",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -675,12 +677,12 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Update",
-        "query": "UPDATE prints SET\n    status = '{{msg.values.status}}',\n    final_kwh = '{{msg.values.final_kwh}}',\n    end_time = (now() at time zone 'utc')\nWHERE \n    start_epoch = '{{msg.values.start_epoch}}';",
+        "query": "UPDATE prints SET\n    status = '{{msg.values.status}}',\n    final_kwh = '{{msg.values.final_kwh}}',\n    end_time = (now() at time zone 'utc'),\n    progress_done = CASE WHEN '{{msg.values.status}}' = 'FINISH' THEN 100 ELSE prints.progress_done END\nWHERE \n    start_epoch = '{{msg.values.start_epoch}}';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 900,
-        "y": 2960,
+        "x": 780,
+        "y": 2940,
         "wires": [
             [
                 "8391500077eba8ae"
@@ -1011,24 +1013,8 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 900,
-        "y": 2920,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "c07ce3f59a10aac7",
-        "type": "postgrestor",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Insert Update (Weights)",
-        "query": "UPDATE prints SET\n    material_used = '{{msg.weight}}',\n    material = '{{msg.material}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
-        "postgresDB": "79ce3199b8eeaa1c",
-        "output": true,
-        "outputs": 1,
-        "x": 1330,
-        "y": 2620,
+        "x": 880,
+        "y": 2880,
         "wires": [
             []
         ]
@@ -1064,7 +1050,7 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1350,
+        "x": 1590,
         "y": 2540,
         "wires": [
             [
@@ -1153,7 +1139,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Update",
-        "query": "UPDATE prints SET\n    material_used = '{{msg.used}}' * ('{{msg.progress}}' / 100.0),\n    material_used_cost = '{{msg.cost}}' * ('{{msg.progress}}' / 100.0)\n    \nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "query": "UPDATE prints SET\n    material_used = '{{msg.used}}' * ('{{msg.progress}}' / 100.0),\n    material_used_cost = '{{msg.cost}}' * ('{{msg.progress}}' / 100.0),\n    progress_done = {{msg.progress}}\n    \nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -1722,96 +1708,12 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1040,
+        "x": 1180,
         "y": 2540,
         "wires": [
             [
                 "87659026e1b64e10"
             ]
-        ]
-    },
-    {
-        "id": "8d19d0768126d960",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "25",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 1620,
-        "y": 2540,
-        "wires": [
-            [
-                "e2407320c2160d63"
-            ]
-        ]
-    },
-    {
-        "id": "302a329fbabf8e92",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Start Epoch",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "0",
-        "halt_if_type": "num",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "num",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "start_epoch",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1730,
-        "y": 2580,
-        "wires": [
-            [
-                "93e890cf1aad18d6"
-            ],
-            [
-                "42748eba9e5a195d"
-            ]
-        ]
-    },
-    {
-        "id": "94f08b2a34e68dd4",
-        "type": "postgrestor",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Insert Update (Plate)",
-        "query": "UPDATE prints SET\n    plate_type = '{{msg.plate}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
-        "postgresDB": "79ce3199b8eeaa1c",
-        "output": true,
-        "outputs": 1,
-        "x": 1740,
-        "y": 2740,
-        "wires": [
-            []
         ]
     },
     {
@@ -2020,40 +1922,6 @@
         ]
     },
     {
-        "id": "e81aee378a4539c5",
-        "type": "link in",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Type + Sum Weights In",
-        "links": [
-            "d0de2bfdbe4c20b5"
-        ],
-        "x": 945,
-        "y": 2540,
-        "wires": [
-            [
-                "13ab87bca0a9499a"
-            ]
-        ]
-    },
-    {
-        "id": "9a89138f9553f880",
-        "type": "link in",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Plate Type In",
-        "links": [
-            "4ccfb3dfd3993e15"
-        ],
-        "x": 1525,
-        "y": 2540,
-        "wires": [
-            [
-                "8d19d0768126d960"
-            ]
-        ]
-    },
-    {
         "id": "fb700d6d896b4e38",
         "type": "function",
         "z": "fbda6ab16491b918",
@@ -2078,38 +1946,18 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "Set Entity Id",
-        "func": "if(msg.payload.weight != undefined) {\n    msg.weight = msg.payload.weight;\n}\nif(msg.payload.material != undefined) {\n    msg.material = msg.payload.material;\n}\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nif(!isNaN(msg.weight)) {\n    node.send(msg);\n}",
+        "name": "EId + Process Updates",
+        "func": "let doNanCheckWeight = false;\nif (msg.update_for == undefined) {\n    return;\n}\nelse if (msg.update_for == \"mat_cost\") {\n    if (msg.cost == undefined) {\n        msg.cost = msg.payload;\n    }\n}\nelse if (msg.update_for == \"weights\") {\n    if (msg.payload.weight != undefined) {\n        msg.weight = msg.payload.weight;\n    }\n    if (msg.payload.material != undefined) {\n        msg.material = msg.payload.material;\n    }\n    doNanCheckWeight = true;\n}\nelse if (msg.update_for == \"plate_type\") {\n    if (msg.plate == undefined) {\n        msg.plate = msg.payload;\n    }\n}\nelse if (msg.update_for == \"gcode_data\"){\n    if(msg.gcode_data == undefined) {\n        msg.gcode_data = msg.payload;\n    }\n}\n\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nif (doNanCheckWeight) {\n    if (!isNaN(msg.weight)) {\n        node.send(msg);\n    }\n}\nelse {\n    node.send(msg);\n}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1190,
+        "x": 1370,
         "y": 2540,
         "wires": [
             [
                 "9f2d2e2411d850db"
-            ]
-        ]
-    },
-    {
-        "id": "e2407320c2160d63",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Set Entity Id",
-        "func": "if(msg.plate == undefined) {\n    msg.plate = msg.payload;\n}\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1570,
-        "y": 2580,
-        "wires": [
-            [
-                "302a329fbabf8e92"
             ]
         ]
     },
@@ -2732,8 +2580,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1210,
-        "y": 2580,
+        "x": 1310,
+        "y": 2600,
         "wires": [
             [
                 "d7dea15d1c35da3f"
@@ -2745,85 +2593,11 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1300,
-        "y": 2580,
+        "x": 1420,
+        "y": 2600,
         "wires": [
             [
                 "43c56dfada7aeada"
-            ]
-        ]
-    },
-    {
-        "id": "42748eba9e5a195d",
-        "type": "change",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "From Flow",
-        "rules": [
-            {
-                "t": "set",
-                "p": "start_epoch",
-                "pt": "msg",
-                "to": "print_start_epoch",
-                "tot": "flow"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 1570,
-        "y": 2620,
-        "wires": [
-            [
-                "93e890cf1aad18d6"
-            ]
-        ]
-    },
-    {
-        "id": "93e890cf1aad18d6",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "x": 1740,
-        "y": 2640,
-        "wires": [
-            [
-                "a08f5a0473621012"
-            ]
-        ]
-    },
-    {
-        "id": "a08f5a0473621012",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "",
-        "property": "start_epoch",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "neq",
-                "v": "0",
-                "vt": "num"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 1710,
-        "y": 2680,
-        "wires": [
-            [
-                "94f08b2a34e68dd4"
-            ],
-            [
-                "8d19d0768126d960",
-                "29ce3287b0fc9101"
             ]
         ]
     },
@@ -2848,11 +2622,11 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1390,
-        "y": 2580,
+        "x": 1510,
+        "y": 2600,
         "wires": [
             [
-                "c07ce3f59a10aac7"
+                "da9b07585f729c89"
             ],
             [
                 "13ab87bca0a9499a",
@@ -2991,197 +2765,20 @@
         ]
     },
     {
-        "id": "5470111ac122b91b",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "25",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 1760,
-        "y": 2840,
-        "wires": [
-            [
-                "d1ec5f30cd5b88f4"
-            ]
-        ]
-    },
-    {
-        "id": "d1ec5f30cd5b88f4",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Set Entity Id",
-        "func": "if(msg.cost == undefined) {\n    msg.cost = msg.payload;\n}\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1750,
-        "y": 2880,
-        "wires": [
-            [
-                "924dadf7d4e2df8f"
-            ]
-        ]
-    },
-    {
-        "id": "924dadf7d4e2df8f",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Start Epoch",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "0",
-        "halt_if_type": "num",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "num",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "start_epoch",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1750,
-        "y": 2920,
-        "wires": [
-            [
-                "7dfc4e9a36c335fb"
-            ],
-            [
-                "1cce906316702a87"
-            ]
-        ]
-    },
-    {
-        "id": "1cce906316702a87",
-        "type": "change",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "From Flow",
-        "rules": [
-            {
-                "t": "set",
-                "p": "start_epoch",
-                "pt": "msg",
-                "to": "print_start_epoch",
-                "tot": "flow"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 1670,
-        "y": 2960,
-        "wires": [
-            [
-                "7dfc4e9a36c335fb"
-            ]
-        ]
-    },
-    {
-        "id": "7dfc4e9a36c335fb",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "x": 1800,
-        "y": 2960,
-        "wires": [
-            [
-                "ae3c93f82649567e"
-            ]
-        ]
-    },
-    {
-        "id": "ae3c93f82649567e",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "",
-        "property": "start_epoch",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "neq",
-                "v": "0",
-                "vt": "num"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 1670,
-        "y": 3000,
-        "wires": [
-            [
-                "4d4e6202ea8e0feb"
-            ],
-            [
-                "5470111ac122b91b",
-                "29ce3287b0fc9101"
-            ]
-        ]
-    },
-    {
-        "id": "4d4e6202ea8e0feb",
-        "type": "postgrestor",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Insert Update (Mat Cost)",
-        "query": "UPDATE prints SET\n    material_used_cost = '{{msg.cost}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
-        "postgresDB": "79ce3199b8eeaa1c",
-        "output": true,
-        "outputs": 1,
-        "x": 1710,
-        "y": 3040,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "426f511209068038",
         "type": "link in",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "Print Cost In",
+        "name": "Update_For_In",
         "links": [
-            "e5bde629696c68c3"
+            "e5bde629696c68c3",
+            "79460dfc84945051"
         ],
-        "x": 1645,
-        "y": 2840,
+        "x": 1055,
+        "y": 2540,
         "wires": [
             [
-                "5470111ac122b91b"
+                "13ab87bca0a9499a"
             ]
         ]
     },
@@ -3190,7 +2787,7 @@
         "type": "inject",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "Update Material Used Costs [READ NOTES]",
+        "name": "Update Material Used Costs [READ NOTES 1]",
         "props": [],
         "repeat": "",
         "crontab": "",
@@ -3210,9 +2807,9 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "NOTES",
-        "info": "Pressing this button will auto update\nall prints in the database.\n\nA new column was introduced in 2.0.6\nfor material_used_cost,\nparsed from the gcode file\n\nSince all previous prints will\nhave it at 0, you can optionally choose\nto press this inject node to forcefully\nset the cost of each based on their\nmaterial used, and an AVERAGE cost for\nthe filament type\n\nPLEASE SET the average costs per filament\nmaterial type in the \"COSTS\" node\n\nthis will permanently update all where\nthe material used cost is 0.0\n\n\nUnfortunately, this list is limited to\nwhatever ends up in the database from\nBambu's filament settings. So nothing for\nPLA+ or such.\n\n----\nEXAMPLE SCENARIO BELOW PLEASE READ\n----\nFor an example of calculating averages,\nlet's say I printed 500g (0.5kg) \nof PLA, 1kg of polymaker CosPLA,\nand 3.2kg of PLA+ and\nthat is all in the database as \"PLA\",\ntotalling 4.7kg\n\nIf my normal PLA costs $28.00 per KG,\nCosPLA costs $33.00 per KG,\nand PLA $30 per KG,\n\nin total I have 4.7kg of PLA in the DB\nbut the cost per kg varies\n\nTo calculate the average per,\nbefore adding:\n\n[variant cost]: ( [amount of variant in kg] / [total weight of material in db in kg] ) * [cost per kg of variant]\n[total = sum of all variant costs]\n\nPLA: (0.5 / 4.7) * 28 = 2.97\ncosPLA: (1 / 4.7) * 33 = 7.02\nPLA+: (3.2 / 4.7) * 30 = 20.43\n\nAdd them together and my average\ncost for PLA printed in the past was\n$30.42\n\nSo for the COSTS node to the right,\nfor PLA I would put in\n\n30.42\n\n*Alternatively* if you know you spent $28\nper kg of PLA, and rarely deviate, you can\njust put 28.00\n\n\n====\nWhen you first import this, all values are 0\n for a predefined list of materials \n this way if you run it, nothing changes\n\nnot all materials may be in the list. If yours isn't\nthen add it as msg.[name] and set the type to a number,\nthen insert the value.\n\nmaterials that will work are ones that you can set from\nwithin bambu studio as a filament type.\n\nTHIS WILL BE A ROUGH CALCULATION\nand not 100% perfect, but is better than having all 0's\n",
-        "x": 250,
+        "name": "NOTES 1",
+        "info": "Pressing this button will auto update\nall prints in the database.\n\nA new column was introduced in 2.0.6\nfor material_used_cost,\nparsed from the gcode file\n\nSince all previous prints will\nhave it at 0, you can optionally choose\nto press this inject node to forcefully\nset the cost of each based on their\nmaterial used, and an AVERAGE cost for\nthe filament type\n\nPLEASE SET the average costs per filament\nmaterial type in the \"COSTS\" node\n\nthis will permanently update all where\nthe material used cost is 0.0\n\n\nUnfortunately, this list is limited to\nwhatever ends up in the database from\nBambu's filament settings. So nothing for\nPLA+ or such.\n\n----\nEXAMPLE SCENARIO BELOW PLEASE READ\n----\nFor an example of calculating averages,\nlet's say I printed 500g (0.5kg) \nof PLA, 1kg of polymaker CosPLA,\nand 3.2kg of PLA+ and\nthat is all in the database as \"PLA\",\ntotalling 4.7kg\n\nIf my normal PLA costs $28.00 per KG,\nCosPLA costs $33.00 per KG,\nand PLA $30 per KG,\n\nin total I have 4.7kg of PLA in the DB\nbut the cost per kg varies\n\nTo calculate the average per,\nbefore adding:\n\n[variant cost]: ( [amount of variant in kg] / [total weight of material in db in kg] ) * [cost per kg of variant]\n[total = sum of all variant costs]\n\nPLA: (0.5 / 4.7) * 28 = 2.97\ncosPLA: (1 / 4.7) * 33 = 7.02\nPLA+: (3.2 / 4.7) * 30 = 20.43\n\nAdd them together and my average\ncost for PLA printed in the past was\n$30.42\n\nSo for the COSTS node to the right,\nfor PLA I would put in\n\n30.42\n\n*Alternatively* if you know you spent $28\nper kg of PLA, and rarely deviate, you can\njust put 28.00\n\n\n====\nWhen you first import this, all values are 0\n for a predefined list of materials \n this way if you run it, nothing changes\n\nnot all materials may be in the list. If yours isn't\nthen add it as msg.[name] and set the type to a number,\nthen insert the value.\n\nmaterials that will work are ones that you can set from\nwithin bambu studio as a filament type.\n\nTHIS WILL BE A ROUGH CALCULATION\nand not 100% perfect, but is better than having all 0's\n\n\n=============\n\nIf you regularly print files from Makerworld, you will need to run this often\nas makerworld gcode files *do not* contain cost information",
+        "x": 240,
         "y": 3200,
         "wires": []
     },
@@ -3361,7 +2958,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Insert Update",
-        "query": "UPDATE prints SET\n    material_used_cost = ((material_used * '{{msg.avg}}') / 1000.0)\nWHERE \n    material_used_cost = 0\n    AND material = '{{msg.material}}';",
+        "query": "UPDATE prints SET\n    material_used_cost = ((material_used * '{{msg.avg}}') / 1000.0)\nWHERE \n    material_used_cost = 0\n    AND material = '{{msg.material}}' and material_type = 'filament';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -3499,6 +3096,219 @@
         ]
     },
     {
+        "id": "da9b07585f729c89",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Update_Row_Out",
+        "mode": "link",
+        "links": [
+            "4221ae3622740ea9"
+        ],
+        "x": 1665,
+        "y": 2600,
+        "wires": []
+    },
+    {
+        "id": "7528cf90e65b64b2",
+        "type": "comment",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "NOTES 2",
+        "info": "Running this will update all previous prints prior to 2.0.7\n\nRUN THIS ONCE AFTER UPDATING TO 2.0.7\nBUT MAKE SURE TO RUN \"Update Material Used Costs\" FIRST\nIF UPDATING FROM AN OLDER VERSION THAN 2.0.6\n\n--------------------------------------------------------------------\n\nWhat this does is fill in data for the filament_data column where it previously is empty.\n\nThis new column is directly taken from the gcode of each print to be accurate,\nHOWEVER for this retroactive updating, it will do it based off of the saved data.\n\nThis means for all that are manually updated like this, they will only have:\n1 filament\ncolour: black\nprofile: Manual\nand a special \"manual_set\":true value in the single filament.\n\nThe purposes of this column is to allow advanced parsing of costs / material usage.\n\nHowever, when this is pulled manually via this, it is already using values based on what exists.\nThis means for failed prints it is already modified based on print progress.\n\nFOR ALL THAT ARE ADDED THROUGH NORMAL PRINTING\nthey will not auto update based on print progress if failed.\n\nHence, a new column, \"progress_done\" is created so you can use it to calculate advanced metrics.\nI already take care of this calc in the grafana dashboards. By default, progress_done is set to 100\nthis way old data works.",
+        "x": 240,
+        "y": 3240,
+        "wires": []
+    },
+    {
+        "id": "d2d26eb313e9f45f",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Update Filament Data [READ NOTES 2]",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "x": 500,
+        "y": 3240,
+        "wires": [
+            [
+                "10407d83408bc1bf"
+            ]
+        ]
+    },
+    {
+        "id": "f436594fa28f7864",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "U1",
+        "query": "UPDATE prints SET\n    filament_data = $1::jsonb\nWHERE filament_data = '[]' and material_type = 'filament' and material is not null;\n",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 1150,
+        "y": 3240,
+        "wires": [
+            [
+                "0c8657af20f117ae"
+            ]
+        ]
+    },
+    {
+        "id": "0c8657af20f117ae",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "del",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "params",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1270,
+        "y": 3240,
+        "wires": [
+            [
+                "3eac6b751d4e8365"
+            ]
+        ]
+    },
+    {
+        "id": "3eac6b751d4e8365",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "U2",
+        "query": "UPDATE prints SET\n filament_data = jsonb_set(filament_data, '{0, type}', to_json(material)::JSONB, true)\nWHERE filament_data @> '[{\"manual_set\":true}]' and material_type = 'filament' and material is not null;",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 1390,
+        "y": 3240,
+        "wires": [
+            [
+                "94d6b55f603d73c4"
+            ]
+        ]
+    },
+    {
+        "id": "94d6b55f603d73c4",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "U3",
+        "query": "UPDATE prints SET\n filament_data = jsonb_set(filament_data, '{0, used_g}', to_json(material_used)::JSONB, true)\nWHERE filament_data @> '[{\"manual_set\":true}]' and material_type = 'filament';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 1510,
+        "y": 3240,
+        "wires": [
+            [
+                "b790b08e7727c55b"
+            ]
+        ]
+    },
+    {
+        "id": "b790b08e7727c55b",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "U4",
+        "query": "UPDATE prints SET\n filament_data = jsonb_set(filament_data, '{0, used_cost}', to_json(material_used_cost)::JSONB, true)\nWHERE filament_data @> '[{\"manual_set\":true}]' and material_type = 'filament';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 1630,
+        "y": 3240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c30c2bb43770649b",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Check",
+        "property": "payload.rows[0].count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 910,
+        "y": 3240,
+        "wires": [
+            [
+                "d549297664c2cb31"
+            ]
+        ]
+    },
+    {
+        "id": "10407d83408bc1bf",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Count",
+        "query": "SELECT count(*) FROM prints\nWHERE filament_data = '[]' and material_type = 'filament' and material is not null;\n",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 790,
+        "y": 3240,
+        "wires": [
+            [
+                "c30c2bb43770649b"
+            ]
+        ]
+    },
+    {
+        "id": "d549297664c2cb31",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Set",
+        "rules": [
+            {
+                "t": "set",
+                "p": "params",
+                "pt": "msg",
+                "to": "[\"[{\\\"manual_set\\\": true, \\\"used_in_print\\\":true, \\\"profile\\\":\\\"Manual\\\", \\\"colour\\\":\\\"#000000\\\",\\\"index\\\":0}]\"]",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1030,
+        "y": 3240,
+        "wires": [
+            [
+                "f436594fa28f7864"
+            ]
+        ]
+    },
+    {
         "id": "79ce3199b8eeaa1c",
         "type": "postgresDB",
         "name": "3DPrint DB (PG13)",
@@ -3586,7 +3396,7 @@
         "x": 1894,
         "y": 2499,
         "w": 712,
-        "h": 462
+        "h": 402
     },
     {
         "id": "2f0c417bdc5f70ba",
@@ -3659,8 +3469,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2380,
-        "y": 2860,
+        "x": 2340,
+        "y": 2800,
         "wires": [
             [
                 "270ff91a248dd8f8"
@@ -3693,8 +3503,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 2060,
-        "y": 2860,
+        "x": 2020,
+        "y": 2800,
         "wires": [
             [
                 "e72f63899b356531"
@@ -3723,8 +3533,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 2360,
-        "y": 2820,
+        "x": 2340,
+        "y": 2760,
         "wires": [
             [
                 "5e0688f121b8fddb"
@@ -3763,8 +3573,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2220,
-        "y": 2860,
+        "x": 2200,
+        "y": 2800,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -3776,8 +3586,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2220,
-        "y": 2880,
+        "x": 2200,
+        "y": 2820,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -3796,8 +3606,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2390,
-        "y": 2920,
+        "x": 2350,
+        "y": 2840,
         "wires": [
             [
                 "270ff91a248dd8f8"
@@ -3809,8 +3619,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2540,
-        "y": 2860,
+        "x": 2480,
+        "y": 2800,
         "wires": [
             [
                 "1e3ee56ffe1d6afb"
@@ -3834,7 +3644,7 @@
         "repair": false,
         "outputs": 1,
         "x": 2210,
-        "y": 2820,
+        "y": 2760,
         "wires": [
             [
                 "1b174dc5a3c2cb2b"
@@ -3846,8 +3656,8 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
-        "x": 2120,
-        "y": 2920,
+        "x": 2220,
+        "y": 2840,
         "wires": [
             [
                 "5be89edbbd6808a4"
@@ -3863,8 +3673,8 @@
         "links": [
             "d0de2bfdbe4c20b5"
         ],
-        "x": 2155,
-        "y": 2880,
+        "x": 2135,
+        "y": 2820,
         "wires": [
             [
                 "41db1a005f0694bc"
@@ -3880,8 +3690,8 @@
         "links": [
             "4ccfb3dfd3993e15"
         ],
-        "x": 2045,
-        "y": 2920,
+        "x": 2135,
+        "y": 2860,
         "wires": [
             [
                 "7fe0a7636edfc4e8"
@@ -4580,7 +4390,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Type And Sum Weights",
-        "func": "var filaments = {};\n\nvar weight = 0.0;\nvar has_only_one_plate = false;\nvar current_plate_meta = undefined;\nif (msg.payload !== undefined && msg.payload.config != undefined\n    && msg.payload.config.plate != undefined) {\n    let plates = msg.payload.config.plate;\n    if(plates.length == 1) {\n        has_only_one_plate = true;\n    }\n    for (var plate of plates) {\n        for (var p of plate.metadata) {\n            if(p.property.key == \"index\" && \n                (parseInt(p.property.value) == msg.plate_id \n                || has_only_one_plate)) {\n                    current_plate_meta = plate.metadata;\n                    msg.plate_id = parseInt(p.property.value);\n                    if(has_only_one_plate && (flow.get(\"current_platename\") == undefined || flow.get(\"current_platename\") == \"\")) {\n                        flow.set(\"current_platename\", \"plate_\"+msg.plate_id + \".gcode\");\n                        let path = flow.get(\"path_prefix\") + flow.get(\"printer_name\");\n                        \n                        msg.localFilename = path + \"/current_print.3mf\"\n                        node.send([null, msg]);\n                    }\n                    break;\n                }\n            //if (p.property.key == \"weight\") {\n            //    weight += parseFloat(p.property.value);\n            //}\n        }\n        for (var f of plate.filament) {\n            if(f.property.type != undefined && \n            !f.property.type.includes(\"Support\")\n                && f.property.type != \"PLA-S\"\n                && f.property.type != \"PA-S\"\n                ) {\n                if (filaments[f.property.type] == undefined) {\n                    filaments[f.property.type] = parseFloat(f.property.used_g);\n                }\n                else {\n                    filaments[f.property.type] = filaments[f.property.type] + parseFloat(f.property.used_g);\n                }\n            }\n        }\n    }\n}\n\nif(current_plate_meta != undefined) {\n    for (var p of current_plate_meta) {\n        if (p.property.key == \"weight\") {\n            weight += parseFloat(p.property.value);\n        }\n    }\n}\n\nmsg.payload = {};\nmsg.payload.weight = weight;\nmsg.payload.material = \"\";\nvar fil = Object.keys(filaments);\nvar max = 0;\nfor (var ff of fil) {\n    if (filaments[ff] >= max) {\n        max = filaments[ff];\n        msg.payload.material = ff;\n    }\n}\nif (max == 0) {\n    msg.payload.material = \"\";\n}\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload.weight + \"g of material, mostly or all \" + msg.payload.material });\nnode.send([msg, null]);",
+        "func": "var filaments = {};\n\nvar weight = 0.0;\nvar has_only_one_plate = false;\nvar current_plate_meta = undefined;\nif (msg.payload !== undefined && msg.payload.config != undefined\n    && msg.payload.config.plate != undefined) {\n    let plates = msg.payload.config.plate;\n    if(plates.length == 1) {\n        has_only_one_plate = true;\n    }\n    for (var plate of plates) {\n        for (var p of plate.metadata) {\n            if(p.property.key == \"index\" && \n                (parseInt(p.property.value) == msg.plate_id \n                || has_only_one_plate)) {\n                    current_plate_meta = plate.metadata;\n                    msg.plate_id = parseInt(p.property.value);\n                    if(has_only_one_plate && (flow.get(\"current_platename\") == undefined || flow.get(\"current_platename\") == \"\")) {\n                        flow.set(\"current_platename\", \"plate_\"+msg.plate_id + \".gcode\");\n                        let path = flow.get(\"path_prefix\") + flow.get(\"printer_name\");\n                        \n                        msg.localFilename = path + \"/current_print.3mf\"\n                        node.send([null, msg]);\n                    }\n                    break;\n                }\n            //if (p.property.key == \"weight\") {\n            //    weight += parseFloat(p.property.value);\n            //}\n        }\n        for (var f of plate.filament) {\n            if(f.property.type != undefined && \n            !f.property.type.includes(\"Support\")\n                && f.property.type != \"PLA-S\"\n                && f.property.type != \"PA-S\"\n                ) {\n                if (filaments[f.property.type] == undefined) {\n                    filaments[f.property.type] = parseFloat(f.property.used_g);\n                }\n                else {\n                    filaments[f.property.type] = filaments[f.property.type] + parseFloat(f.property.used_g);\n                }\n            }\n        }\n    }\n}\n\nif(current_plate_meta != undefined) {\n    for (var p of current_plate_meta) {\n        if (p.property.key == \"weight\") {\n            weight += parseFloat(p.property.value);\n        }\n    }\n}\n\nmsg.payload = {};\nmsg.payload.weight = weight;\nmsg.payload.material = \"\";\nvar fil = Object.keys(filaments);\nvar max = 0;\nfor (var ff of fil) {\n    if (filaments[ff] >= max) {\n        max = filaments[ff];\n        msg.payload.material = ff;\n    }\n}\nif (max == 0) {\n    msg.payload.material = \"\";\n}\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload.weight + \"g of material, mostly or all \" + msg.payload.material });\nmsg.update_for = \"weights\";\nnode.send([msg, null]);",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -4590,7 +4400,8 @@
         "y": 2200,
         "wires": [
             [
-                "d0de2bfdbe4c20b5"
+                "d0de2bfdbe4c20b5",
+                "e5bde629696c68c3"
             ],
             [
                 "4cf88c06f97c30db"
@@ -5324,7 +5135,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Plate Type",
-        "func": "if (msg.payload != undefined && msg.payload.bed_type != undefined) {\n    msg.payload = msg.payload.bed_type;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: msg.payload });\n}\n",
+        "func": "if (msg.payload != undefined && msg.payload.bed_type != undefined) {\n    msg.payload = msg.payload.bed_type;\n    msg.update_for = \"plate_type\";\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: msg.payload });\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -5334,7 +5145,8 @@
         "y": 2340,
         "wires": [
             [
-                "4ccfb3dfd3993e15"
+                "4ccfb3dfd3993e15",
+                "e5bde629696c68c3"
             ]
         ]
     },
@@ -5870,7 +5682,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Plate name?",
-        "func": "let current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    msg.decompress_data = msg.payload;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_plate_name\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
+        "func": "if(msg.access_code != undefined) {\n    delete msg.access_code;\n}\nif (msg.printer_ip != undefined) {\n    delete msg.printer_ip;\n}\n\nlet current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    msg.decompress_data = msg.payload;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_plate_name\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
@@ -6874,8 +6686,8 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Parse GCode",
-        "func": "let lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        break;\n    }\n}\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}",
-        "outputs": 1,
+        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 120);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim()\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] > 0.00) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != []) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -6883,6 +6695,9 @@
         "x": 1720,
         "y": 2280,
         "wires": [
+            [
+                "e5bde629696c68c3"
+            ],
             [
                 "e5bde629696c68c3"
             ]
@@ -6893,12 +6708,12 @@
         "type": "link out",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "Print Cost Out",
+        "name": "Update_For_Out",
         "mode": "link",
         "links": [
             "426f511209068038"
         ],
-        "x": 1895,
+        "x": 2135,
         "y": 2280,
         "wires": []
     },
@@ -6971,6 +6786,182 @@
         "wires": [
             [
                 "32224e154dd11042"
+            ]
+        ]
+    },
+    {
+        "id": "1536199568f3f2d7",
+        "type": "group",
+        "z": "fbda6ab16491b918",
+        "g": "20b7b2baaa0fdddd",
+        "name": "Postgres DB Row Updater",
+        "style": {
+            "stroke": "#001f60",
+            "label": true,
+            "color": "#3f93cf"
+        },
+        "nodes": [
+            "c07ce3f59a10aac7",
+            "94f08b2a34e68dd4",
+            "4d4e6202ea8e0feb",
+            "47be921cd284ce4d",
+            "4221ae3622740ea9",
+            "3088613307143de9",
+            "88adc4ef65388bc4"
+        ],
+        "x": 1904,
+        "y": 2919,
+        "w": 662,
+        "h": 202
+    },
+    {
+        "id": "c07ce3f59a10aac7",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "1536199568f3f2d7",
+        "name": "Insert Update (Weights)",
+        "query": "UPDATE prints SET\n    material_used = '{{msg.weight}}',\n    material = '{{msg.material}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 2390,
+        "y": 3040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "94f08b2a34e68dd4",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "1536199568f3f2d7",
+        "name": "Insert Update (Plate)",
+        "query": "UPDATE prints SET\n    plate_type = '{{msg.plate}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 2380,
+        "y": 3000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4d4e6202ea8e0feb",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "1536199568f3f2d7",
+        "name": "Insert Update (Mat Cost)",
+        "query": "UPDATE prints SET\n    material_used_cost = '{{msg.cost}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 2390,
+        "y": 2960,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "47be921cd284ce4d",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "1536199568f3f2d7",
+        "name": "Which Insert",
+        "property": "update_for",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "mat_cost",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "plate_type",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "weights",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "gcode_data",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 2050,
+        "y": 3000,
+        "wires": [
+            [
+                "4d4e6202ea8e0feb"
+            ],
+            [
+                "94f08b2a34e68dd4"
+            ],
+            [
+                "c07ce3f59a10aac7"
+            ],
+            [
+                "88adc4ef65388bc4"
+            ]
+        ]
+    },
+    {
+        "id": "4221ae3622740ea9",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "1536199568f3f2d7",
+        "name": "Update Row In",
+        "links": [
+            "da9b07585f729c89"
+        ],
+        "x": 1945,
+        "y": 3000,
+        "wires": [
+            [
+                "47be921cd284ce4d"
+            ]
+        ]
+    },
+    {
+        "id": "3088613307143de9",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "1536199568f3f2d7",
+        "name": "Insert Update (Filament Data)",
+        "query": "UPDATE prints SET\n    filament_data = $1::jsonb\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 2410,
+        "y": 3080,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "88adc4ef65388bc4",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "1536199568f3f2d7",
+        "name": "Convert",
+        "func": "msg.params = [JSON.stringify(msg.gcode_data)];\nnode.send(msg);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2200,
+        "y": 3060,
+        "wires": [
+            [
+                "3088613307143de9"
             ]
         ]
     }
