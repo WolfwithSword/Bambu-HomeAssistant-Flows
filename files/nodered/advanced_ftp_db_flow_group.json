@@ -23,7 +23,7 @@
             "1536199568f3f2d7"
         ],
         "x": 28,
-        "y": 1659,
+        "y": 1699,
         "w": 2604,
         "h": 1648
     },
@@ -35,7 +35,7 @@
         "name": "Adv Flow: README",
         "info": "- If you do not want to have the database stuff, delete the \"Postgres DB\" group.\nThe FTPS fetch and filament type setter will still work without it\n\n- If you have a print start and it didn't fetch the image right or the weight or type,\ngo back here to the nodered flow and click the button on the \"FORCE FETCH\" inject node.",
         "x": 310,
-        "y": 1700,
+        "y": 1740,
         "wires": []
     },
     {
@@ -43,10 +43,10 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.7",
-        "info": "Version 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.0.8",
+        "info": "Version 2.0.8: 2023-11-05\n- Minor tweaks around logic\n- Sync with 2.0.8\n\n===\nVersion 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
-        "y": 1700,
+        "y": 1740,
         "wires": []
     },
     {
@@ -62,7 +62,7 @@
         "onceDelay": "0.1",
         "topic": "",
         "x": 550,
-        "y": 1700,
+        "y": 1740,
         "wires": [
             [
                 "7f8794fea9a6cecb",
@@ -119,7 +119,7 @@
         "to": "",
         "reg": false,
         "x": 750,
-        "y": 1720,
+        "y": 1760,
         "wires": [
             []
         ]
@@ -143,7 +143,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1040,
-        "y": 1700,
+        "y": 1740,
         "wires": [
             [
                 "e006c3ea171dd5fc"
@@ -163,7 +163,7 @@
         "finalize": "",
         "libs": [],
         "x": 1230,
-        "y": 1720,
+        "y": 1760,
         "wires": [
             []
         ]
@@ -174,7 +174,7 @@
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
         "x": 900,
-        "y": 1700,
+        "y": 1740,
         "wires": [
             [
                 "7e397b8a77767024"
@@ -316,7 +316,7 @@
             "d549297664c2cb31"
         ],
         "x": 54,
-        "y": 2499,
+        "y": 2539,
         "w": 1792,
         "h": 782
     },
@@ -331,7 +331,7 @@
         "output": true,
         "outputs": 1,
         "x": 520,
-        "y": 2620,
+        "y": 2660,
         "wires": [
             [
                 "3bea4a461a0c7c4b"
@@ -370,7 +370,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1010,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "3d20c32e447aefca"
@@ -412,7 +412,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1390,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "3d9b17f1d8d8058f"
@@ -451,7 +451,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1470,
-        "y": 2700,
+        "y": 2740,
         "wires": [
             [
                 "7cbdaf040db972c0"
@@ -490,7 +490,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1270,
-        "y": 2780,
+        "y": 2820,
         "wires": [
             [
                 "c97ff23076ed10b4"
@@ -529,7 +529,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1550,
-        "y": 2780,
+        "y": 2820,
         "wires": [
             [
                 "37aa1c47b14b9c0c"
@@ -547,7 +547,7 @@
         "output": true,
         "outputs": 1,
         "x": 1510,
-        "y": 2880,
+        "y": 2920,
         "wires": [
             []
         ]
@@ -584,7 +584,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 450,
-        "y": 2840,
+        "y": 2880,
         "wires": [
             [
                 "835d262eba54ae5c"
@@ -624,7 +624,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 450,
-        "y": 2880,
+        "y": 2920,
         "wires": [
             [
                 "c5c99a5cfe9da632"
@@ -664,7 +664,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 440,
-        "y": 2920,
+        "y": 2960,
         "wires": [
             [
                 "6943ae17c18c6084"
@@ -682,7 +682,7 @@
         "output": true,
         "outputs": 1,
         "x": 780,
-        "y": 2940,
+        "y": 2980,
         "wires": [
             [
                 "8391500077eba8ae"
@@ -721,7 +721,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 450,
-        "y": 2800,
+        "y": 2840,
         "wires": [
             [
                 "3b1d3fc339195087"
@@ -761,7 +761,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 450,
-        "y": 2760,
+        "y": 2800,
         "wires": [
             [
                 "269dc2231b49e4bb"
@@ -775,7 +775,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "x": 420,
-        "y": 2620,
+        "y": 2660,
         "wires": [
             [
                 "c207be711ef10b6a"
@@ -788,7 +788,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "x": 380,
-        "y": 2720,
+        "y": 2760,
         "wires": [
             [
                 "c7c9f6fcbdd71a9f",
@@ -815,7 +815,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 860,
-        "y": 2620,
+        "y": 2660,
         "wires": [
             [
                 "fb700d6d896b4e38"
@@ -833,7 +833,7 @@
         "output": true,
         "outputs": 1,
         "x": 750,
-        "y": 3120,
+        "y": 3160,
         "wires": [
             []
         ]
@@ -857,7 +857,7 @@
         "onceDelay": 0.1,
         "topic": "",
         "x": 150,
-        "y": 3040,
+        "y": 3080,
         "wires": [
             [
                 "53d8b5de5daaa9ba"
@@ -878,7 +878,7 @@
         "property": "payload.kwh",
         "topi": "topic",
         "x": 420,
-        "y": 3080,
+        "y": 3120,
         "wires": [
             [
                 "c40cba2075d93e84"
@@ -917,7 +917,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 730,
-        "y": 3060,
+        "y": 3100,
         "wires": [
             [
                 "b62ebcf18556c189"
@@ -956,7 +956,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 510,
-        "y": 3020,
+        "y": 3060,
         "wires": [
             [
                 "061ba64419d1fe72"
@@ -990,7 +990,7 @@
         "repair": false,
         "outputs": 3,
         "x": 650,
-        "y": 2880,
+        "y": 2920,
         "wires": [
             [
                 "1707d16455cba415"
@@ -1014,7 +1014,7 @@
         "output": true,
         "outputs": 1,
         "x": 880,
-        "y": 2880,
+        "y": 2920,
         "wires": [
             []
         ]
@@ -1051,7 +1051,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1590,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "d7dea15d1c35da3f"
@@ -1085,7 +1085,7 @@
         "repair": false,
         "outputs": 2,
         "x": 460,
-        "y": 2720,
+        "y": 2760,
         "wires": [
             [
                 "51c6377e70811e9a"
@@ -1125,7 +1125,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 770,
-        "y": 2700,
+        "y": 2740,
         "wires": [
             [
                 "e733d198e61a5062"
@@ -1144,7 +1144,7 @@
         "output": true,
         "outputs": 1,
         "x": 680,
-        "y": 2780,
+        "y": 2820,
         "wires": [
             [
                 "8391500077eba8ae"
@@ -1162,7 +1162,7 @@
         "output": true,
         "outputs": 1,
         "x": 670,
-        "y": 2740,
+        "y": 2780,
         "wires": [
             [
                 "d46519a504a1341d"
@@ -1182,7 +1182,7 @@
         "finalize": "",
         "libs": [],
         "x": 850,
-        "y": 2740,
+        "y": 2780,
         "wires": [
             [
                 "fa51361c222215dd"
@@ -1200,7 +1200,7 @@
         "output": true,
         "outputs": 1,
         "x": 1060,
-        "y": 3100,
+        "y": 3140,
         "wires": [
             [
                 "296c0a8fc5707ef3",
@@ -1219,7 +1219,7 @@
         "output": true,
         "outputs": 1,
         "x": 1250,
-        "y": 3060,
+        "y": 3100,
         "wires": [
             []
         ]
@@ -1235,7 +1235,7 @@
         "output": true,
         "outputs": 1,
         "x": 1230,
-        "y": 3020,
+        "y": 3060,
         "wires": [
             []
         ]
@@ -1253,7 +1253,7 @@
         "finalize": "",
         "libs": [],
         "x": 1280,
-        "y": 3100,
+        "y": 3140,
         "wires": [
             [
                 "7479721db2f16939"
@@ -1284,7 +1284,7 @@
         "repair": false,
         "outputs": 2,
         "x": 1050,
-        "y": 3020,
+        "y": 3060,
         "wires": [
             [
                 "1d6f980a4979a67a"
@@ -1302,7 +1302,7 @@
         "name": "Link - Rev 36 DB Update",
         "links": [],
         "x": 915,
-        "y": 3100,
+        "y": 3140,
         "wires": [
             [
                 "b6fef40e301e1d12"
@@ -1321,7 +1321,7 @@
         "linkType": "static",
         "timeout": "30",
         "x": 690,
-        "y": 2620,
+        "y": 2660,
         "wires": [
             [
                 "57ed2f101a692dae"
@@ -1347,7 +1347,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1600,
-        "y": 3120,
+        "y": 3160,
         "wires": [
             [
                 "1c8bfea602263ae7"
@@ -1363,7 +1363,7 @@
         "mode": "return",
         "links": [],
         "x": 1695,
-        "y": 3100,
+        "y": 3140,
         "wires": []
     },
     {
@@ -1385,7 +1385,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1040,
-        "y": 3060,
+        "y": 3100,
         "wires": [
             [
                 "89b6de093608e1bd"
@@ -1414,7 +1414,7 @@
         "repair": false,
         "outputs": 2,
         "x": 1450,
-        "y": 3100,
+        "y": 3140,
         "wires": [
             [
                 "a3e69a85d5a875b8"
@@ -1428,7 +1428,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "x": 960,
-        "y": 3120,
+        "y": 3160,
         "wires": [
             [
                 "0ed5db3a40ab601d"
@@ -1448,7 +1448,7 @@
         "finalize": "",
         "libs": [],
         "x": 1010,
-        "y": 2700,
+        "y": 2740,
         "wires": [
             [
                 "380607347779a3fa",
@@ -1472,7 +1472,7 @@
         "expiry": "",
         "broker": "489094618c340eef",
         "x": 1410,
-        "y": 2940,
+        "y": 2980,
         "wires": []
     },
     {
@@ -1488,7 +1488,7 @@
         "finalize": "",
         "libs": [],
         "x": 1140,
-        "y": 2820,
+        "y": 2860,
         "wires": [
             [
                 "1ec91432ced6f4f0"
@@ -1506,12 +1506,13 @@
         "name": "Printer Config",
         "func": "let data = {};\nlet payload = {};\nlet device = {};\nlet root_topic = flow.get(\"root_topic\");\nif(msg.payload == undefined && !msg.topic.includes(\"reset\")) {\n    return;\n}\nlet type = \"sensor\";\nif (msg.topic.match(/time/)) {\n    msg.icon = \"mdi:clock\";\n    if(msg.topic.includes(\"_start_time\")){\n        msg.icon = \"mdi:clock-start\";\n    } \n    else if (msg.topic.includes(\"_end_time\")) {\n        msg.icon = \"mdi:clock-end\";\n    }\n}\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\n\nlet base_topic = root_topic +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\n\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\npayload.availability_topic = root_topic + \"/sensor/\"+msg.machine_name+\"/status/state\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\nif(data.topic.startsWith(root_topic)) {\n    node.send(data);\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 1220,
-        "y": 2920,
+        "y": 2960,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1531,7 +1532,7 @@
         "finalize": "",
         "libs": [],
         "x": 1210,
-        "y": 2960,
+        "y": 3000,
         "wires": [
             [
                 "2e90a12c29779bff"
@@ -1570,7 +1571,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1170,
-        "y": 2740,
+        "y": 2780,
         "wires": [
             [
                 "76b73ce6ce99d69d"
@@ -1596,7 +1597,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1190,
-        "y": 2700,
+        "y": 2740,
         "wires": [
             [
                 "27e8750d79dc7117"
@@ -1609,7 +1610,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "x": 1060,
-        "y": 2900,
+        "y": 2940,
         "wires": [
             [
                 "239b69ba6de0f3b0",
@@ -1630,7 +1631,7 @@
         "finalize": "",
         "libs": [],
         "x": 900,
-        "y": 2820,
+        "y": 2860,
         "wires": [
             [
                 "380607347779a3fa"
@@ -1669,7 +1670,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 710,
-        "y": 2820,
+        "y": 2860,
         "wires": [
             [
                 "f292ef02b868a96d"
@@ -1683,7 +1684,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "x": 1320,
-        "y": 2940,
+        "y": 2980,
         "wires": [
             [
                 "b292c53d06fe5323"
@@ -1709,7 +1710,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1180,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "87659026e1b64e10"
@@ -1733,7 +1734,7 @@
         "repair": false,
         "outputs": 1,
         "x": 150,
-        "y": 2740,
+        "y": 2780,
         "wires": [
             [
                 "a59ef513683810a9"
@@ -1757,7 +1758,7 @@
         "repair": false,
         "outputs": 1,
         "x": 150,
-        "y": 2780,
+        "y": 2820,
         "wires": [
             [
                 "f6ec9c1c878be81a"
@@ -1781,7 +1782,7 @@
         "repair": false,
         "outputs": 1,
         "x": 270,
-        "y": 3040,
+        "y": 3080,
         "wires": [
             [
                 "f83cc5013554e075"
@@ -1816,7 +1817,7 @@
         "to": "",
         "reg": false,
         "x": 1360,
-        "y": 2740,
+        "y": 2780,
         "wires": [
             [
                 "de0f8d6c3213410d"
@@ -1842,7 +1843,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 660,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "9f785ff8ae78f4c8"
@@ -1868,7 +1869,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 250,
-        "y": 3080,
+        "y": 3120,
         "wires": [
             [
                 "33269b09bb9a4a3b"
@@ -1896,7 +1897,7 @@
         "to": "",
         "reg": false,
         "x": 300,
-        "y": 3120,
+        "y": 3160,
         "wires": [
             []
         ]
@@ -1914,7 +1915,7 @@
         "onceDelay": 0.1,
         "topic": "",
         "x": 780,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "d342f643c08ee9d3"
@@ -1934,7 +1935,7 @@
         "finalize": "",
         "libs": [],
         "x": 850,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "50ca810a9ab07205"
@@ -1954,7 +1955,7 @@
         "finalize": "",
         "libs": [],
         "x": 1370,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "9f2d2e2411d850db"
@@ -1974,7 +1975,7 @@
         "finalize": "",
         "libs": [],
         "x": 1230,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "ba7473069f371df8"
@@ -1994,7 +1995,7 @@
         "finalize": "",
         "libs": [],
         "x": 1510,
-        "y": 2740,
+        "y": 2780,
         "wires": [
             [
                 "eee0dce21d4b91c2"
@@ -2014,7 +2015,7 @@
         "finalize": "",
         "libs": [],
         "x": 590,
-        "y": 2680,
+        "y": 2720,
         "wires": [
             [
                 "7b11af61e6e0ef10"
@@ -2034,7 +2035,7 @@
         "finalize": "",
         "libs": [],
         "x": 730,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "6e251ea8ba446823"
@@ -2054,7 +2055,7 @@
         "finalize": "",
         "libs": [],
         "x": 870,
-        "y": 2780,
+        "y": 2820,
         "wires": [
             [
                 "ac28bca5d1b05769"
@@ -2074,7 +2075,7 @@
         "finalize": "",
         "libs": [],
         "x": 290,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "83e2f72cc122faf3"
@@ -2096,7 +2097,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 420,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "ccef33154dde5e17"
@@ -2116,7 +2117,7 @@
         "finalize": "",
         "libs": [],
         "x": 150,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "aedffc8f39c5e784"
@@ -2142,7 +2143,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 280,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "6488fbbd9a16fced"
@@ -2168,7 +2169,7 @@
         "output_location_type": "msg",
         "output_location": "payload",
         "x": 410,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "5fba0cd4a415a1a0"
@@ -2188,7 +2189,7 @@
         "finalize": "",
         "libs": [],
         "x": 180,
-        "y": 2620,
+        "y": 2660,
         "wires": [
             [
                 "81669dbc1cb1994d"
@@ -2208,7 +2209,7 @@
         "finalize": "",
         "libs": [],
         "x": 210,
-        "y": 2680,
+        "y": 2720,
         "wires": [
             [
                 "d342f643c08ee9d3"
@@ -2237,7 +2238,7 @@
         "finalize": "",
         "libs": [],
         "x": 290,
-        "y": 2760,
+        "y": 2800,
         "wires": [
             [
                 "fd7de145f90381e2"
@@ -2257,7 +2258,7 @@
         "finalize": "",
         "libs": [],
         "x": 290,
-        "y": 2800,
+        "y": 2840,
         "wires": [
             [
                 "c0bd71c5f8c63191"
@@ -2277,7 +2278,7 @@
         "finalize": "",
         "libs": [],
         "x": 290,
-        "y": 2840,
+        "y": 2880,
         "wires": [
             [
                 "7ef27dfc5aaf648f"
@@ -2297,7 +2298,7 @@
         "finalize": "",
         "libs": [],
         "x": 290,
-        "y": 2880,
+        "y": 2920,
         "wires": [
             [
                 "80fe10448625eade"
@@ -2332,7 +2333,7 @@
         "to": "",
         "reg": false,
         "x": 1410,
-        "y": 2780,
+        "y": 2820,
         "wires": [
             [
                 "bc135fef68caf1ed"
@@ -2367,7 +2368,7 @@
         "to": "",
         "reg": false,
         "x": 270,
-        "y": 2920,
+        "y": 2960,
         "wires": [
             [
                 "417afcee7a04a0a2"
@@ -2402,7 +2403,7 @@
         "to": "",
         "reg": false,
         "x": 1330,
-        "y": 2700,
+        "y": 2740,
         "wires": [
             [
                 "8bf5c9135058acb6"
@@ -2423,7 +2424,7 @@
         "property": "payload",
         "topi": "topic",
         "x": 550,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "20e12e2dbc0511d2"
@@ -2443,7 +2444,7 @@
         "finalize": "",
         "libs": [],
         "x": 390,
-        "y": 3020,
+        "y": 3060,
         "wires": [
             [
                 "6a4ba58e99355e4c"
@@ -2463,7 +2464,7 @@
         "finalize": "",
         "libs": [],
         "x": 570,
-        "y": 3080,
+        "y": 3120,
         "wires": [
             [
                 "68f63aed66cbd5e3"
@@ -2483,7 +2484,7 @@
         "finalize": "",
         "libs": [],
         "x": 1030,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "27e8750d79dc7117"
@@ -2512,7 +2513,7 @@
         "repair": false,
         "outputs": 1,
         "x": 1480,
-        "y": 2840,
+        "y": 2880,
         "wires": [
             [
                 "dcf293279321a598"
@@ -2540,7 +2541,7 @@
         "to": "",
         "reg": false,
         "x": 1140,
-        "y": 2860,
+        "y": 2900,
         "wires": [
             [
                 "1ec91432ced6f4f0"
@@ -2553,7 +2554,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "x": 1260,
-        "y": 2880,
+        "y": 2920,
         "wires": [
             [
                 "1927a157e503a89a"
@@ -2581,7 +2582,7 @@
         "to": "",
         "reg": false,
         "x": 1310,
-        "y": 2600,
+        "y": 2640,
         "wires": [
             [
                 "d7dea15d1c35da3f"
@@ -2594,7 +2595,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "x": 1420,
-        "y": 2600,
+        "y": 2640,
         "wires": [
             [
                 "43c56dfada7aeada"
@@ -2623,7 +2624,7 @@
         "repair": false,
         "outputs": 2,
         "x": 1510,
-        "y": 2600,
+        "y": 2640,
         "wires": [
             [
                 "da9b07585f729c89"
@@ -2645,7 +2646,7 @@
         ],
         "uncaught": false,
         "x": 870,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "3d20c32e447aefca"
@@ -2671,7 +2672,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1020,
-        "y": 2740,
+        "y": 2780,
         "wires": [
             [
                 "380607347779a3fa"
@@ -2697,7 +2698,7 @@
         "repair": false,
         "outputs": 1,
         "x": 450,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "11f9cdb5d2ee29b1"
@@ -2717,7 +2718,7 @@
         "finalize": "",
         "libs": [],
         "x": 590,
-        "y": 2940,
+        "y": 2980,
         "wires": [
             [
                 "7f6eec43ae3d2fa0"
@@ -2730,14 +2731,14 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Prepare = Running",
-        "func": "if (msg.values.status != undefined && msg.values.status==\"PREPARE\"){\n    msg.values.status = \"RUNNING\";\n}\nnode.send(msg);",
+        "func": "if (msg.values.status != undefined && (msg.values.status==\"PREPARE\" || msg.values.status == \"SLICING\")){\n    msg.values.status = \"RUNNING\";\n}\n\nnode.send(msg);",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 1730,
-        "y": 2780,
+        "y": 2820,
         "wires": [
             [
                 "85bdccd86c38d0e0"
@@ -2757,7 +2758,7 @@
         "onceDelay": "1",
         "topic": "",
         "x": 170,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "eeba54db5300affd"
@@ -2775,7 +2776,7 @@
             "79460dfc84945051"
         ],
         "x": 1055,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "13ab87bca0a9499a"
@@ -2795,7 +2796,7 @@
         "onceDelay": 0.1,
         "topic": "",
         "x": 510,
-        "y": 3200,
+        "y": 3240,
         "wires": [
             [
                 "840551d3791478d9"
@@ -2810,7 +2811,7 @@
         "name": "NOTES 1",
         "info": "Pressing this button will auto update\nall prints in the database.\n\nA new column was introduced in 2.0.6\nfor material_used_cost,\nparsed from the gcode file\n\nSince all previous prints will\nhave it at 0, you can optionally choose\nto press this inject node to forcefully\nset the cost of each based on their\nmaterial used, and an AVERAGE cost for\nthe filament type\n\nPLEASE SET the average costs per filament\nmaterial type in the \"COSTS\" node\n\nthis will permanently update all where\nthe material used cost is 0.0\n\n\nUnfortunately, this list is limited to\nwhatever ends up in the database from\nBambu's filament settings. So nothing for\nPLA+ or such.\n\n----\nEXAMPLE SCENARIO BELOW PLEASE READ\n----\nFor an example of calculating averages,\nlet's say I printed 500g (0.5kg) \nof PLA, 1kg of polymaker CosPLA,\nand 3.2kg of PLA+ and\nthat is all in the database as \"PLA\",\ntotalling 4.7kg\n\nIf my normal PLA costs $28.00 per KG,\nCosPLA costs $33.00 per KG,\nand PLA $30 per KG,\n\nin total I have 4.7kg of PLA in the DB\nbut the cost per kg varies\n\nTo calculate the average per,\nbefore adding:\n\n[variant cost]: ( [amount of variant in kg] / [total weight of material in db in kg] ) * [cost per kg of variant]\n[total = sum of all variant costs]\n\nPLA: (0.5 / 4.7) * 28 = 2.97\ncosPLA: (1 / 4.7) * 33 = 7.02\nPLA+: (3.2 / 4.7) * 30 = 20.43\n\nAdd them together and my average\ncost for PLA printed in the past was\n$30.42\n\nSo for the COSTS node to the right,\nfor PLA I would put in\n\n30.42\n\n*Alternatively* if you know you spent $28\nper kg of PLA, and rarely deviate, you can\njust put 28.00\n\n\n====\nWhen you first import this, all values are 0\n for a predefined list of materials \n this way if you run it, nothing changes\n\nnot all materials may be in the list. If yours isn't\nthen add it as msg.[name] and set the type to a number,\nthen insert the value.\n\nmaterials that will work are ones that you can set from\nwithin bambu studio as a filament type.\n\nTHIS WILL BE A ROUGH CALCULATION\nand not 100% perfect, but is better than having all 0's\n\n\n=============\n\nIf you regularly print files from Makerworld, you will need to run this often\nas makerworld gcode files *do not* contain cost information",
         "x": 240,
-        "y": 3200,
+        "y": 3240,
         "wires": []
     },
     {
@@ -2925,7 +2926,7 @@
         "to": "",
         "reg": false,
         "x": 760,
-        "y": 3200,
+        "y": 3240,
         "wires": [
             [
                 "fb4417c1c1663037"
@@ -2945,7 +2946,7 @@
         "finalize": "",
         "libs": [],
         "x": 890,
-        "y": 3200,
+        "y": 3240,
         "wires": [
             [
                 "0bf4156fbf9943b1"
@@ -2963,7 +2964,7 @@
         "output": true,
         "outputs": 1,
         "x": 1060,
-        "y": 3200,
+        "y": 3240,
         "wires": [
             []
         ]
@@ -2982,7 +2983,7 @@
         "property": "payload",
         "topi": "topic",
         "x": 530,
-        "y": 2980,
+        "y": 3020,
         "wires": [
             [
                 "7f29777d2e10448a"
@@ -3008,7 +3009,7 @@
         "repair": false,
         "outputs": 1,
         "x": 650,
-        "y": 2980,
+        "y": 3020,
         "wires": [
             [
                 "adea5317e157380b"
@@ -3028,7 +3029,7 @@
         "finalize": "",
         "libs": [],
         "x": 820,
-        "y": 3000,
+        "y": 3040,
         "wires": [
             []
         ]
@@ -3046,7 +3047,7 @@
         "onceDelay": "1",
         "topic": "",
         "x": 150,
-        "y": 2980,
+        "y": 3020,
         "wires": [
             [
                 "7601c6459218c91a"
@@ -3066,7 +3067,7 @@
         "finalize": "",
         "libs": [],
         "x": 270,
-        "y": 2980,
+        "y": 3020,
         "wires": [
             [
                 "6715f9a179dc6151"
@@ -3088,7 +3089,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 400,
-        "y": 2980,
+        "y": 3020,
         "wires": [
             [
                 "432f0dd8fcdc8358"
@@ -3106,7 +3107,7 @@
             "4221ae3622740ea9"
         ],
         "x": 1665,
-        "y": 2600,
+        "y": 2640,
         "wires": []
     },
     {
@@ -3117,7 +3118,7 @@
         "name": "NOTES 2",
         "info": "Running this will update all previous prints prior to 2.0.7\n\nRUN THIS ONCE AFTER UPDATING TO 2.0.7\nBUT MAKE SURE TO RUN \"Update Material Used Costs\" FIRST\nIF UPDATING FROM AN OLDER VERSION THAN 2.0.6\n\n--------------------------------------------------------------------\n\nWhat this does is fill in data for the filament_data column where it previously is empty.\n\nThis new column is directly taken from the gcode of each print to be accurate,\nHOWEVER for this retroactive updating, it will do it based off of the saved data.\n\nThis means for all that are manually updated like this, they will only have:\n1 filament\ncolour: black\nprofile: Manual\nand a special \"manual_set\":true value in the single filament.\n\nThe purposes of this column is to allow advanced parsing of costs / material usage.\n\nHowever, when this is pulled manually via this, it is already using values based on what exists.\nThis means for failed prints it is already modified based on print progress.\n\nFOR ALL THAT ARE ADDED THROUGH NORMAL PRINTING\nthey will not auto update based on print progress if failed.\n\nHence, a new column, \"progress_done\" is created so you can use it to calculate advanced metrics.\nI already take care of this calc in the grafana dashboards. By default, progress_done is set to 100\nthis way old data works.",
         "x": 240,
-        "y": 3240,
+        "y": 3280,
         "wires": []
     },
     {
@@ -3133,7 +3134,7 @@
         "onceDelay": "5",
         "topic": "",
         "x": 500,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "10407d83408bc1bf"
@@ -3151,7 +3152,7 @@
         "output": true,
         "outputs": 1,
         "x": 1150,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "0c8657af20f117ae"
@@ -3177,7 +3178,7 @@
         "to": "",
         "reg": false,
         "x": 1270,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "3eac6b751d4e8365"
@@ -3195,7 +3196,7 @@
         "output": true,
         "outputs": 1,
         "x": 1390,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "94d6b55f603d73c4"
@@ -3213,7 +3214,7 @@
         "output": true,
         "outputs": 1,
         "x": 1510,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "b790b08e7727c55b"
@@ -3231,7 +3232,7 @@
         "output": true,
         "outputs": 1,
         "x": 1630,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             []
         ]
@@ -3255,7 +3256,7 @@
         "repair": false,
         "outputs": 1,
         "x": 910,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "d549297664c2cb31"
@@ -3273,7 +3274,7 @@
         "output": true,
         "outputs": 1,
         "x": 790,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "c30c2bb43770649b"
@@ -3301,7 +3302,7 @@
         "to": "",
         "reg": false,
         "x": 1030,
-        "y": 3240,
+        "y": 3280,
         "wires": [
             [
                 "f436594fa28f7864"
@@ -3394,7 +3395,7 @@
             "dcebecadb5c407e4"
         ],
         "x": 1894,
-        "y": 2499,
+        "y": 2539,
         "w": 712,
         "h": 402
     },
@@ -3414,7 +3415,7 @@
         "expiry": "",
         "broker": "489094618c340eef",
         "x": 2500,
-        "y": 2720,
+        "y": 2760,
         "wires": []
     },
     {
@@ -3430,7 +3431,7 @@
         "finalize": "",
         "libs": [],
         "x": 2430,
-        "y": 2600,
+        "y": 2640,
         "wires": [
             [
                 "7cea7009956f5aec"
@@ -3450,7 +3451,7 @@
         "finalize": "",
         "libs": [],
         "x": 2440,
-        "y": 2560,
+        "y": 2600,
         "wires": [
             [
                 "53d9f117e4bdc75a"
@@ -3470,7 +3471,7 @@
         "finalize": "",
         "libs": [],
         "x": 2340,
-        "y": 2800,
+        "y": 2840,
         "wires": [
             [
                 "270ff91a248dd8f8"
@@ -3504,7 +3505,7 @@
         "repair": false,
         "outputs": 3,
         "x": 2020,
-        "y": 2800,
+        "y": 2840,
         "wires": [
             [
                 "e72f63899b356531"
@@ -3534,7 +3535,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 2340,
-        "y": 2760,
+        "y": 2800,
         "wires": [
             [
                 "5e0688f121b8fddb"
@@ -3547,7 +3548,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2560,
-        "y": 2640,
+        "y": 2680,
         "wires": [
             [
                 "2f0c417bdc5f70ba"
@@ -3560,7 +3561,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2320,
-        "y": 2680,
+        "y": 2720,
         "wires": [
             [
                 "e91c88c6b0449efb",
@@ -3574,7 +3575,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2200,
-        "y": 2800,
+        "y": 2840,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -3587,7 +3588,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2200,
-        "y": 2820,
+        "y": 2860,
         "wires": [
             [
                 "1a3a1c71ba1cf2f3"
@@ -3607,7 +3608,7 @@
         "finalize": "",
         "libs": [],
         "x": 2350,
-        "y": 2840,
+        "y": 2880,
         "wires": [
             [
                 "270ff91a248dd8f8"
@@ -3620,7 +3621,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2480,
-        "y": 2800,
+        "y": 2840,
         "wires": [
             [
                 "1e3ee56ffe1d6afb"
@@ -3644,7 +3645,7 @@
         "repair": false,
         "outputs": 1,
         "x": 2210,
-        "y": 2760,
+        "y": 2800,
         "wires": [
             [
                 "1b174dc5a3c2cb2b"
@@ -3657,7 +3658,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "x": 2220,
-        "y": 2840,
+        "y": 2880,
         "wires": [
             [
                 "5be89edbbd6808a4"
@@ -3674,7 +3675,7 @@
             "d0de2bfdbe4c20b5"
         ],
         "x": 2135,
-        "y": 2820,
+        "y": 2860,
         "wires": [
             [
                 "41db1a005f0694bc"
@@ -3691,7 +3692,7 @@
             "4ccfb3dfd3993e15"
         ],
         "x": 2135,
-        "y": 2860,
+        "y": 2900,
         "wires": [
             [
                 "7fe0a7636edfc4e8"
@@ -3711,7 +3712,7 @@
         "finalize": "",
         "libs": [],
         "x": 2220,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "bd56371da0a2e632"
@@ -3733,7 +3734,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 2000,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "8a4f1c973014f966"
@@ -3753,7 +3754,7 @@
         "finalize": "",
         "libs": [],
         "x": 2250,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "5a5aad687311dcf6"
@@ -3779,7 +3780,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 2000,
-        "y": 2620,
+        "y": 2660,
         "wires": [
             [
                 "015f1beab287c717"
@@ -3805,7 +3806,7 @@
         "output_location_type": "msg",
         "output_location": "payload",
         "x": 2130,
-        "y": 2620,
+        "y": 2660,
         "wires": [
             [
                 "3ead9edd41601385"
@@ -3825,7 +3826,7 @@
         "finalize": "",
         "libs": [],
         "x": 2040,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "34a5733e7ccb948d"
@@ -3845,7 +3846,7 @@
         "finalize": "",
         "libs": [],
         "x": 2040,
-        "y": 2720,
+        "y": 2760,
         "wires": [
             [
                 "78ca6a864531e4b4"
@@ -3866,7 +3867,7 @@
         "property": "payload",
         "topi": "topic",
         "x": 2130,
-        "y": 2580,
+        "y": 2620,
         "wires": [
             [
                 "dc8f60896e88822e"
@@ -3892,7 +3893,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 2460,
-        "y": 2660,
+        "y": 2700,
         "wires": [
             [
                 "53d9f117e4bdc75a"
@@ -3912,7 +3913,7 @@
         "onceDelay": "1",
         "topic": "",
         "x": 1990,
-        "y": 2540,
+        "y": 2580,
         "wires": [
             [
                 "9d9e2b832774a598"
@@ -4049,10 +4050,13 @@
             "d64e04129b153b23",
             "d0c8110b3e5249f4",
             "6dbc7a3a5001c0ba",
-            "6a12ca3e9a532505"
+            "6a12ca3e9a532505",
+            "46f772845cc334b4",
+            "e2eb37196fdf0a9c",
+            "7c37dc690184b5cd"
         ],
         "x": 54,
-        "y": 1739,
+        "y": 1779,
         "w": 2152,
         "h": 742
     },
@@ -4070,7 +4074,7 @@
         "encoding": "none",
         "allProps": false,
         "x": 1280,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "96da9757d9fb412c"
@@ -4088,7 +4092,7 @@
         "compressionlevel": 6,
         "outasstring": false,
         "x": 1430,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "5473649d0d4b8226"
@@ -4108,7 +4112,7 @@
         "finalize": "",
         "libs": [],
         "x": 1260,
-        "y": 2060,
+        "y": 2100,
         "wires": [
             [
                 "9f11992046e857ad"
@@ -4128,7 +4132,7 @@
         "overwriteFile": "true",
         "encoding": "base64",
         "x": 1230,
-        "y": 2100,
+        "y": 2140,
         "wires": [
             [
                 "3d06568f60ee15de"
@@ -4145,7 +4149,7 @@
         "action": "",
         "property": "payload",
         "x": 1460,
-        "y": 2060,
+        "y": 2100,
         "wires": [
             [
                 "7763767593c91b02"
@@ -4171,7 +4175,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 980,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "5a7c93bb3a3652f0"
@@ -4197,7 +4201,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 390,
-        "y": 1800,
+        "y": 1840,
         "wires": [
             [
                 "2b6a547ffa94394d"
@@ -4236,7 +4240,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1330,
-        "y": 1780,
+        "y": 1820,
         "wires": [
             [
                 "626e8370574c265c"
@@ -4256,7 +4260,7 @@
         "finalize": "",
         "libs": [],
         "x": 2000,
-        "y": 1800,
+        "y": 1840,
         "wires": [
             [
                 "a976f52574ef2598"
@@ -4282,7 +4286,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 880,
-        "y": 1800,
+        "y": 1840,
         "wires": [
             [
                 "84f691a521695fd2"
@@ -4302,7 +4306,7 @@
         "finalize": "",
         "libs": [],
         "x": 1240,
-        "y": 2160,
+        "y": 2200,
         "wires": [
             [
                 "4ffc15c7937bdb08"
@@ -4318,7 +4322,7 @@
         "action": "",
         "property": "payload",
         "x": 1420,
-        "y": 2160,
+        "y": 2200,
         "wires": [
             [
                 "f693e97ccdeabc0b"
@@ -4338,7 +4342,7 @@
         "overwriteFile": "true",
         "encoding": "base64",
         "x": 1570,
-        "y": 2160,
+        "y": 2200,
         "wires": [
             [
                 "150e8ccb27fa934d"
@@ -4360,7 +4364,7 @@
         "encoding": "none",
         "allProps": false,
         "x": 1880,
-        "y": 2160,
+        "y": 2200,
         "wires": [
             [
                 "cb0be7b293557c45"
@@ -4377,7 +4381,7 @@
         "attr": "property",
         "chr": "",
         "x": 1690,
-        "y": 2200,
+        "y": 2240,
         "wires": [
             [
                 "14bf16d39c0cc296"
@@ -4392,12 +4396,13 @@
         "name": "Extract Type And Sum Weights",
         "func": "var filaments = {};\n\nvar weight = 0.0;\nvar has_only_one_plate = false;\nvar current_plate_meta = undefined;\nif (msg.payload !== undefined && msg.payload.config != undefined\n    && msg.payload.config.plate != undefined) {\n    let plates = msg.payload.config.plate;\n    if(plates.length == 1) {\n        has_only_one_plate = true;\n    }\n    for (var plate of plates) {\n        for (var p of plate.metadata) {\n            if(p.property.key == \"index\" && \n                (parseInt(p.property.value) == msg.plate_id \n                || has_only_one_plate)) {\n                    current_plate_meta = plate.metadata;\n                    msg.plate_id = parseInt(p.property.value);\n                    if(has_only_one_plate && (flow.get(\"current_platename\") == undefined || flow.get(\"current_platename\") == \"\")) {\n                        flow.set(\"current_platename\", \"plate_\"+msg.plate_id + \".gcode\");\n                        let path = flow.get(\"path_prefix\") + flow.get(\"printer_name\");\n                        \n                        msg.localFilename = path + \"/current_print.3mf\"\n                        node.send([null, msg]);\n                    }\n                    break;\n                }\n            //if (p.property.key == \"weight\") {\n            //    weight += parseFloat(p.property.value);\n            //}\n        }\n        for (var f of plate.filament) {\n            if(f.property.type != undefined && \n            !f.property.type.includes(\"Support\")\n                && f.property.type != \"PLA-S\"\n                && f.property.type != \"PA-S\"\n                ) {\n                if (filaments[f.property.type] == undefined) {\n                    filaments[f.property.type] = parseFloat(f.property.used_g);\n                }\n                else {\n                    filaments[f.property.type] = filaments[f.property.type] + parseFloat(f.property.used_g);\n                }\n            }\n        }\n    }\n}\n\nif(current_plate_meta != undefined) {\n    for (var p of current_plate_meta) {\n        if (p.property.key == \"weight\") {\n            weight += parseFloat(p.property.value);\n        }\n    }\n}\n\nmsg.payload = {};\nmsg.payload.weight = weight;\nmsg.payload.material = \"\";\nvar fil = Object.keys(filaments);\nvar max = 0;\nfor (var ff of fil) {\n    if (filaments[ff] >= max) {\n        max = filaments[ff];\n        msg.payload.material = ff;\n    }\n}\nif (max == 0) {\n    msg.payload.material = \"\";\n}\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload.weight + \"g of material, mostly or all \" + msg.payload.material });\nmsg.update_for = \"weights\";\nnode.send([msg, null]);",
         "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 1910,
-        "y": 2200,
+        "y": 2240,
         "wires": [
             [
                 "d0de2bfdbe4c20b5",
@@ -4422,7 +4427,7 @@
         "fnCode": "import ftplib\nimport ssl\nimport platform\n\nftplib.ssl_version = ssl.PROTOCOL_TLSv1_2\n\nclass ImplicitFTP_TLS(ftplib.FTP_TLS):\n    \"\"\"FTP_TLS subclass that automatically wraps sockets in SSL to support implicit FTPS.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self._sock = None\n\n    @property\n    def sock(self):\n        \"\"\"Return the socket.\"\"\"\n        return self._sock\n\n    @sock.setter\n    def sock(self, value):\n        \"\"\"When modifying the socket, ensure that it is ssl wrapped.\"\"\"\n        if value is not None and not isinstance(value, ssl.SSLSocket):\n            value = self.context.wrap_socket(value)\n        self._sock = value\n\n    def ntransfercmd(self, cmd, rest=None):\n        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)\n        if self._prot_p:\n            session = self.sock.session\n            if isinstance(self.sock, ssl.SSLSocket):\n                    session = self.sock.session\n            conn = self.context.wrap_socket(conn,\n                                            server_hostname=self.host,\n                                            session=session)  # this is the fix\n        return conn, size\n        \n\nftps = ImplicitFTP_TLS()\n\nftps.connect(host=msg[\"printer_ip\"], port=990)\n\nftps.login(user=\"bblp\", passwd=msg[\"access_code\"])\nftps.prot_p()\n\nli = []\nif(str(msg[\"model\"]).startswith(\"P1\")):\n    li = ftps.nlst()\nelse:\n    li = ftps.nlst(\"*.3mf\")\nlitemp = ftps.nlst(\"/cache\")\nli2 = []\nfor item in litemp:\n    if not item.startswith(\"/cache\"):\n        if not item.startswith(\"/\"):\n            item = \"/\" + item\n        item = \"/cache\" + item\n    li2.append(item)\n# may need to add /cache/ in front of items maybe?\n# alter list so if items from li2 dont start with it, to pre-pend\n\nli = li + li2\nresult = [x for x in li if x.endswith(\".3mf\")] \nmsg[\"files\"] = result\nftps.close()\nreturn msg\n\n",
         "fnCodePost": "#comment",
         "x": 770,
-        "y": 1840,
+        "y": 1880,
         "wires": [
             [
                 "94d689b7678280ab"
@@ -4443,7 +4448,7 @@
         "fnCode": "import ftplib\nimport ssl\nimport os\n\nftplib.ssl_version = ssl.PROTOCOL_TLSv1_2\n\nclass ImplicitFTP_TLS(ftplib.FTP_TLS):\n    \"\"\"FTP_TLS subclass that automatically wraps sockets in SSL to support implicit FTPS.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self._sock = None\n\n    @property\n    def sock(self):\n        \"\"\"Return the socket.\"\"\"\n        return self._sock\n\n    @sock.setter\n    def sock(self, value):\n        \"\"\"When modifying the socket, ensure that it is ssl wrapped.\"\"\"\n        if value is not None and not isinstance(value, ssl.SSLSocket):\n            value = self.context.wrap_socket(value)\n        self._sock = value\n\n    def ntransfercmd(self, cmd, rest=None):\n        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)\n        if self._prot_p:\n            session = self.sock.session\n            if isinstance(self.sock, ssl.SSLSocket):\n                    session = self.sock.session\n            conn = self.context.wrap_socket(conn,\n                                            server_hostname=self.host,\n                                            session=session)  # this is the fix\n        return conn, size\n\nftps = ImplicitFTP_TLS()\n\nftps.connect(host=msg[\"printer_ip\"], port=990)\n\nftps.login(user=\"bblp\", passwd=msg[\"access_code\"])\nftps.prot_p()\n\npath = msg[\"path_prefix\"]+ msg[\"printer_name\"]\nisExist = os.path.exists(path)\nif not isExist:\n   os.makedirs(path)\n\nlocalFileName = path + \"/current_print.3mf\"\n\nwith open(localFileName, 'wb') as f:\n    ftps.retrbinary('RETR ' + msg[\"payload\"], f.write)\\\n        \nmsg[\"localFilename\"] = localFileName\nftps.close()\nreturn msg\n\n",
         "fnCodePost": "#comment",
         "x": 1530,
-        "y": 1840,
+        "y": 1880,
         "wires": [
             [
                 "4bcb45ef62c19ded"
@@ -4472,7 +4477,7 @@
         "repair": false,
         "outputs": 2,
         "x": 990,
-        "y": 1840,
+        "y": 1880,
         "wires": [
             [
                 "3dc0d9a315fb5a62"
@@ -4488,7 +4493,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "x": 1080,
-        "y": 1960,
+        "y": 2000,
         "wires": [
             [
                 "93d2a7632b0f6d50",
@@ -4512,7 +4517,7 @@
         "finalize": "",
         "libs": [],
         "x": 830,
-        "y": 2100,
+        "y": 2140,
         "wires": [
             [
                 "7763767593c91b02"
@@ -4557,7 +4562,7 @@
         "entity_location": "data",
         "override_data": "msg",
         "x": 1910,
-        "y": 1860,
+        "y": 1900,
         "wires": [
             [
                 "31fe7e40ca1fe0d2"
@@ -4577,7 +4582,7 @@
         "finalize": "",
         "libs": [],
         "x": 1760,
-        "y": 1920,
+        "y": 1960,
         "wires": [
             [
                 "882cd28a46933aba"
@@ -4603,7 +4608,7 @@
         "finalize": "",
         "libs": [],
         "x": 1650,
-        "y": 2060,
+        "y": 2100,
         "wires": [
             [
                 "1303f7e11c7da28a"
@@ -4616,7 +4621,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "x": 1760,
-        "y": 2060,
+        "y": 2100,
         "wires": [
             [
                 "9a80d72e27f5a9fd",
@@ -4632,12 +4637,13 @@
         "name": "Printer Config",
         "func": "let data = {};\nlet payload = {};\nlet device = {};\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"camera\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.topic = base_topic + \"/image\";\npayload.json_attributes_topic = base_topic + \"/attr\";\npayload.image_encoding = \"b64\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 1860,
-        "y": 2020,
+        "y": 2060,
         "wires": [
             [
                 "7ba43cad29afac9c"
@@ -4652,12 +4658,13 @@
         "name": "Printer State",
         "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nmsg.topic = flow.get(\"root_topic\") +\"/camera/\" + msg.machine_name + \"/\" + msg.topic + \"/image\";\n\nnode.send(msg);\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 1870,
-        "y": 2060,
+        "y": 2100,
         "wires": [
             [
                 "7ba43cad29afac9c"
@@ -4680,7 +4687,7 @@
         "expiry": "",
         "broker": "489094618c340eef",
         "x": 2070,
-        "y": 2040,
+        "y": 2080,
         "wires": []
     },
     {
@@ -4702,7 +4709,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1380,
-        "y": 2100,
+        "y": 2140,
         "wires": [
             [
                 "47f2f3e7a840b868"
@@ -4723,7 +4730,7 @@
         "encoding": "none",
         "allProps": false,
         "x": 1530,
-        "y": 2100,
+        "y": 2140,
         "wires": [
             [
                 "4ae5178797656c89"
@@ -4739,7 +4746,7 @@
         "action": "str",
         "property": "payload",
         "x": 1680,
-        "y": 2100,
+        "y": 2140,
         "wires": [
             [
                 "114bd45d2f6a3eae"
@@ -4763,7 +4770,7 @@
         "repair": false,
         "outputs": 1,
         "x": 540,
-        "y": 1800,
+        "y": 1840,
         "wires": [
             [
                 "a04618988906643f"
@@ -4775,7 +4782,7 @@
         "type": "switch",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "Is P1P Not Cloud?",
+        "name": "Is Not Cloud?",
         "property": "P1P_CLOUD_MODE",
         "propertyType": "flow",
         "rules": [
@@ -4789,8 +4796,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 530,
-        "y": 1840,
+        "x": 520,
+        "y": 1880,
         "wires": [
             [
                 "32224e154dd11042"
@@ -4815,7 +4822,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 180,
-        "y": 2320,
+        "y": 2360,
         "wires": [
             [
                 "a0b30399e596f2c4"
@@ -4832,7 +4839,7 @@
         "action": "obj",
         "pretty": false,
         "x": 350,
-        "y": 2320,
+        "y": 2360,
         "wires": [
             [
                 "4878f77e0b70394f"
@@ -4845,14 +4852,15 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Cloud?",
-        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nflow.set(\"was_http_successful\", false);\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    let match = plate.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n                    if (match != undefined && match.length > 1) {\n                      plate = match[1];\n                    }\n                    flow.set(\"current_platename\", plate);\n                    node.send([null, {\"payload\": plate, \"topic\": \"plate_name\"}], null);\n                  }\n\n                  delete msg.payload;\n                  node.send([msg, null, null]);\n            }\n            else if (msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && !String(msg.payload.print.url).startsWith(\"http\")) {\n                node.send([null, null, msg]);\n              }\n\n}",
+        "func": "flow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nflow.set(\"was_http_successful\", false);\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"http\") ){\n                  msg.url = msg.payload.print.url;\n\n                  flow.set(\"http_print_file_url\", msg.url);\n\n                  flow.set(\"current_filename\", msg.url);\n\n                  if(msg.payload.print.param != undefined) {\n                    let plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                    plate = plate.replace(\".gcode\", \"\");\n                    let match = plate.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n                    if (match != undefined && match.length > 1) {\n                      plate = match[1];\n                    }\n                    flow.set(\"current_platename\", plate);\n                    node.send([null, {\"payload\": plate, \"topic\": \"plate_name\"}], null);\n                  }\n\n                  delete msg.payload;\n                  node.send([msg, null, null]);\n            }\n            else if (msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && !String(msg.payload.print.url).startsWith(\"http\")) {\n                node.send([null, null, msg]);\n              }\n\n}",
         "outputs": 3,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 560,
-        "y": 2380,
+        "y": 2420,
         "wires": [
             [
                 "1c845f7d3a35bec3"
@@ -4883,7 +4891,7 @@
         "senderr": false,
         "headers": [],
         "x": 190,
-        "y": 2400,
+        "y": 2440,
         "wires": [
             [
                 "22232609c683663d"
@@ -4903,7 +4911,7 @@
         "overwriteFile": "true",
         "encoding": "none",
         "x": 540,
-        "y": 2440,
+        "y": 2480,
         "wires": [
             [
                 "22bd310294153ff5"
@@ -4923,7 +4931,7 @@
         "finalize": "",
         "libs": [],
         "x": 940,
-        "y": 2440,
+        "y": 2480,
         "wires": [
             [
                 "4bcb45ef62c19ded"
@@ -4949,7 +4957,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 320,
-        "y": 2440,
+        "y": 2480,
         "wires": [
             [
                 "dc50f8c00489f468"
@@ -4975,7 +4983,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1720,
-        "y": 2160,
+        "y": 2200,
         "wires": [
             [
                 "b4dccf6d01ed92c4"
@@ -5001,7 +5009,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 760,
-        "y": 2280,
+        "y": 2320,
         "wires": [
             [
                 "f067576a05ce8f67"
@@ -5021,7 +5029,7 @@
         "finalize": "",
         "libs": [],
         "x": 1210,
-        "y": 2260,
+        "y": 2300,
         "wires": [
             [
                 "abaa28644684f90e"
@@ -5037,7 +5045,7 @@
         "action": "",
         "property": "payload",
         "x": 1200,
-        "y": 2300,
+        "y": 2340,
         "wires": [
             [
                 "5b6ab2bc7a531af9"
@@ -5057,7 +5065,7 @@
         "overwriteFile": "true",
         "encoding": "base64",
         "x": 1210,
-        "y": 2340,
+        "y": 2380,
         "wires": [
             [
                 "7db5fa88a8518261"
@@ -5084,7 +5092,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1440,
-        "y": 2260,
+        "y": 2300,
         "wires": [
             [
                 "99abcec52237d2d2"
@@ -5105,7 +5113,7 @@
         "encoding": "none",
         "allProps": false,
         "x": 1420,
-        "y": 2340,
+        "y": 2380,
         "wires": [
             [
                 "a2efbc015a951f08"
@@ -5122,7 +5130,7 @@
         "action": "",
         "pretty": false,
         "x": 1570,
-        "y": 2340,
+        "y": 2380,
         "wires": [
             [
                 "8af8587f887b4c53"
@@ -5142,7 +5150,7 @@
         "finalize": "",
         "libs": [],
         "x": 1790,
-        "y": 2340,
+        "y": 2380,
         "wires": [
             [
                 "4ccfb3dfd3993e15",
@@ -5172,7 +5180,7 @@
         "to": "",
         "reg": false,
         "x": 1870,
-        "y": 2120,
+        "y": 2160,
         "wires": [
             [
                 "5309948f7257a603"
@@ -5201,7 +5209,7 @@
         "to": "",
         "reg": false,
         "x": 1440,
-        "y": 2300,
+        "y": 2340,
         "wires": [
             [
                 "1c9708508fb4061b"
@@ -5243,7 +5251,7 @@
         "to": "",
         "reg": false,
         "x": 530,
-        "y": 2180,
+        "y": 2220,
         "wires": [
             []
         ]
@@ -5261,7 +5269,7 @@
         "finalize": "",
         "libs": [],
         "x": 1230,
-        "y": 1960,
+        "y": 2000,
         "wires": [
             [
                 "5775eefd4e4d3eeb"
@@ -5277,7 +5285,7 @@
         "action": "",
         "property": "payload",
         "x": 1420,
-        "y": 1960,
+        "y": 2000,
         "wires": [
             [
                 "3008bc1efb073922"
@@ -5297,7 +5305,7 @@
         "overwriteFile": "true",
         "encoding": "base64",
         "x": 1290,
-        "y": 2000,
+        "y": 2040,
         "wires": [
             [
                 "cfa741817de5baf3"
@@ -5324,7 +5332,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1440,
-        "y": 2000,
+        "y": 2040,
         "wires": [
             [
                 "68843c7f7a8b38ea"
@@ -5353,7 +5361,7 @@
         "to": "",
         "reg": false,
         "x": 1620,
-        "y": 1960,
+        "y": 2000,
         "wires": [
             []
         ]
@@ -5377,7 +5385,7 @@
         "onceDelay": 0.1,
         "topic": "",
         "x": 150,
-        "y": 1960,
+        "y": 2000,
         "wires": [
             [
                 "9c63753ac1e8be87"
@@ -5403,7 +5411,7 @@
         "onceDelay": 0.1,
         "topic": "",
         "x": 180,
-        "y": 1780,
+        "y": 1820,
         "wires": [
             [
                 "291c79c514634664"
@@ -5427,7 +5435,7 @@
         "repair": false,
         "outputs": 1,
         "x": 550,
-        "y": 2020,
+        "y": 2060,
         "wires": [
             [
                 "f21a27ebe27373ac",
@@ -5452,7 +5460,7 @@
         "repair": false,
         "outputs": 1,
         "x": 350,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "9327e5ca3160a74e"
@@ -5501,7 +5509,7 @@
         "to": "",
         "reg": false,
         "x": 710,
-        "y": 1800,
+        "y": 1840,
         "wires": [
             [
                 "99471c4671f4c1c8"
@@ -5542,6 +5550,13 @@
                 "pt": "msg",
                 "to": "path_prefix",
                 "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "http_print_file_url",
+                "pt": "flow",
+                "to": "",
+                "tot": "str"
             }
         ],
         "action": "",
@@ -5550,7 +5565,7 @@
         "to": "",
         "reg": false,
         "x": 1170,
-        "y": 1840,
+        "y": 1880,
         "wires": [
             [
                 "b6ff9234e9c4103a"
@@ -5570,7 +5585,7 @@
         "onceDelay": "5",
         "topic": "",
         "x": 170,
-        "y": 2280,
+        "y": 2320,
         "wires": [
             [
                 "e1e4d60219ddca10"
@@ -5590,7 +5605,7 @@
         "finalize": "",
         "libs": [],
         "x": 360,
-        "y": 2280,
+        "y": 2320,
         "wires": [
             [
                 "29afc93ac757d13c"
@@ -5602,7 +5617,7 @@
         "type": "switch",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
-        "name": "Is P1P Not Cloud?",
+        "name": "Is Not Cloud?",
         "property": "P1P_CLOUD_MODE",
         "propertyType": "flow",
         "rules": [
@@ -5616,8 +5631,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 350,
-        "y": 2360,
+        "x": 340,
+        "y": 2400,
         "wires": [
             [
                 "9c9a70fe3c4e05a6"
@@ -5635,12 +5650,13 @@
         "name": "Is Project URL Local?",
         "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\"ftp:/\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  let match = plate.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n                  if (match != undefined && match.length > 1) {\n                    plate = match[1];\n                  }\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }, null]);\n            }\n  else if (msg.payload.print.command == \"project_file\"\n    && msg.payload.print.url != undefined\n    && String(msg.payload.print.url).startsWith(\"http\")) {\n        node.send([null, null, msg]);\n    }\n}",
         "outputs": 3,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 560,
-        "y": 2320,
+        "y": 2360,
         "wires": [
             [
                 "6a12ca3e9a532505"
@@ -5666,7 +5682,7 @@
         "finalize": "",
         "libs": [],
         "x": 1030,
-        "y": 1800,
+        "y": 1840,
         "wires": [
             [
                 "32972334a68e7852"
@@ -5689,7 +5705,7 @@
         "finalize": "",
         "libs": [],
         "x": 1590,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "6ab24dd036f012f3"
@@ -5734,7 +5750,7 @@
         "to": "",
         "reg": false,
         "x": 550,
-        "y": 2220,
+        "y": 2260,
         "wires": [
             []
         ]
@@ -5758,7 +5774,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 540,
-        "y": 1980,
+        "y": 2020,
         "wires": [
             [
                 "a9c4d210d07b2491"
@@ -5782,7 +5798,7 @@
         "repair": false,
         "outputs": 1,
         "x": 350,
-        "y": 1940,
+        "y": 1980,
         "wires": [
             [
                 "9327e5ca3160a74e"
@@ -5810,7 +5826,7 @@
         "to": "",
         "reg": false,
         "x": 1130,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "82eb71a02f89ed73"
@@ -5823,7 +5839,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "x": 260,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "7ff317869f9c6f32"
@@ -5843,7 +5859,7 @@
         "finalize": "",
         "libs": [],
         "x": 170,
-        "y": 2440,
+        "y": 2480,
         "wires": [
             [
                 "2965467d46be20b4"
@@ -5865,7 +5881,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 160,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "291c79c514634664"
@@ -5885,7 +5901,7 @@
         "finalize": "",
         "libs": [],
         "x": 150,
-        "y": 1860,
+        "y": 1900,
         "wires": [
             [
                 "2d2a60988e25d24d"
@@ -5905,7 +5921,7 @@
         "onceDelay": "1",
         "topic": "",
         "x": 150,
-        "y": 1820,
+        "y": 1860,
         "wires": [
             [
                 "c85d1f9d9cfa90ca"
@@ -5934,7 +5950,7 @@
         "repair": false,
         "outputs": 2,
         "x": 1470,
-        "y": 1780,
+        "y": 1820,
         "wires": [
             [
                 "a4213022bc187889"
@@ -5963,7 +5979,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1590,
-        "y": 1780,
+        "y": 1820,
         "wires": [
             [
                 "005198128b13fd0b"
@@ -5989,7 +6005,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1340,
-        "y": 1840,
+        "y": 1880,
         "wires": [
             [
                 "2133e1b03b80f121"
@@ -6015,7 +6031,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1840,
-        "y": 1800,
+        "y": 1840,
         "wires": [
             [
                 "5cf8b602091be9bb"
@@ -6034,7 +6050,7 @@
             "0f0b9aa41491e74a"
         ],
         "x": 2105,
-        "y": 2200,
+        "y": 2240,
         "wires": []
     },
     {
@@ -6049,7 +6065,7 @@
             "2b5fbcfc32a16fa5"
         ],
         "x": 1995,
-        "y": 2340,
+        "y": 2380,
         "wires": []
     },
     {
@@ -6073,7 +6089,7 @@
         "to": "",
         "reg": false,
         "x": 760,
-        "y": 1940,
+        "y": 1980,
         "wires": [
             [
                 "f8479c53a54a30e6"
@@ -6093,7 +6109,7 @@
         "finalize": "",
         "libs": [],
         "x": 1710,
-        "y": 1780,
+        "y": 1820,
         "wires": [
             [
                 "5f893cfbc9c8b3da"
@@ -6106,10 +6122,10 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "x": 440,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
-                "c905d2cbece4a005"
+                "46f772845cc334b4"
             ]
         ]
     },
@@ -6119,14 +6135,14 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Subscribe",
-        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });\n\nflow.set(\"http_print_file_url\", \"\");",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 300,
-        "y": 2040,
+        "y": 2080,
         "wires": [
             [
                 "34fb479b5e33f9c7"
@@ -6148,7 +6164,7 @@
         "rh": 0,
         "inputs": 1,
         "x": 160,
-        "y": 2080,
+        "y": 2120,
         "wires": [
             [
                 "f5834a52286a1756"
@@ -6168,7 +6184,7 @@
         "finalize": "",
         "libs": [],
         "x": 150,
-        "y": 2120,
+        "y": 2160,
         "wires": [
             [
                 "a16e19bc9442375f"
@@ -6194,7 +6210,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 300,
-        "y": 2120,
+        "y": 2160,
         "wires": [
             [
                 "3a7ca8e6215a655a"
@@ -6220,7 +6236,7 @@
         "output_location_type": "msg",
         "output_location": "payload",
         "x": 150,
-        "y": 2160,
+        "y": 2200,
         "wires": [
             [
                 "2dda54c49285778c"
@@ -6240,7 +6256,7 @@
         "finalize": "",
         "libs": [],
         "x": 200,
-        "y": 2200,
+        "y": 2240,
         "wires": [
             [
                 "b4d807c686531217"
@@ -6253,14 +6269,14 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Start / Ends (or reset)",
-        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if ((msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") || (msg.previous_state == \"RUNNING\" && msg.current_state == \"IDLE\")) {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n    if(msg.current_state == \"OFFLINE\" || msg.current_state == \"FAILED\" || msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\") {\n        flow.set(\"was_http_successful\", false);\n        flow.set(\"try_extract_backup\", false);\n    }\n}\n",
+        "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if ((msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") || (msg.previous_state == \"RUNNING\" && msg.current_state == \"IDLE\")) {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n                flow.set(\"http_print_file_url\", \"\");\n\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n                flow.set(\"http_print_file_url\", \"\");\n\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n    if(msg.current_state == \"OFFLINE\" || msg.current_state == \"FAILED\" || msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\") {\n        flow.set(\"was_http_successful\", false);\n        flow.set(\"try_extract_backup\", false);\n        flow.set(\"http_print_file_url\", \"\");\n    }\n}\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 240,
-        "y": 2240,
+        "y": 2280,
         "wires": [
             [
                 "9c63753ac1e8be87"
@@ -6285,7 +6301,7 @@
         "property": "payload",
         "topi": "topic",
         "x": 290,
-        "y": 2080,
+        "y": 2120,
         "wires": [
             [
                 "bc1c9acec2e7b857"
@@ -6312,7 +6328,7 @@
         "repair": false,
         "outputs": 2,
         "x": 780,
-        "y": 1900,
+        "y": 1940,
         "wires": [
             [
                 "32224e154dd11042"
@@ -6335,7 +6351,7 @@
         "finalize": "",
         "libs": [],
         "x": 390,
-        "y": 2400,
+        "y": 2440,
         "wires": [
             [
                 "f2684e6c83a56bd4"
@@ -6359,7 +6375,7 @@
         "repair": false,
         "outputs": 1,
         "x": 840,
-        "y": 2320,
+        "y": 2360,
         "wires": [
             [
                 "22bd310294153ff5"
@@ -6385,7 +6401,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1760,
-        "y": 1860,
+        "y": 1900,
         "wires": [
             [
                 "d702395bb3be0f21"
@@ -6405,7 +6421,7 @@
         "finalize": "",
         "libs": [],
         "x": 1420,
-        "y": 2400,
+        "y": 2440,
         "wires": [
             [
                 "48ea5ffc822af224"
@@ -6425,7 +6441,7 @@
         "finalize": "",
         "libs": [],
         "x": 1430,
-        "y": 2440,
+        "y": 2480,
         "wires": [
             [
                 "48ea5ffc822af224"
@@ -6438,7 +6454,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "x": 1300,
-        "y": 2420,
+        "y": 2460,
         "wires": [
             [
                 "58964f0865d26681",
@@ -6452,7 +6468,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "x": 740,
-        "y": 2360,
+        "y": 2400,
         "wires": [
             [
                 "6dbc7a3a5001c0ba"
@@ -6475,7 +6491,7 @@
         "expiry": "",
         "broker": "489094618c340eef",
         "x": 1630,
-        "y": 2420,
+        "y": 2460,
         "wires": []
     },
     {
@@ -6495,7 +6511,7 @@
         "repair": false,
         "outputs": 1,
         "x": 2050,
-        "y": 2160,
+        "y": 2200,
         "wires": [
             [
                 "3b59acc082a9bc99"
@@ -6523,7 +6539,7 @@
         "to": "",
         "reg": false,
         "x": 2090,
-        "y": 2120,
+        "y": 2160,
         "wires": [
             [
                 "82eb71a02f89ed73"
@@ -6543,7 +6559,7 @@
         "onceDelay": "1",
         "topic": "",
         "x": 150,
-        "y": 2040,
+        "y": 2080,
         "wires": [
             [
                 "3f1c8e25f7805121"
@@ -6563,7 +6579,7 @@
         "finalize": "",
         "libs": [],
         "x": 1200,
-        "y": 2220,
+        "y": 2260,
         "wires": [
             [
                 "ac7ad51aa0ac7ebc"
@@ -6579,7 +6595,7 @@
         "action": "",
         "property": "payload",
         "x": 1360,
-        "y": 2220,
+        "y": 2260,
         "wires": [
             [
                 "ab842986c460b6e3"
@@ -6599,7 +6615,7 @@
         "overwriteFile": "true",
         "encoding": "base64",
         "x": 1510,
-        "y": 2200,
+        "y": 2240,
         "wires": [
             [
                 "b866b5fd015b735f"
@@ -6626,7 +6642,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1180,
-        "y": 1780,
+        "y": 1820,
         "wires": [
             [
                 "5f893cfbc9c8b3da"
@@ -6647,7 +6663,7 @@
         "encoding": "none",
         "allProps": false,
         "x": 1720,
-        "y": 2240,
+        "y": 2280,
         "wires": [
             [
                 "5550a0cc1cb9c55c"
@@ -6673,7 +6689,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 1580,
-        "y": 2240,
+        "y": 2280,
         "wires": [
             [
                 "f3b1eca3de35dadb"
@@ -6686,14 +6702,15 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Parse GCode",
-        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 120);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim()\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] > 0.00) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != []) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
+        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 120);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\nlet fila_costkg_line = \"\";\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_cost =\")) {\n        fila_costkg_line = n.replace(\"; filament_cost =\",\"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\"\n        && fila_costkg_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\nlet costkg = fila_costkg_line.split(\",\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim(),\n            \"kg_cost\": parseFloat(costkg[i].trim())\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] > 0.00) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != undefined && data.length != 0) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
         "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 1720,
-        "y": 2280,
+        "y": 2320,
         "wires": [
             [
                 "e5bde629696c68c3"
@@ -6714,7 +6731,7 @@
             "426f511209068038"
         ],
         "x": 2135,
-        "y": 2280,
+        "y": 2320,
         "wires": []
     },
     {
@@ -6728,7 +6745,7 @@
             "6dbc7a3a5001c0ba"
         ],
         "x": 1255,
-        "y": 2420,
+        "y": 2460,
         "wires": [
             [
                 "dc395c3ab15fc5b7"
@@ -6746,7 +6763,7 @@
             "d64e04129b153b23"
         ],
         "x": 1945,
-        "y": 1920,
+        "y": 1960,
         "wires": []
     },
     {
@@ -6760,7 +6777,7 @@
             "d64e04129b153b23"
         ],
         "x": 785,
-        "y": 2360,
+        "y": 2400,
         "wires": []
     },
     {
@@ -6782,10 +6799,83 @@
         "allowrate": false,
         "outputs": 1,
         "x": 760,
-        "y": 2240,
+        "y": 2280,
         "wires": [
             [
                 "32224e154dd11042"
+            ]
+        ]
+    },
+    {
+        "id": "46f772845cc334b4",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "property": "http_print_file_url",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 510,
+        "y": 1940,
+        "wires": [
+            [
+                "c905d2cbece4a005"
+            ],
+            [
+                "e2eb37196fdf0a9c"
+            ]
+        ]
+    },
+    {
+        "id": "e2eb37196fdf0a9c",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "http_print_file_url",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 1980,
+        "wires": [
+            [
+                "7c37dc690184b5cd"
+            ]
+        ]
+    },
+    {
+        "id": "7c37dc690184b5cd",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "x": 640,
+        "y": 2300,
+        "wires": [
+            [
+                "1c845f7d3a35bec3"
             ]
         ]
     },
@@ -6810,7 +6900,7 @@
             "88adc4ef65388bc4"
         ],
         "x": 1904,
-        "y": 2919,
+        "y": 2959,
         "w": 662,
         "h": 202
     },
@@ -6825,7 +6915,7 @@
         "output": true,
         "outputs": 1,
         "x": 2390,
-        "y": 3040,
+        "y": 3080,
         "wires": [
             []
         ]
@@ -6841,7 +6931,7 @@
         "output": true,
         "outputs": 1,
         "x": 2380,
-        "y": 3000,
+        "y": 3040,
         "wires": [
             []
         ]
@@ -6857,7 +6947,7 @@
         "output": true,
         "outputs": 1,
         "x": 2390,
-        "y": 2960,
+        "y": 3000,
         "wires": [
             []
         ]
@@ -6896,7 +6986,7 @@
         "repair": false,
         "outputs": 4,
         "x": 2050,
-        "y": 3000,
+        "y": 3040,
         "wires": [
             [
                 "4d4e6202ea8e0feb"
@@ -6922,7 +7012,7 @@
             "da9b07585f729c89"
         ],
         "x": 1945,
-        "y": 3000,
+        "y": 3040,
         "wires": [
             [
                 "47be921cd284ce4d"
@@ -6940,7 +7030,7 @@
         "output": true,
         "outputs": 1,
         "x": 2410,
-        "y": 3080,
+        "y": 3120,
         "wires": [
             []
         ]
@@ -6958,7 +7048,7 @@
         "finalize": "",
         "libs": [],
         "x": 2200,
-        "y": 3060,
+        "y": 3100,
         "wires": [
             [
                 "3088613307143de9"
