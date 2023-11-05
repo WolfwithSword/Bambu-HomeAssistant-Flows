@@ -150,7 +150,7 @@ elements:
           font-size: 0.75em
           color: rgba(0,0,0,0)
           '--label-badge-red': '#2F9AC5'
-image: /local/media/AMS_2.png
+image: /local/media/bambuprinter/AMS_2.png
 style: |
   ha-card {
     background: none !important;

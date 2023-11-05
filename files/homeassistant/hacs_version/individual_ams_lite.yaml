@@ -4,51 +4,19 @@ view_layout:
 elements:
   - type: custom:config-template-card
     entities:
-      - sensor.{HA_AMS_DEVICE_NAME}_tray_0
-    element:
-      type: state-icon
-      entity: sensor.{HA_AMS_DEVICE_NAME}_tray_0
-      icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_0'].state != 'Empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
-    style:
-      top: 28%
-      left: 21.4%
-      '--paper-item-icon-color': var(--tray_0_color)
-      background-color: rgba(0,0,0,0.5)
-      box-shadow: 0 0 5px 5px var(--tray_0_bg)
-      border-radius: 50px
-      '--mdc-icon-size': 2.4em
-  - type: state-label
-    entity: sensor.{HA_AMS_DEVICE_NAME}_tray_0
-    attribute: type
-    tap_action:
-      action: none
-    style:
-      top: 77%
-      left: 21%
-      text-align: center
-      font-size: 1em
-      background-color: rgba(0,0,0,0.4)
-      box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.4)
-      border-radius: 50px
-      pointer-events: none
-      color: '#FFFFFF'
-  - type: custom:config-template-card
-    entities:
       - sensor.{HA_AMS_DEVICE_NAME}_tray_1
     element:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_1
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state != 'Empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'custom:filament-1' : 'mdi:tray' }
     style:
-      top: 28%
-      left: 39.7%
+      top: 27%
+      left: 15.4%
       '--paper-item-icon-color': var(--tray_1_color)
       background-color: rgba(0,0,0,0.5)
-      box-shadow: 0 0 5px 5px  var(--tray_1_bg)
+      box-shadow: 0 0 5px 5px var(--tray_1_bg)
       border-radius: 50px
       '--mdc-icon-size': 2.4em
   - type: state-label
@@ -57,8 +25,8 @@ elements:
     tap_action:
       action: none
     style:
-      top: 77%
-      left: 40%
+      top: 42%
+      left: 15.4%
       text-align: center
       font-size: 1em
       background-color: rgba(0,0,0,0.4)
@@ -74,10 +42,10 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_2
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state != 'Empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'custom:filament-1' : 'mdi:tray' }
     style:
-      top: 28%
-      left: 59.7%
+      top: 62%
+      left: 45.7%
       '--paper-item-icon-color': var(--tray_2_color)
       background-color: rgba(0,0,0,0.5)
       box-shadow: 0 0 5px 5px  var(--tray_2_bg)
@@ -90,7 +58,39 @@ elements:
       action: none
     style:
       top: 77%
-      left: 60%
+      left: 45.7%
+      text-align: center
+      font-size: 1em
+      background-color: rgba(0,0,0,0.4)
+      box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.4)
+      border-radius: 50px
+      pointer-events: none
+      color: '#FFFFFF'
+  - type: custom:config-template-card
+    entities:
+      - sensor.{HA_AMS_DEVICE_NAME}_tray_4
+    element:
+      type: state-icon
+      entity: sensor.{HA_AMS_DEVICE_NAME}_tray_4
+      icon: >-
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_4'].state != 'Empty' ?
+        'custom:filament-1' : 'mdi:tray' }
+    style:
+      top: 11%
+      left: 44.7%
+      '--paper-item-icon-color': var(--tray_4_color)
+      background-color: rgba(0,0,0,0.5)
+      box-shadow: 0 0 5px 5px  var(--tray_4_bg)
+      border-radius: 50px
+      '--mdc-icon-size': 2.4em
+  - type: state-label
+    entity: sensor.{HA_AMS_DEVICE_NAME}_tray_4
+    attribute: type
+    tap_action:
+      action: none
+    style:
+      top: 26%
+      left: 44.7%
       text-align: center
       font-size: 1em
       background-color: rgba(0,0,0,0.4)
@@ -106,10 +106,10 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_3
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state != 'Empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'custom:filament-1' : 'mdi:tray' }
     style:
-      top: 28%
-      left: 79.6%
+      top: 52%
+      left: 84.6%
       '--paper-item-icon-color': var(--tray_3_color)
       background-color: rgba(0,0,0,0.5)
       box-shadow: 0 0 5px 5px var(--tray_3_bg)
@@ -121,8 +121,8 @@ elements:
     tap_action:
       action: none
     style:
-      top: 77%
-      left: 79.6%
+      top: 67%
+      left: 84.6%
       text-align: center
       font-size: 1em
       background-color: rgba(0,0,0,0.4)
@@ -130,38 +130,18 @@ elements:
       border-radius: 50px
       pointer-events: none
       color: '#FFFFFF'
-  - type: conditional
-    conditions:
-      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
-        state_not: OFFLINE
-    elements:
-      - entity: sensor.{HA_AMS_DEVICE_NAME}_temp
-        type: state-badge
-        style:
-          top: 22%
-          left: 8%
-          font-size: 0.75em
-          color: rgba(0,0,0,0)
-      - entity: sensor.{HA_AMS_DEVICE_NAME}_humidity_level
-        type: state-badge
-        style:
-          top: 22%
-          left: 92.5%
-          font-size: 0.75em
-          color: rgba(0,0,0,0)
-          '--label-badge-red': '#2F9AC5'
-image: /local/media/bambuprinter/AMS_2.png
+image: /local/media/bambuprinter/ams_lite.png
 style: |
   ha-card {
     background: none !important;
     border: none !important;
     box-shadow: none !important;
-    --tray_0_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_0', 'color') }};
     --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
     --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};
     --tray_3_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }};
-    --tray_0_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_0', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+    --tray_4_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color') }};
     --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
     --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
     --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+    --tray_4_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
   }
