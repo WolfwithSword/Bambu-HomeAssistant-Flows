@@ -138,24 +138,33 @@ elements:
       - entity: sensor.{HA_AMS_DEVICE_NAME}_temp
         type: state-badge
         style:
-          top: 22%
+          top: 50.75%
           left: 8%
           font-size: 0.75em
           color: rgba(0,0,0,0)
-      - entity: sensor.{HA_AMS_DEVICE_NAME}_humidity_level
-        type: state-badge
+      - type: custom:config-template-card
+        entities:
+          - sensor.{HA_AMS_DEVICE_NAME}_humidity_level
+        element:
+          type: state-icon
+          entity: sensor.{HA_AMS_DEVICE_NAME}_humidity_level
+          icon: >-
+            ${'fapro:humidity-index-' +
+            states['sensor.{HA_AMS_DEVICE_NAME}_humidity_level'].state + '#fullcolor'}
         style:
-          top: 22%
+          top: 38.5%
           left: 92.5%
-          font-size: 0.75em
-          color: rgba(0,0,0,0)
-          '--label-badge-red': '#2F9AC5'
+          background-color: var(--label-badge-background-color,#fff)
+          border-radius: 50px
+          border: 0.12em solid var(--humidity-border-color)
+          '--mdc-icon-size': 2.05em
 image: /local/media/bambuprinter/AMS_2.png
 style: |
   ha-card {
     background: none !important;
     border: none !important;
     box-shadow: none !important;
+    --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
     --tray_0_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_0', 'color') }};
     --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
     --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};
