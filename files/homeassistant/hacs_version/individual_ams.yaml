@@ -164,7 +164,7 @@ style: |
     background: none !important;
     border: none !important;
     box-shadow: none !important;
-    --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
+    --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
     --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
     --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};
     --tray_3_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }};
