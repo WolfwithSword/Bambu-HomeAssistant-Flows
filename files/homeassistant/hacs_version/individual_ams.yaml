@@ -135,7 +135,7 @@ elements:
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         state_not: offline
     elements:
-      - entity: sensor.{HA_AMS_DEVICE_NAME}_temperature
+      - entity: sensor.{HA_AMS_DEVICE_NAME}_ams_temperature
         type: state-badge
         style:
           top: 50.75%
