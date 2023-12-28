@@ -58,12 +58,13 @@ elements:
           top: 31%
           left: 19%
           color: rgba(0,0,0,0)
-style: |
-  ha-card {
-    box-shadow: none !important;
-    background: none !important;
-    border: none !important;
-  }
+card_mod:
+  style: |
+      ha-card {
+        box-shadow: none !important;
+        background: none !important;
+        border: none !important;
+      }
 image: /local/media/bambuprinter/on_lighton_2.png
 entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
 state_image:

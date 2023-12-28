@@ -159,18 +159,19 @@ elements:
           border: 0.12em solid var(--humidity-border-color)
           '--mdc-icon-size': 2.05em
 image: /local/media/bambuprinter/AMS_2.png
-style: |
-  ha-card {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
-    --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
-    --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};
-    --tray_3_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }};
-    --tray_4_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color') }};
-    --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-    --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-    --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-    --tray_4_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-  }
+card_mod:
+  style: |
+      ha-card {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
+        --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
+        --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};
+        --tray_3_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }};
+        --tray_4_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color') }};
+        --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+        --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+        --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+        --tray_4_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+      }

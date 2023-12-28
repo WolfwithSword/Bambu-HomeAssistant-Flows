@@ -51,12 +51,13 @@ elements:
           left: 40.5%
           font-size: 0.8em
           color: rgba(0,0,0,0)
-style: |
-  ha-card {
-    box-shadow: none !important;
-    background: none !important;
-    border: none !important;
-  }
+card_mod:
+  style: |
+      ha-card {
+        box-shadow: none !important;
+        background: none !important;
+        border: none !important;
+      }
 image: /local/media/bambuprinter/on_p1p.png
 entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
 state_image:
