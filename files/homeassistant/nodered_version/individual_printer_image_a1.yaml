@@ -10,17 +10,17 @@ elements:
       - entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
         type: state-icon
         style:
-          top: 46%
-          left: 18%
+          top: 45%
+          left: 89%
           '--mdc-icon-size': 2.6em
         tap_action:
           action: toggle
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         type: state-label
         style:
-          top: 8.6%
-          left: 32.8%
-          font-size: 1.2em
+          top: 82.5%
+          left: 78.8%
+          font-size: 0.75em
           color: '#FFFFFF'
       - type: conditional
         conditions:
@@ -33,8 +33,8 @@ elements:
             show_state: false
             entity: image.{HA_PRINTER_DEVICE_NAME}_print_preview
             style:
-              top: 50%
-              left: 50%
+              top: 61.5%
+              left: 47%
               transform: translate(-45%, -40%) scale(75%, 75%)
               '--ha-card-border-width': 0px
               '--ha-card-background': none
@@ -44,41 +44,34 @@ elements:
               action: none
             style:
               top: 18.5%
-              left: 81%
+              left: 74%
               font-size: 1em
               color: rgba(0,0,0,0)
               '--label-badge-red': '#11739D'
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_nozzle_temperature
         type: state-badge
         style:
-          top: 31%
-          left: 51%
+          top: 35%
+          left: 46.5%
           font-size: 0.8em
           color: rgba(0,0,0,0)
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_bed_temperature
         type: state-badge
         style:
-          top: 78%
-          left: 51%
+          top: 95%
+          left: 46.5%
           font-size: 0.8em
-          color: rgba(0,0,0,0)
-      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
-        type: state-badge
-        style:
-          font-size: 0.8em
-          top: 31%
-          left: 19%
           color: rgba(0,0,0,0)
 card_mod:
   style: |
-      ha-card {
-        box-shadow: none !important;
-        background: none !important;
-        border: none !important;
-      }
-image: /local/media/bambuprinter/on_x1e.png
+    ha-card {
+      box-shadow: none !important;
+      background: none !important;
+      border: none !important;
+    }
+image: /local/media/bambuprinter/a1_lightoff.png
 entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
 state_image:
-  unavailable: /local/media/bambuprinter/off_x1e.png
-  'on': /local/media/bambuprinter/on_x1e.png
-  'off': /local/media/bambuprinter/off_x1e.png
+  unavailable: /local/media/bambuprinter/a1_lightoff.png
+  'on': /local/media/bambuprinter/a1_lighton.png
+  'off': /local/media/bambuprinter/a1_lightoff.png

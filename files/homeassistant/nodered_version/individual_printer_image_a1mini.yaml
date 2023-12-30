@@ -31,7 +31,7 @@ elements:
             card_type: picture-entity
             show_name: false
             show_state: false
-            entity: camera.{HA_PRINTER_DEVICE_NAME}_print_preview
+            entity: image.{HA_PRINTER_DEVICE_NAME}_print_preview
             style:
               top: 57%
               left: 38%
