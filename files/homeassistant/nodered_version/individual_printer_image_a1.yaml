@@ -25,7 +25,9 @@ elements:
       - type: conditional
         conditions:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
-            state: RUNNING
+            state: 
+            - RUNNING
+            - PAUSE
         elements:
           - type: custom:hui-element
             card_type: picture-entity
