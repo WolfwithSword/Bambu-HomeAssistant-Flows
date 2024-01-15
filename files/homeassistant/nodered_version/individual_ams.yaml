@@ -135,13 +135,20 @@ elements:
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         state_not: OFFLINE
     elements:
-      - entity: sensor.{HA_AMS_DEVICE_NAME}_temp
-        type: state-badge
-        style:
-          top: 50.75%
-          left: 8%
-          font-size: 0.75em
-          color: rgba(0,0,0,0)
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_AMS_DEVICE_NAME}_temp
+            state_not: 
+                - "unavailable"
+                - "unknown"  
+        elements:
+          - entity: sensor.{HA_AMS_DEVICE_NAME}_temp
+            type: state-badge
+            style:
+              top: 50.75%
+              left: 8%
+              font-size: 0.75em
+              color: rgba(0,0,0,0)
       - type: custom:config-template-card
         entities:
           - sensor.{HA_AMS_DEVICE_NAME}_humidity_level

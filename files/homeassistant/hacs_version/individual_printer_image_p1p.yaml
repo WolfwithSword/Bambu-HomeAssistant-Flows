@@ -71,13 +71,20 @@ elements:
           left: 51%
           font-size: 0.8em
           color: rgba(0,0,0,0)
-      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
-        type: state-badge
-        style:
-          font-size: 0.8em
-          top: 31%
-          left: 19%
-          color: rgba(0,0,0,0)
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
+            state_not: 
+                - "unavailable"
+                - "unknown"  
+        elements:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
+            type: state-badge
+            style:
+              font-size: 0.8em
+              top: 31%
+              left: 19%
+              color: rgba(0,0,0,0)
 card_mod:
   style: |
       ha-card {
