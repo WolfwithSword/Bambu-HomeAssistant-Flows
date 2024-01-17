@@ -141,8 +141,8 @@ card_mod:
         --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};
         --tray_3_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }};
         --tray_4_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color') }};
-        --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-        --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-        --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-        --tray_4_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+        --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+        --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+        --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+        --tray_4_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
       }
