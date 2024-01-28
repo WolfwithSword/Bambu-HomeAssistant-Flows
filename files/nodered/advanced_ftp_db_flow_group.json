@@ -26,7 +26,7 @@
         "x": 28,
         "y": 1699,
         "w": 2604,
-        "h": 1648
+        "h": 1768
     },
     {
         "id": "b3dce1cde1787caf",
@@ -44,8 +44,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.10",
-        "info": "Version 2.0.10: 2023-12-30\n- Sync with basic flow update\n- Minor logic change in plate_name extraction if HA fails\n- Dashboard support change - print preview is now an image type, not camera\n\n===\nVersion 2.0.9: 2023-12-11\n- Add setting for printer device name from HA\n - this is requires after HA changed their MQTT implementation that f***ed up device names\n - makes it 10x more annoying for configurable dashboards and flows\n - it isn't configured to be used yet as I am attempting a different workaround, but it is ready for debugging and eventual permanent usage.\n\n===\nVersion 2.0.8: 2023-11-05\n- Minor tweaks around logic\n- Sync with 2.0.8\n\n===\nVersion 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.0.11",
+        "info": "Version 2.0.11: 2024-01-20\n\n- Added sensors that poll the DB for:\n - total tracked/recorded active printing time\n - total tracked/recorded grams of filament printed\n- misc fixes/typos\n- fix for gcode parsing missing vendor in recent orcaslicer updates.\n\n===\nVersion 2.0.10: 2023-12-30\n- Sync with basic flow update\n- Minor logic change in plate_name extraction if HA fails\n- Dashboard support change - print preview is now an image type, not camera\n\n===\nVersion 2.0.9: 2023-12-11\n- Add setting for printer device name from HA\n - this is requires after HA changed their MQTT implementation that f***ed up device names\n - makes it 10x more annoying for configurable dashboards and flows\n - it isn't configured to be used yet as I am attempting a different workaround, but it is ready for debugging and eventual permanent usage.\n\n===\nVersion 2.0.8: 2023-11-05\n- Minor tweaks around logic\n- Sync with 2.0.8\n\n===\nVersion 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1740,
         "wires": []
@@ -324,12 +324,22 @@
             "b790b08e7727c55b",
             "c30c2bb43770649b",
             "10407d83408bc1bf",
-            "d549297664c2cb31"
+            "d549297664c2cb31",
+            "a5fe627a447cbafc",
+            "b5769d3b9aecfdaa",
+            "602d705feca68105",
+            "727765126773d2e1",
+            "3dfa97bf422f9202",
+            "095875e32232a439",
+            "541fa2dc1982de8a"
+            "541fa2dc1982de8a",
+            "6ab0a0bf24afb073",
+            "7cd87a8c5f0531db"
         ],
         "x": 54,
         "y": 2539,
         "w": 1792,
-        "h": 782
+        "h": 902
     },
     {
         "id": "c207be711ef10b6a",
@@ -1373,8 +1383,8 @@
         "name": "link out 1",
         "mode": "return",
         "links": [],
-        "x": 1695,
-        "y": 3140,
+        "x": 1705,
+        "y": 3160,
         "wires": []
     },
     {
@@ -1483,7 +1493,7 @@
         "correl": "",
         "expiry": "",
         "broker": "489094618c340eef",
-        "x": 1410,
+        "x": 1510,
         "y": 2980,
         "wires": []
     },
@@ -1517,7 +1527,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Printer Config",
-        "func": "let data = {};\nlet payload = {};\nlet device = {};\nlet root_topic = flow.get(\"root_topic\");\nif(msg.payload == undefined && !msg.topic.includes(\"reset\")) {\n    return;\n}\nlet type = \"sensor\";\nif (msg.topic.match(/time/)) {\n    msg.icon = \"mdi:clock\";\n    if(msg.topic.includes(\"_start_time\")){\n        msg.icon = \"mdi:clock-start\";\n    } \n    else if (msg.topic.includes(\"_end_time\")) {\n        msg.icon = \"mdi:clock-end\";\n    }\n}\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\n\nlet base_topic = root_topic +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\n\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\npayload.availability_topic = root_topic + \"/sensor/\"+msg.machine_name+\"/status/state\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\nif(data.topic.startsWith(root_topic)) {\n    node.send(data);\n}",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\nlet root_topic = flow.get(\"root_topic\");\nif(msg.payload == undefined && !msg.topic.includes(\"reset\")) {\n    return;\n}\nlet type = \"sensor\";\nif (msg.topic.match(/time/)) {\n    msg.icon = \"mdi:clock\";\n    if(msg.topic.includes(\"_start_time\")){\n        if(msg.payload != undefined && msg.payload != \"N/A\") {\n            msg.device_class = \"timestamp\";\n        }\n        msg.icon = \"mdi:clock-start\";\n    } \n    else if (msg.topic.includes(\"_end_time\")) {\n        if(msg.payload != undefined && msg.payload != \"N/A\") {\n            msg.device_class = \"timestamp\";\n        }\n        msg.icon = \"mdi:clock-end\";\n    }\n}\npayload.availability_topic = root_topic + \"/sensor/\" + msg.machine_name + \"/status/state\";\n\nif (msg.topic == \"active_print_time\") {\n    msg.icon = \"mdi:clock\";\n    msg.unit_of_measurement = \"h\";\n    msg.device_class = \"duration\";\n    \n    msg.state_class = \"measurement\";\n    msg.entity_category = \"diagnostic\";\n    delete payload.availability_topic;\n}\nelse if (msg.topic == \"filament_printed\") {\n    msg.icon = \"mdi:weight-kilogram\";\n    msg.unit_of_measurement = \"kg\";\n    msg.device_class = \"weight\";\n    \n    msg.state_class = \"measurement\";\n    msg.entity_category = \"diagnostic\";\n    delete payload.availability_topic;\n}\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\n\nlet base_topic = root_topic +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = { \"bambu_lab\": msg.machine_name, \"type\": \"printer\", \"serial\": flow.get(\"printer_serial\") , \"model\": flow.get(\"model\")};\ndevice.identifiers[1] = msg.machine_name;\ndevice.identifiers[2] = flow.get(\"printer_serial\");\ndevice.model = flow.get(\"model\");\ndevice.identifiers[0] = JSON.stringify(device.identifiers[0]);\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\n\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\nif (msg.topic != \"active_print_time\" && msg.topic != \"filament_printed\")\n    payload.availability_topic = root_topic + \"/sensor/\"+msg.machine_name+\"/status/state\";\n\nif (msg.icon != undefined)\n    payload.icon = msg.icon;\nif (msg.entity_category != undefined)\n    payload.entity_category = msg.entity_category\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\nif(data.topic.startsWith(root_topic)) {\n    node.send(data);\n}",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1538,17 +1548,18 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Printer State",
-        "func": "// Filter UoM from payload\nif (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced\" });",
+        "func": "// Filter UoM from payload\nif (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nif (msg.topic.endsWith(\"_start_time\") || msg.topic.endsWith(\"_end_time\")) {\n    if (typeof msg.payload != typeof \"\") {\n        let d = new Date(msg.payload);\n        msg.payload = d.toISOString();\n    }\n}\n\nlet old_topic = msg.topic;\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\nnode.send(msg);\n\nif (old_topic == \"active_print_time\") {\n    msg.topic = flow.get(\"root_topic\") + \"/sensor/\" + msg.machine_name + \"/\" + old_topic + \"/attr\";\n    msg.payload = {\"Note:\": \"Only since adv-flow with DB was set up, and not including idle times\",\n                };\n    if (msg.data != undefined) {\n        for (var key of Object.keys(msg.data)) {\n            msg.payload[key] = msg.data[key];\n        }\n    }\n    node.send(msg);\n}\nelse if (old_topic == \"filament_printed\"){\n    msg.topic = flow.get(\"root_topic\") + \"/sensor/\" + msg.machine_name + \"/\" + old_topic + \"/attr\";\n    msg.payload = {\"Note:\": \"Only since adv-flow with DB was set up. Only a rough estimate considering cancelled/failed prints\",\n                };\n    if (msg.data != undefined) {\n        for (var key of Object.keys(msg.data)) {\n            msg.payload[key] = msg.data[key];\n        }\n    }\n    node.send(msg);\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1210,
+        "x": 1130,
         "y": 3000,
         "wires": [
             [
-                "2e90a12c29779bff"
+                "3dfa97bf422f9202"
             ]
         ]
     },
@@ -1622,7 +1633,7 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1060,
+        "x": 1020,
         "y": 2940,
         "wires": [
             [
@@ -1697,7 +1708,7 @@
         "type": "junction",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "x": 1320,
+        "x": 1400,
         "y": 2980,
         "wires": [
             [
@@ -2088,8 +2099,9 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Sub",
-        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });\nflow.set(\"has_db_flow\", true);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -2178,17 +2190,17 @@
         "g": "a3e765e96362759b",
         "name": "",
         "server": "ed9339d3bdf92870",
-        "version": 0,
-        "startdate": "",
-        "enddate": "",
-        "entityid": "",
-        "entityidtype": "is",
+        "version": 1,
+        "startDate": "",
+        "endDate": "",
+        "entityId": "",
+        "entityIdType": "equals",
         "useRelativeTime": true,
         "relativeTime": "60s",
         "flatten": true,
-        "output_type": "array",
-        "output_location_type": "msg",
-        "output_location": "payload",
+        "outputType": "array",
+        "outputLocationType": "msg",
+        "outputLocation": "payload",
         "x": 410,
         "y": 2620,
         "wires": [
@@ -2225,6 +2237,7 @@
         "name": "Start / End or Pause / Resume",
         "func": "let entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\n\nif (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        node.send([null, null, msg, null]);\n        node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Resumed\" });\n    }\n    else {\n\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\" && msg.current_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n                node.send([null, msg, null, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Paused\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg, null, {\"start_epoch\": 0, \"payload\": {\"entityId\": entityId, \"entity_id\": entityId}}]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if ( (msg.previous_state == \"RUNNING\" || msg.previous_state == \"FINISH\" || msg.previous_state == \"FAILED\") && msg.current_state == \"IDLE\") {\n                // ended and is idle\n                msg.payload = \"FAILED\";\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Ended\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null, null, null]);\n                flow.set(\"print_progress_pct\", 0)\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n}\nelse {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state +\" -> \"+ msg.current_state });\n    if (msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\" || msg.current_state == \"FAILED\") {\n        node.send([null, null, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n    }\n}\nif(msg.current_state == \"OFFLINE\" && msg.previous_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Offline\"});\n}\nelse if(msg.current_state == \"IDLE\" && msg.previous_state == \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Online\" });\n}\nelse if (msg.current_state != \"IDLE\" && msg.previous_state == \"OFFLINE\" && msg.current_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Recovered from Offline Status\" });\n}",
         "outputs": 4,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -2557,7 +2570,7 @@
         "rules": [
             {
                 "t": "set",
-                "p": "payload",
+                "p": "payload_time",
                 "pt": "msg",
                 "to": "$moment(msg.payload).format(\"MMMM D, yyyy [at] h:mm A\")",
                 "tot": "jsonata"
@@ -2761,6 +2774,7 @@
         "name": "Prepare = Running",
         "func": "if (msg.values.status != undefined && (msg.values.status==\"PREPARE\" || msg.values.status == \"SLICING\")){\n    msg.values.status = \"RUNNING\";\n}\n\nnode.send(msg);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -3339,6 +3353,218 @@
         ]
     },
     {
+        "id": "a5fe627a447cbafc",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Poll Print Data",
+        "props": [
+            {
+                "p": "printer",
+                "v": "printer_name",
+                "vt": "flow"
+            }
+        ],
+        "repeat": "1200",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 340,
+        "y": 3340,
+        "wires": [
+            [
+                "b5769d3b9aecfdaa",
+                "095875e32232a439"
+            ]
+        ]
+    },
+    {
+        "id": "b5769d3b9aecfdaa",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Get Printing Time",
+        "query": "select \n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' \n      then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) \n      else EXTRACT(EPOCH FROM (end_time - start_time))end), material\nfrom prints \nwhere printer = '{{msg.printer}}' and material is not null group by material;",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 550,
+        "y": 3340,
+        "wires": [
+            [
+                "602d705feca68105"
+            ]
+        ]
+    },
+    {
+        "id": "602d705feca68105",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Get Print Time",
+        "func": "if (msg.payload != undefined && msg.payload.rows != undefined \n    && msg.payload.rows.length > 0) {\n    let minutes = 0;\n    let data = {};\n    for (var filament of msg.payload.rows) {\n        data[filament[\"material\"]] = (Math.round((filament.sum / 3600) * 100) / 100).toString() + \" h\"\n        minutes += filament.sum\n    }\n    minutes = (Math.round((minutes / 60) * 100) / 100)\n    let hours = Math.round((minutes / 60) * 100) / 100; // yes again\n    msg.payload = hours;\n    msg.data = data;\n    msg.topic = \"active_print_time\"\n    msg.machine_name = flow.get(\"model\") + \"_\" + msg.printer;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: `${hours} h` });\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 3340,
+        "wires": [
+            [
+                "727765126773d2e1"
+            ]
+        ]
+    },
+    {
+        "id": "727765126773d2e1",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "func": "deadbandEq",
+        "gap": "0.01",
+        "start": "",
+        "inout": "in",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 920,
+        "y": 3340,
+        "wires": [
+            [
+                "1927a157e503a89a"
+            ]
+        ]
+    },
+    {
+        "id": "3dfa97bf422f9202",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1290,
+        "y": 3000,
+        "wires": [
+            [
+                "2e90a12c29779bff"
+            ]
+        ]
+    },
+    {
+        "id": "095875e32232a439",
+        "type": "postgrestor",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Get Printing Amount",
+        "query": "select \n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat is not null and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\n        (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", (b->>'type')::text as material\n      from (\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, material_type, progress_done, material as most_mat, material_used\n            from prints \n            where jsonb_array_length(filament_data) != 0 \n            and printer = '{{msg.printer}}' and material is not null\n      ) as foo \n      group by material, material_type",
+        "postgresDB": "79ce3199b8eeaa1c",
+        "output": true,
+        "outputs": 1,
+        "x": 560,
+        "y": 3400,
+        "wires": [
+            [
+                "541fa2dc1982de8a"
+            ]
+        ]
+    },
+    {
+        "id": "541fa2dc1982de8a",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Get Amounts",
+        "func": "if (msg.payload != undefined && msg.payload.rows != undefined \n    && msg.payload.rows.length > 0) {\n    let total = 0;\n    let data = {};\n    for (var filament of msg.payload.rows) {\n        \n        if (filament[\"material_unit\"] == \"g\" && filament[\"sum\"] > 0 && filament[\"material\"] != undefined && filament[\"material\"] != \"\"){\n            total += filament[\"sum\"];\n            data[filament[\"material\"]] = (Math.round((filament[\"sum\"] / 1000) * 100) / 100).toString() + \" kg\";\n        }\n    }\n    total = (Math.round((total) * 100) / 100);\n    let kg_total = (Math.round((total / 1000) * 100) / 100);\n    msg.payload = kg_total;\n    msg.topic = \"filament_printed\"\n    msg.machine_name = flow.get(\"model\") + \"_\" + msg.printer;\n    msg.data = data;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: `${kg_total} kg` });\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 3400,
+        "wires": [
+            [
+                "727765126773d2e1"
+            ]
+        ]
+    },
+    {
+        "id": "6ab0a0bf24afb073",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Reset",
+        "rules": [
+            {
+                "t": "set",
+                "p": "reset",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1090,
+        "y": 3400,
+        "wires": [
+            [
+                "727765126773d2e1"
+            ]
+        ]
+    },
+    {
+        "id": "7cd87a8c5f0531db",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Reset Filter",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 950,
+        "y": 3400,
+        "wires": [
+            [
+                "6ab0a0bf24afb073"
+            ]
+        ]
+    },
+    {
         "id": "79ce3199b8eeaa1c",
         "type": "postgresDB",
         "name": "3DPrint DB (PG13)",
@@ -3373,7 +3599,7 @@
         "ha_boolean": "y|yes|true|on|home|open",
         "connectionDelay": true,
         "cacheJson": true,
-        "heartbeat": true,
+        "heartbeat": false,
         "heartbeatInterval": "30",
         "areaSelector": "friendlyName",
         "deviceSelector": "friendlyName",
@@ -3473,7 +3699,7 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "name": "Printer Config",
-        "func": "let data = {};\nlet payload = {};\nlet device = {};\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.model = msg.model;\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\n\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = { \"bambu_lab\": msg.machine_name, \"type\": \"printer\", \"serial\": flow.get(\"printer_serial\"), \"model\": flow.get(\"model\") };\ndevice.identifiers[1] = msg.machine_name;\ndevice.identifiers[2] = flow.get(\"printer_serial\");\ndevice.identifiers[0] = JSON.stringify(device.identifiers[0]);\ndevice.manufacturer = \"Bambu Labs\";\ndevice.model = msg.model;\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\n\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\n\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -3825,17 +4051,17 @@
         "g": "e2ddb329074d1a53",
         "name": "",
         "server": "ed9339d3bdf92870",
-        "version": 0,
-        "startdate": "",
-        "enddate": "",
-        "entityid": "",
-        "entityidtype": "is",
+        "version": 1,
+        "startDate": "",
+        "endDate": "",
+        "entityId": "",
+        "entityIdType": "equals",
         "useRelativeTime": true,
         "relativeTime": "60s",
         "flatten": true,
-        "output_type": "array",
-        "output_location_type": "msg",
-        "output_location": "payload",
+        "outputType": "array",
+        "outputLocationType": "msg",
+        "outputLocation": "payload",
         "x": 2130,
         "y": 2660,
         "wires": [
@@ -4636,6 +4862,7 @@
         "name": "Format Msg",
         "func": "msg.topic = \"print_preview\";\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\n\nnode.send(msg);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -4668,7 +4895,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Printer Config",
-        "func": "let data = {};\nlet payload = {};\nlet device = {};\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"image\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.image_topic = base_topic + \"/image\";\npayload.topic = base_topic + \"/image\";\npayload.json_attributes_topic = base_topic + \"/attr\";\npayload.image_encoding = \"b64\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"image\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = { \"bambu_lab\": msg.machine_name, \"type\": \"printer\", \"serial\": flow.get(\"printer_serial\"), \"model\": flow.get(\"model\") };\ndevice.identifiers[1] = msg.machine_name;\ndevice.identifiers[2] = flow.get(\"printer_serial\");\ndevice.identifiers[0] = JSON.stringify(device.identifiers[0]);\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.image_topic = base_topic + \"/image\";\npayload.topic = base_topic + \"/image\";\npayload.json_attributes_topic = base_topic + \"/attr\";\npayload.image_encoding = \"b64\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -6263,17 +6490,17 @@
         "g": "615e0a4a63e8487d",
         "name": "",
         "server": "ed9339d3bdf92870",
-        "version": 0,
-        "startdate": "",
-        "enddate": "",
-        "entityid": "",
-        "entityidtype": "is",
+        "version": 1,
+        "startDate": "",
+        "endDate": "",
+        "entityId": "",
+        "entityIdType": "equals",
         "useRelativeTime": true,
         "relativeTime": "60s",
         "flatten": true,
-        "output_type": "array",
-        "output_location_type": "msg",
-        "output_location": "payload",
+        "outputType": "array",
+        "outputLocationType": "msg",
+        "outputLocation": "payload",
         "x": 150,
         "y": 2200,
         "wires": [
@@ -6310,6 +6537,7 @@
         "name": "Start / Ends (or reset)",
         "func": "if (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        // resumed from pausing\n    }\n    else {\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n            }\n            else if (msg.current_state == \"IDLE\" || msg.current_state == \"OFFLINE\") {\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Not Printing\" });\n                flow.set(\"try_extract_backup\", false);\n            }\n            else if ((msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") || (msg.previous_state == \"RUNNING\" && msg.current_state == \"IDLE\")) {\n                // failed or cancelled\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n                flow.set(\"http_print_file_url\", \"\");\n\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n                flow.set(\"was_http_successful\", false);\n                flow.set(\"try_extract_backup\", false);\n                flow.set(\"http_print_file_url\", \"\");\n\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n} else {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state + \" -> \" + msg.current_state });\n    if(msg.current_state == \"OFFLINE\" || msg.current_state == \"FAILED\" || msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\") {\n        flow.set(\"was_http_successful\", false);\n        flow.set(\"try_extract_backup\", false);\n        flow.set(\"http_print_file_url\", \"\");\n    }\n}\n",
         "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -6453,7 +6681,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Printer Config",
-        "func": "let data = {};\nlet payload = {};\nlet device = {};\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = msg.machine_name;\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\n\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet base_topic = flow.get(\"root_topic\") +\"/\"+ type + \"/\" + msg.machine_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\npayload.name = getFriendlyName(msg.topic);\n\ndevice.identifiers = [];\ndevice.identifiers[0] = { \"bambu_lab\": msg.machine_name, \"type\": \"printer\", \"serial\": flow.get(\"printer_serial\") , \"model\": flow.get(\"model\")};\ndevice.identifiers[1] = msg.machine_name;\ndevice.identifiers[2] = flow.get(\"printer_serial\");\n\ndevice.manufacturer = \"Bambu Labs\";\ndevice.name = msg.machine_name;\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\npayload.topic = base_topic + \"/state\";\npayload.state_topic = base_topic + \"/state\";\npayload.json_attributes_topic = base_topic + \"/attr\";\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nnode.send(data);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -6743,7 +6971,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Parse GCode",
-        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 120);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\nlet fila_costkg_line = \"\";\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_cost =\")) {\n        fila_costkg_line = n.replace(\"; filament_cost =\",\"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\"\n        && fila_costkg_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\nlet costkg = fila_costkg_line.split(\",\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim(),\n            \"kg_cost\": parseFloat(costkg[i].trim())\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] > 0.00) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != undefined && data.length != 0) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
+        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 140);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\nlet fila_costkg_line = \"\";\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_cost =\")) {\n        fila_costkg_line = n.replace(\"; filament_cost =\",\"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\"\n        && fila_costkg_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\nlet costkg = fila_costkg_line.split(\",\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim(),\n            \"kg_cost\": parseFloat(costkg[i].trim())\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] > 0.00) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != undefined && data.length != 0) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
