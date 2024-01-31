@@ -331,7 +331,6 @@
             "727765126773d2e1",
             "3dfa97bf422f9202",
             "095875e32232a439",
-            "541fa2dc1982de8a"
             "541fa2dc1982de8a",
             "6ab0a0bf24afb073",
             "7cd87a8c5f0531db"
@@ -6517,6 +6516,7 @@
         "name": "Get Latest & Previous",
         "func": "if (msg.payload != undefined && msg.payload.length != undefined && msg.payload.length > 0) {\n    let li = msg.payload;\n    let first_state = \"\";\n    let newmsg = {};\n    li.sort((x, y) => {\n        return new Date(x.last_updated) < new Date(y.last_updated) ? 1 : -1\n    })\n    let states_only = [];\n    for (var event of li) {\n        if (event.state == \"PREPARE\") {\n            continue;\n        }\n        if (first_state == \"\") {\n            first_state == event.state;\n            states_only.push(event.state);\n        }\n        else if (first_state != event.state) {\n            states_only.push(event.state);\n        }\n\n    }\n    newmsg.current_state = states_only[0];\n    newmsg.previous_state = states_only[0];\n    if (states_only.length > 1) {\n        newmsg.previous_state = states_only[1];\n    }\n    node.send(newmsg);\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
