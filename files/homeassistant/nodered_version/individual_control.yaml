@@ -256,7 +256,6 @@ cards:
             name: HMS Notifications
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_start_time
             name: Start Time
-            name: Start Time
             secondary_info: last-changed
             format: datetime
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_end_time
