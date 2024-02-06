@@ -228,6 +228,9 @@ cards:
     title: ''
     subtitle: Print Details
     alignment: center
+  - type: custom:mushroom-entity-card
+    entity: sensor.{HA_PRINTER_DEVICE_NAME}_task_name
+    name: Task
   - type: horizontal-stack
     cards:
       - type: custom:mushroom-entity-card
