@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.0.3"
+      "version": "10.1.5"
     },
     {
       "type": "datasource",
@@ -98,7 +98,7 @@
               }
             ]
           },
-          "unit": "dthms"
+          "unit": "massg"
         },
         "overrides": []
       },
@@ -124,7 +124,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -160,6 +160,7 @@
       "title": "$materials",
       "transformations": [
         {
+          "disabled": true,
           "id": "configFromData",
           "options": {
             "configRefId": "A",
@@ -234,7 +235,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -330,7 +331,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -426,7 +427,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -833,7 +834,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "targets": [
         {
           "datasource": {
@@ -1073,7 +1074,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "targets": [
         {
           "datasource": {
@@ -1187,7 +1188,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "targets": [
         {
           "datasource": {
@@ -1295,7 +1296,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "targets": [
         {
           "datasource": {
@@ -1405,7 +1406,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "targets": [
         {
           "datasource": {
@@ -1570,6 +1571,6 @@
   "timezone": "",
   "title": "Printer Stats",
   "uid": "XPQuII2Vk",
-  "version": 57,
+  "version": 58,
   "weekStart": ""
 }

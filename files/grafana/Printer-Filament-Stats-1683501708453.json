@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.0.3"
+      "version": "10.1.5"
     },
     {
       "type": "datasource",
@@ -98,7 +98,7 @@
               }
             ]
           },
-          "unit": "dthms"
+          "unit": "massg"
         },
         "overrides": []
       },
@@ -124,7 +124,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -160,6 +160,7 @@
       "title": "$materials",
       "transformations": [
         {
+          "disabled": true,
           "id": "configFromData",
           "options": {
             "configRefId": "A",
@@ -234,7 +235,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -330,7 +331,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -426,7 +427,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -566,7 +567,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "10.0.3",
+      "pluginVersion": "10.1.5",
       "targets": [
         {
           "datasource": {
@@ -718,6 +719,6 @@
   "timezone": "",
   "title": "Printer Filament Stats",
   "uid": "J9QyupI2sk",
-  "version": 15,
+  "version": 16,
   "weekStart": ""
 }
