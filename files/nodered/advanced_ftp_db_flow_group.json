@@ -44,8 +44,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.0.11",
-        "info": "Version 2.0.11: 2024-01-20\n\n- Added sensors that poll the DB for:\n - total tracked/recorded active printing time\n - total tracked/recorded grams of filament printed\n- misc fixes/typos\n- fix for gcode parsing missing vendor in recent orcaslicer updates.\n\n===\nVersion 2.0.10: 2023-12-30\n- Sync with basic flow update\n- Minor logic change in plate_name extraction if HA fails\n- Dashboard support change - print preview is now an image type, not camera\n\n===\nVersion 2.0.9: 2023-12-11\n- Add setting for printer device name from HA\n - this is requires after HA changed their MQTT implementation that f***ed up device names\n - makes it 10x more annoying for configurable dashboards and flows\n - it isn't configured to be used yet as I am attempting a different workaround, but it is ready for debugging and eventual permanent usage.\n\n===\nVersion 2.0.8: 2023-11-05\n- Minor tweaks around logic\n- Sync with 2.0.8\n\n===\nVersion 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.1.0",
+        "info": "Version 2.1.0: 2024-03-13\n- Added plate_id column in db, so you can track which plate a print used\n- Remove some HA nodes in favour of flow variables set continuously from retained mqtt states from basic flow\n- Add more datetime parts to status messages \n\n===\nVersion 2.0.11: 2024-01-20\n- Added sensors that poll the DB for:\n - total tracked/recorded active printing time\n - total tracked/recorded grams of filament printed\n- misc fixes/typos\n- fix for gcode parsing missing vendor in recent orcaslicer updates.\n\n===\nVersion 2.0.10: 2023-12-30\n- Sync with basic flow update\n- Minor logic change in plate_name extraction if HA fails\n- Dashboard support change - print preview is now an image type, not camera\n\n===\nVersion 2.0.9: 2023-12-11\n- Add setting for printer device name from HA\n - this is requires after HA changed their MQTT implementation that f***ed up device names\n - makes it 10x more annoying for configurable dashboards and flows\n - it isn't configured to be used yet as I am attempting a different workaround, but it is ready for debugging and eventual permanent usage.\n\n===\nVersion 2.0.8: 2023-11-05\n- Minor tweaks around logic\n- Sync with 2.0.8\n\n===\nVersion 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1740,
         "wires": []
@@ -205,18 +205,11 @@
         },
         "nodes": [
             "c207be711ef10b6a",
-            "50ca810a9ab07205",
-            "ba7473069f371df8",
             "8bf5c9135058acb6",
-            "eee0dce21d4b91c2",
             "bc135fef68caf1ed",
             "dcf293279321a598",
-            "7ef27dfc5aaf648f",
-            "80fe10448625eade",
             "417afcee7a04a0a2",
             "7f6eec43ae3d2fa0",
-            "c0bd71c5f8c63191",
-            "fd7de145f90381e2",
             "9f785ff8ae78f4c8",
             "a59ef513683810a9",
             "57ed2f101a692dae",
@@ -227,9 +220,7 @@
             "6a4ba58e99355e4c",
             "c5c99a5cfe9da632",
             "1707d16455cba415",
-            "9f2d2e2411d850db",
             "c7c9f6fcbdd71a9f",
-            "6e251ea8ba446823",
             "fa51361c222215dd",
             "e733d198e61a5062",
             "d46519a504a1341d",
@@ -250,11 +241,9 @@
             "76b73ce6ce99d69d",
             "239b69ba6de0f3b0",
             "38891e797d89fde0",
-            "380607347779a3fa",
             "8aaf33109eab123b",
             "1927a157e503a89a",
             "f292ef02b868a96d",
-            "ac28bca5d1b05769",
             "2e90a12c29779bff",
             "13ab87bca0a9499a",
             "f2fd88c2be22e11f",
@@ -271,7 +260,6 @@
             "de0f8d6c3213410d",
             "51c6377e70811e9a",
             "7b11af61e6e0ef10",
-            "8391500077eba8ae",
             "eeba54db5300affd",
             "83e2f72cc122faf3",
             "20e12e2dbc0511d2",
@@ -280,7 +268,6 @@
             "5fba0cd4a415a1a0",
             "81669dbc1cb1994d",
             "f6ec9c1c878be81a",
-            "269dc2231b49e4bb",
             "3b1d3fc339195087",
             "835d262eba54ae5c",
             "c97ff23076ed10b4",
@@ -291,12 +278,10 @@
             "c40cba2075d93e84",
             "3d20c32e447aefca",
             "85bdccd86c38d0e0",
-            "a062127d516f2611",
             "1ec91432ced6f4f0",
             "231456032b28ba12",
             "d7dea15d1c35da3f",
             "43c56dfada7aeada",
-            "1036e9d3d63d4a72",
             "11f9cdb5d2ee29b1",
             "c304cc5c892d73bb",
             "6943ae17c18c6084",
@@ -333,11 +318,13 @@
             "095875e32232a439",
             "541fa2dc1982de8a",
             "6ab0a0bf24afb073",
-            "7cd87a8c5f0531db"
+            "7cd87a8c5f0531db",
+            "d66673d11ba1d499",
+            "4af701019725fb0e"
         ],
         "x": 54,
         "y": 2539,
-        "w": 1792,
+        "w": 1692,
         "h": 902
     },
     {
@@ -346,7 +333,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Initialize",
-        "query": "ALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS material varchar(10);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS plate_type varchar(15);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS filament_data jsonb default '[]';\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS progress_done numeric default 100;\n\nCREATE TABLE IF NOT EXISTS prints (\n    id SERIAL,\n    start_epoch numeric PRIMARY KEY,\n    printer varchar(25) NOT NULL,\n    printer_serial varchar(20) NOT NULL,\n    name varchar(75) NOT NULL,\n    start_time timestamp DEFAULT (now() at time zone 'utc'),\n    end_time timestamp,\n    initial_kwh numeric DEFAULT 0.0,\n    final_kwh numeric DEFAULT 0.0,\n    kwh numeric GENERATED ALWAYS AS\n  \t\t(\n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE final_kwh - initial_kwh\n            end\n      ) STORED,\n    status varchar(10),\n    electric_rate numeric NOT NULL,\n    electric_cost numeric GENERATED ALWAYS AS ( \n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE ((electric_rate / 100) * (final_kwh - initial_kwh))\n            end\n      ) STORED,\n    material_used numeric default 0.0,\n    material_type varchar(10) default 'filament',\n    material_price numeric default 0.0,\n    material_cost numeric GENERATED ALWAYS AS (\n        material_used * (material_price / 1000)\n    ) STORED,\n    material_description varchar(50),\n    material varchar(10),\n    plate_type varchar(15),\n    filament_data jsonb default '[]',\n    progress_done numeric default 100\n);\n\n\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_price;\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_cost;\nALTER TABLE prints ADD COLUMN IF NOT EXISTS material_used_cost numeric default 0.0;",
+        "query": "ALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS material varchar(10);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS plate_type varchar(15);\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS filament_data jsonb default '[]';\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS progress_done numeric default 100;\nALTER TABLE IF EXISTS prints ADD COLUMN IF NOT EXISTS plate_id varchar(25) default 'unknown';\n\nCREATE TABLE IF NOT EXISTS prints (\n    id SERIAL,\n    start_epoch numeric PRIMARY KEY,\n    printer varchar(25) NOT NULL,\n    printer_serial varchar(20) NOT NULL,\n    name varchar(75) NOT NULL,\n    start_time timestamp DEFAULT (now() at time zone 'utc'),\n    end_time timestamp,\n    initial_kwh numeric DEFAULT 0.0,\n    final_kwh numeric DEFAULT 0.0,\n    kwh numeric GENERATED ALWAYS AS\n  \t\t(\n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE final_kwh - initial_kwh\n            end\n      ) STORED,\n    status varchar(10),\n    electric_rate numeric NOT NULL,\n    electric_cost numeric GENERATED ALWAYS AS ( \n        case WHEN status = 'RUNNING' THEN 0.0\n            ELSE ((electric_rate / 100) * (final_kwh - initial_kwh))\n            end\n      ) STORED,\n    material_used numeric default 0.0,\n    material_type varchar(10) default 'filament',\n    material_price numeric default 0.0,\n    material_cost numeric GENERATED ALWAYS AS (\n        material_used * (material_price / 1000)\n    ) STORED,\n    material_description varchar(50),\n    material varchar(10),\n    plate_type varchar(15),\n    filament_data jsonb default '[]',\n    progress_done numeric default 100,\n    plate_id varchar(25) default 'unknown'\n);\n\n\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_price;\n--ALTER TABLE prints DROP COLUMN IF EXISTS material_cost;\nALTER TABLE prints ADD COLUMN IF NOT EXISTS material_used_cost numeric default 0.0;\n",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -355,87 +342,6 @@
         "wires": [
             [
                 "3bea4a461a0c7c4b"
-            ]
-        ]
-    },
-    {
-        "id": "50ca810a9ab07205",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Start Epoch",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "0",
-        "halt_if_type": "num",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "num",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "values.start_epoch",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1010,
-        "y": 2620,
-        "wires": [
-            [
-                "3d20c32e447aefca"
-            ],
-            [
-                "29ce3287b0fc9101"
-            ]
-        ]
-    },
-    {
-        "id": "ba7473069f371df8",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Print Name",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 1,
-        "halt_if": "",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "values.name",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1390,
-        "y": 2700,
-        "wires": [
-            [
-                "3d9b17f1d8d8058f"
             ]
         ]
     },
@@ -479,45 +385,6 @@
         ]
     },
     {
-        "id": "eee0dce21d4b91c2",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Print Status",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 1,
-        "halt_if": "",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "values.status",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1270,
-        "y": 2820,
-        "wires": [
-            [
-                "c97ff23076ed10b4"
-            ]
-        ]
-    },
-    {
         "id": "bc135fef68caf1ed",
         "type": "api-current-state",
         "z": "fbda6ab16491b918",
@@ -548,7 +415,7 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 1550,
+        "x": 1470,
         "y": 2820,
         "wires": [
             [
@@ -566,89 +433,9 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 1510,
-        "y": 2920,
+        "x": 1550,
+        "y": 2900,
         "wires": [
-            []
-        ]
-    },
-    {
-        "id": "7ef27dfc5aaf648f",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Start Epoch",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "0",
-        "halt_if_type": "num",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "num",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "values.start_epoch",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 450,
-        "y": 2880,
-        "wires": [
-            [
-                "835d262eba54ae5c"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "80fe10448625eade",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Print Status",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "unknown",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "values.status",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 450,
-        "y": 2920,
-        "wires": [
-            [
-                "c5c99a5cfe9da632"
-            ],
             []
         ]
     },
@@ -683,8 +470,8 @@
         "override_payload": "msg",
         "entity_location": "data",
         "override_data": "msg",
-        "x": 440,
-        "y": 2960,
+        "x": 280,
+        "y": 2940,
         "wires": [
             [
                 "6943ae17c18c6084"
@@ -701,92 +488,12 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 780,
-        "y": 2980,
+        "x": 580,
+        "y": 2920,
         "wires": [
             [
-                "8391500077eba8ae"
+                "f292ef02b868a96d"
             ]
-        ]
-    },
-    {
-        "id": "c0bd71c5f8c63191",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Print Name",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "unavailable",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "values.name",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 450,
-        "y": 2840,
-        "wires": [
-            [
-                "3b1d3fc339195087"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "fd7de145f90381e2",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Printer Name",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "unknown",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "values.printer",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 450,
-        "y": 2800,
-        "wires": [
-            [
-                "269dc2231b49e4bb"
-            ],
-            []
         ]
     },
     {
@@ -834,8 +541,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 860,
-        "y": 2660,
+        "x": 840,
+        "y": 2620,
         "wires": [
             [
                 "fb700d6d896b4e38"
@@ -1009,8 +716,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 650,
-        "y": 2920,
+        "x": 210,
+        "y": 2900,
         "wires": [
             [
                 "1707d16455cba415"
@@ -1033,52 +740,10 @@
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
-        "x": 880,
-        "y": 2920,
+        "x": 480,
+        "y": 2880,
         "wires": [
             []
-        ]
-    },
-    {
-        "id": "9f2d2e2411d850db",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Start Epoch",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "0",
-        "halt_if_type": "num",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "num",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "start_epoch",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1590,
-        "y": 2580,
-        "wires": [
-            [
-                "d7dea15d1c35da3f"
-            ],
-            [
-                "231456032b28ba12"
-            ]
         ]
     },
     {
@@ -1114,46 +779,6 @@
         ]
     },
     {
-        "id": "6e251ea8ba446823",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Start Epoch",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "0",
-        "halt_if_type": "num",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "num",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "start_epoch",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 770,
-        "y": 2740,
-        "wires": [
-            [
-                "e733d198e61a5062"
-            ],
-            []
-        ]
-    },
-    {
         "id": "fa51361c222215dd",
         "type": "postgrestor",
         "z": "fbda6ab16491b918",
@@ -1167,7 +792,7 @@
         "y": 2820,
         "wires": [
             [
-                "8391500077eba8ae"
+                "f292ef02b868a96d"
             ]
         ]
     },
@@ -1197,6 +822,7 @@
         "name": "Parse Amt",
         "func": "msg.used = parseFloat(msg.payload.rows[0].material_used);\nmsg.cost = parseFloat(msg.payload.rows[0].material_used_cost)\n\nnode.send(msg);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1461,7 +1087,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Force start epoch",
-        "func": "if (msg == undefined ) {\n    msg = {\n        \"values\": {}\n    };\n}\nmsg['start_epoch'] = Math.round(Date.now() / 1000);\nmsg[\"values\"] = {};\nmsg.values['start_epoch'] = msg['start_epoch'];\nflow.set(\"print_start_epoch\", msg.start_epoch);\nmsg.payload = {};\nmsg.payload['entityId'] = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_machine_name\";\nmsg.payload['entity_id'] = msg.payload.entityId;\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced \" + msg.values.start_epoch });",
+        "func": "if (msg == undefined ) {\n    msg = {\n        \"values\": {}\n    };\n}\nmsg['start_epoch'] = Math.round(Date.now() / 1000);\nmsg[\"values\"] = {};\nmsg.values['start_epoch'] = msg['start_epoch'];\nflow.set(\"print_start_epoch\", msg.start_epoch);\nmsg.payload = {};\nvar printer_name = flow.get(\"printer_name\")\nmsg.machine_name = flow.get(\"model\") + \"_\" + printer_name;\n//msg.payload['entityId'] = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_machine_name\";\n//msg.payload['entity_id'] = msg.payload.entityId;\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Forced \" + msg.values.start_epoch });",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1472,8 +1098,8 @@
         "y": 2740,
         "wires": [
             [
-                "380607347779a3fa",
-                "8aaf33109eab123b"
+                "8aaf33109eab123b",
+                "76b73ce6ce99d69d"
             ]
         ]
     },
@@ -1492,7 +1118,7 @@
         "correl": "",
         "expiry": "",
         "broker": "489094618c340eef",
-        "x": 1510,
+        "x": 1630,
         "y": 2980,
         "wires": []
     },
@@ -1502,7 +1128,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Set Topic",
-        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nmsg.payload = msg.start_epoch;\nif(msg.values != undefined) {\n    delete msg.values;\n}\nnode.send([msg, null]);\n\nflow.set(\"print_start_epoch\", msg.payload);\n\nmsg.topic = \"print_start_time\";\nmsg.payload = Math.round(Date.now());\nif (msg.values != undefined) {\n    delete msg.values;\n}\nif (msg.start_epoch != 0 && msg.start_epoch != \"0\") {\n    node.send([null, msg]);\n}\nif (msg.start_epoch != 0 && msg.start_epoch != \"0\") {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}",
+        "func": "msg.topic = \"print_start_epoch\";\nmsg.model = flow.get(\"model\");\nvar printer_name = flow.get(\"printer_name\");\nmsg.machine_name = msg.model + \"_\" + printer_name;\nmsg.payload = msg.start_epoch;\nif(msg.values != undefined) {\n    delete msg.values;\n}\nnode.send([msg, null]);\n\nflow.set(\"print_start_epoch\", msg.payload);\n\nmsg.topic = \"print_start_time\";\nmsg.payload = Math.round(Date.now());\nif (msg.values != undefined) {\n    delete msg.values;\n}\nif (msg.start_epoch != 0 && msg.start_epoch != \"0\"){//} || !msg.model.startsWith(\"X1\")) {\n    flow.set(msg.machine_name+\"_forced_startepoch\", true);\n}\nelse {\n    flow.set(msg.machine_name + \"_forced_startepoch\", false);\n}\nif (!msg.model.startsWith(\"X1\") && flow.get(msg.machine_name + \"_forced_startepoch\")) {\n    node.send([null, msg]);\n}",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
@@ -1516,7 +1142,7 @@
                 "1ec91432ced6f4f0"
             ],
             [
-                "a062127d516f2611"
+                "1ec91432ced6f4f0"
             ]
         ]
     },
@@ -1547,7 +1173,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Printer State",
-        "func": "// Filter UoM from payload\nif (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nif (msg.topic.endsWith(\"_start_time\") || msg.topic.endsWith(\"_end_time\")) {\n    if (typeof msg.payload != typeof \"\") {\n        let d = new Date(msg.payload);\n        msg.payload = d.toISOString();\n    }\n}\n\nlet old_topic = msg.topic;\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\nnode.send(msg);\n\nif (old_topic == \"active_print_time\") {\n    msg.topic = flow.get(\"root_topic\") + \"/sensor/\" + msg.machine_name + \"/\" + old_topic + \"/attr\";\n    msg.payload = {\"Note:\": \"Only since adv-flow with DB was set up, and not including idle times\",\n                };\n    if (msg.data != undefined) {\n        for (var key of Object.keys(msg.data)) {\n            msg.payload[key] = msg.data[key];\n        }\n    }\n    node.send(msg);\n}\nelse if (old_topic == \"filament_printed\"){\n    msg.topic = flow.get(\"root_topic\") + \"/sensor/\" + msg.machine_name + \"/\" + old_topic + \"/attr\";\n    msg.payload = {\"Note:\": \"Only since adv-flow with DB was set up. Only a rough estimate considering cancelled/failed prints\",\n                };\n    if (msg.data != undefined) {\n        for (var key of Object.keys(msg.data)) {\n            msg.payload[key] = msg.data[key];\n        }\n    }\n    node.send(msg);\n}",
+        "func": "// Filter UoM from payload\nif (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nif (msg.topic.endsWith(\"_start_time\") || msg.topic.endsWith(\"_end_time\")) {\n    if (typeof msg.payload != typeof \"\") {\n        let d = new Date(msg.payload);\n        msg.payload = d.toISOString();\n    }\n}\n\nlet old_topic = msg.topic;\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\nnode.send(msg);\n\nlet retained = flow.get(\"retained_mqtt\");\nfor (var r of retained) {\n    if (msg.topic.endsWith(r)) {\n        msg.retain = true;\n        msg.qos = 2;\n        break;\n    }\n}\n\nif (old_topic == \"active_print_time\") {\n    msg.topic = flow.get(\"root_topic\") + \"/sensor/\" + msg.machine_name + \"/\" + old_topic + \"/attr\";\n    msg.payload = {\"Note:\": \"Only since adv-flow with DB was set up, and not including idle times\",\n                };\n    if (msg.data != undefined) {\n        for (var key of Object.keys(msg.data)) {\n            msg.payload[key] = msg.data[key];\n        }\n    }\n    node.send(msg);\n}\nelse if (old_topic == \"filament_printed\"){\n    msg.topic = flow.get(\"root_topic\") + \"/sensor/\" + msg.machine_name + \"/\" + old_topic + \"/attr\";\n    msg.payload = {\"Note:\": \"Only since adv-flow with DB was set up. Only a rough estimate considering cancelled/failed prints\",\n                };\n    if (msg.data != undefined) {\n        for (var key of Object.keys(msg.data)) {\n            msg.payload[key] = msg.data[key];\n        }\n    }\n    node.send(msg);\n}",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1559,45 +1185,6 @@
         "wires": [
             [
                 "3dfa97bf422f9202"
-            ]
-        ]
-    },
-    {
-        "id": "380607347779a3fa",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Printer Name",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 1,
-        "halt_if": "",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "machine_name",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1170,
-        "y": 2780,
-        "wires": [
-            [
-                "76b73ce6ce99d69d"
             ]
         ]
     },
@@ -1647,59 +1234,19 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "If Start Forced Clear",
-        "func": "msg.model = flow.get(\"model\");\nmsg.machine_name = msg.model + \"_\" + msg.machine_name;\nif(flow.get(msg.machine_name + \"_forced_startepoch\") == true) {\n    msg.start_epoch = 0;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_machine_name\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send(msg);\n}\n",
+        "func": "msg.model = flow.get(\"model\");\nvar printer_name = flow.get(\"printer_name\")\nmsg.machine_name = msg.model + \"_\" + printer_name;\nif(flow.get(msg.machine_name + \"_forced_startepoch\") == true) {\n    msg.start_epoch = 0;\n    msg.payload = {};\n    /*msg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_machine_name\";\n    msg.payload.entity_id = msg.payload.entityId;*/\n    node.send(msg);\n}\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 900,
+        "x": 880,
         "y": 2860,
         "wires": [
             [
-                "380607347779a3fa"
+                "76b73ce6ce99d69d"
             ]
-        ]
-    },
-    {
-        "id": "ac28bca5d1b05769",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Printer Name",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 2,
-        "halt_if": "unknown",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "machine_name",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 710,
-        "y": 2860,
-        "wires": [
-            [
-                "f292ef02b868a96d"
-            ],
-            []
         ]
     },
     {
@@ -1711,7 +1258,7 @@
         "y": 2980,
         "wires": [
             [
-                "b292c53d06fe5323"
+                "d66673d11ba1d499"
             ]
         ]
     },
@@ -1722,7 +1269,7 @@
         "g": "a3e765e96362759b",
         "name": "",
         "pauseType": "delay",
-        "timeout": "100",
+        "timeout": "60",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1733,7 +1280,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1170,
+        "x": 1160,
         "y": 2580,
         "wires": [
             [
@@ -1951,19 +1498,22 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "Set Entity Id",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
+        "name": "Start Epoch",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nlet epoch = flow.get(\"RET_\"+\"print_start_epoch\");\nif (epoch != undefined && !isNaN(parseInt(epoch))) {\n    epoch = parseInt(epoch);\n}\nelse {\n    epoch = 0;\n}\nif (msg['values'] == undefined) {\n    msg['values'] = {};\n}\nmsg['values']['start_epoch'] = epoch;\nif (epoch == 0) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}\n\nnode.status({ fill: \"white\", shape: \"ring\", text: `${epoch} - ${dt}` });",
+        "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 850,
-        "y": 2620,
+        "x": 870,
+        "y": 2660,
         "wires": [
             [
-                "50ca810a9ab07205"
+                "3d20c32e447aefca"
+            ],
+            [
+                "29ce3287b0fc9101"
             ]
         ]
     },
@@ -1984,7 +1534,7 @@
         "y": 2580,
         "wires": [
             [
-                "9f2d2e2411d850db"
+                "4af701019725fb0e"
             ]
         ]
     },
@@ -1993,19 +1543,19 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_subtask\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "name": "Print Name",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nif (msg['values'] == undefined) {\n    msg['values'] = {};\n}\nmsg['values']['name'] = flow.get(\"RET_\"+\"subtask\");\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: `${msg.values.name} - ${dt}` });",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1230,
+        "x": 1350,
         "y": 2700,
         "wires": [
             [
-                "ba7473069f371df8"
+                "3d9b17f1d8d8058f"
             ]
         ]
     },
@@ -2014,19 +1564,19 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "flow.set(\"print_start_epoch\", msg.values.start_epoch);\n\nmsg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "name": "Print Status",
+        "func": "flow.set(\"print_start_epoch\", msg.values.start_epoch);\n\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nif (msg['values'] == undefined) {\n    msg['values'] = {};\n}\nmsg['values']['status'] = flow.get(\"RET_\"+\"print_status\");\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: `${msg.values.status} - ${dt}` });",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1510,
+        "x": 1530,
         "y": 2780,
         "wires": [
             [
-                "eee0dce21d4b91c2"
+                "c97ff23076ed10b4"
             ]
         ]
     },
@@ -2038,6 +1588,7 @@
         "name": "progress %",
         "func": "msg.progress = parseInt(flow.get(\"print_progress_pct\"));\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.progress });\nnode.send(msg);\nflow.set(\"print_progress_pct\", 0);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -2055,40 +1606,23 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
+        "name": "Start Epoch",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nlet epoch = flow.get(\"RET_\"+\"print_start_epoch\");\nif (epoch != undefined && !isNaN(parseInt(epoch))) {\n    epoch = parseInt(epoch);\n}\nelse {\n    epoch = 0;\n}\nif (msg['values'] == undefined) {\n    msg['values'] = {};\n}\nmsg['start_epoch'] = epoch;\nnode.status({ fill: \"white\", shape: \"ring\", text: `${epoch} - ${dt}` });\nif (flow.get(\"ignored_printfiles\").includes(flow.get(\"RET_subtask\"))) {\n    node.send([null, null, msg]);\n    return;\n}\nif (epoch == 0) {\n    node.send([null, msg, null]);\n}\nelse {\n    node.send([msg, null, null]);\n}\n",
+        "outputs": 3,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 730,
-        "y": 2700,
+        "x": 750,
+        "y": 2720,
         "wires": [
             [
-                "6e251ea8ba446823"
-            ]
-        ]
-    },
-    {
-        "id": "8391500077eba8ae",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 870,
-        "y": 2820,
-        "wires": [
+                "e733d198e61a5062"
+            ],
+            [],
             [
-                "ac28bca5d1b05769"
+                "f292ef02b868a96d"
             ]
         ]
     },
@@ -2098,7 +1632,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Sub",
-        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });\nflow.set(\"has_db_flow\", true);",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_status/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });\nflow.set(\"has_db_flow\", true);\n\nvar model = flow.get(\"model\");\nvar printer_name = flow.get(\"printer_name\")\nvar machine_name = model + \"_\" + printer_name;\n//flow.set(machine_name + \"_forced_startepoch\", false);\n//flow.set(\"print_start_epoch\", 0);\n//flow.set(\"print_start_epoch\", undefined);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2216,6 +1750,7 @@
         "name": "Get Latest & Previous",
         "func": "if (msg.payload != undefined && msg.payload.length != undefined && msg.payload.length > 0) {\n    let li = msg.payload;\n    let first_state = \"\";\n    let newmsg = {};\n    li.sort((x, y) => {\n        return new Date(x.last_updated) < new Date(y.last_updated) ? 1 : -1\n    })\n    let states_only = [];\n    for (var event of li) {\n        if(event.state == \"PREPARE\") {\n            continue;\n        }\n        if(first_state == \"\") {\n            first_state == event.state;\n            states_only.push(event.state);\n        }\n        else if(first_state != event.state) {\n            states_only.push(event.state);\n        }\n        \n    }\n    newmsg.current_state = states_only[0];\n    newmsg.previous_state = states_only[0];\n    if(states_only.length > 1) {\n        newmsg.previous_state = states_only[1];\n    }\n    \n    node.send(newmsg);\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -2234,7 +1769,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Start / End or Pause / Resume",
-        "func": "let entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\n\nif (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        node.send([null, null, msg, null]);\n        node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Resumed\" });\n    }\n    else {\n\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\" && msg.current_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n                node.send([null, msg, null, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Paused\" });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg, null, {\"start_epoch\": 0, \"payload\": {\"entityId\": entityId, \"entity_id\": entityId}}]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Cancelled or Failed\" });\n            }\n            else if ( (msg.previous_state == \"RUNNING\" || msg.previous_state == \"FINISH\" || msg.previous_state == \"FAILED\") && msg.current_state == \"IDLE\") {\n                // ended and is idle\n                msg.payload = \"FAILED\";\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Ended\" });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Completed\" });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null, null, null]);\n                flow.set(\"print_progress_pct\", 0)\n                node.status({ fill: \"blue\", shape: \"ring\", text: \"Print Started\" });\n            }\n        }\n    }\n}\nelse {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state +\" -> \"+ msg.current_state });\n    if (msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\" || msg.current_state == \"FAILED\") {\n        node.send([null, null, null, { \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n    }\n}\nif(msg.current_state == \"OFFLINE\" && msg.previous_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Offline\"});\n}\nelse if(msg.current_state == \"IDLE\" && msg.previous_state == \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Online\" });\n}\nelse if (msg.current_state != \"IDLE\" && msg.previous_state == \"OFFLINE\" && msg.current_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Recovered from Offline Status\" });\n}",
+        "func": "let entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_machine_name\";\nlet machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nif (msg.previous_state != undefined && msg.current_state != undefined\n    && msg.previous_state != msg.current_state) {\n    msg.payload = msg.current_state;\n    if(msg.previous_state == \"PAUSE\" && msg.current_state == \"RUNNING\") {\n        node.send([null, null, msg, null]);\n        node.status({ fill: \"blue\", shape: \"ring\", text: `Print Resumed - ${dt}` });\n    }\n    else {\n\n        if(msg.previous_state.toLowerCase() != \"unknown\"\n        && msg.previous_state.toLowerCase() != \"unavailable\"\n        && msg.previous_state != \"OFFLINE\" && msg.current_state != \"OFFLINE\"\n        && msg.current_state.toLowerCase() != \"unknown\"\n        && msg.current_state.toLowerCase() != \"unavailable\")\n        {\n            if (msg.previous_state != \"PAUSE\" && msg.current_state == \"PAUSE\"){\n                // paused\n                node.send([null, msg, null, null]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: `Print Paused - ${dt}` });\n            }\n            else if (msg.previous_state != \"FAILED\" && msg.current_state == \"FAILED\") {\n                // failed or cancelled\n                node.send([null, msg, null, {\"machine_name\": machine_name, \"start_epoch\": 0, \"payload\": {\"entityId\": entityId, \"entity_id\": entityId}}]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: `Print Cancelled or Failed - ${dt}` });\n            }\n            else if ( (msg.previous_state == \"RUNNING\" || msg.previous_state == \"FINISH\" || msg.previous_state == \"FAILED\") && msg.current_state == \"IDLE\") {\n                // ended and is idle\n                msg.payload = \"FAILED\";\n                node.send([null, msg, null, {\"machine_name\": machine_name,  \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: `Print Ended - ${dt}` });\n            }\n            else if (msg.previous_state != \"FINISH\" && msg.current_state == \"FINISH\") {\n                // finished\n                node.send([null, msg, null, {\"machine_name\": machine_name,  \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n                node.status({ fill: \"blue\", shape: \"ring\", text: `Print Completed - ${dt}` });\n            }\n            else if (msg.current_state == \"RUNNING\"){\n                // starts\n                node.send([msg, null, null, null]);\n                flow.set(\"print_progress_pct\", 0)\n                node.status({ fill: \"blue\", shape: \"ring\", text: `Print Started - ${dt}` });\n            }\n        }\n    }\n}\nelse {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Unhandled: \" + msg.previous_state +\" -> \"+ msg.current_state });\n    if (msg.current_state == \"FINISH\" || msg.current_state == \"IDLE\" || msg.current_state == \"FAILED\") {\n        node.send([null, null, null, { \"machine_name\": machine_name, \"start_epoch\": 0, \"payload\": { \"entityId\": entityId, \"entity_id\": entityId } }]);\n    }\n}\nif(msg.current_state == \"OFFLINE\" && msg.previous_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Offline\"});\n}\nelse if(msg.current_state == \"IDLE\" && msg.previous_state == \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Online\" });\n}\nelse if (msg.current_state != \"IDLE\" && msg.previous_state == \"OFFLINE\" && msg.current_state != \"OFFLINE\") {\n    node.status({ fill: \"white\", shape: \"ring\", text: \"Recovered from Offline Status\" });\n}",
         "outputs": 4,
         "timeout": "",
         "noerr": 0,
@@ -2263,40 +1798,19 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_machine_name\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "name": "Print Name",
+        "func": "let device = flow.get(\"HA_DEVICE\");\nif (msg.payload == undefined) {\n    msg.payload = {};\n}\nif (msg['values'] == undefined) {\n    msg['values'] = {};\n}\n\nmsg.values['printer'] = device;\n\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nmsg['values']['name'] = flow.get(\"RET_\"+\"subtask\");\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: `${msg.values.name} - ${dt}` });",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 290,
+        "x": 310,
         "y": 2800,
         "wires": [
             [
-                "fd7de145f90381e2"
-            ]
-        ]
-    },
-    {
-        "id": "269dc2231b49e4bb",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_subtask\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 290,
-        "y": 2840,
-        "wires": [
-            [
-                "c0bd71c5f8c63191"
+                "3b1d3fc339195087"
             ]
         ]
     },
@@ -2305,20 +1819,21 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_print_start_epoch\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
+        "name": "Start Epoch",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nlet epoch = flow.get(\"RET_\"+\"print_start_epoch\");\nif (epoch != undefined && !isNaN(parseInt(epoch))) {\n    epoch = parseInt(epoch);\n}\nelse {\n    epoch = 0;\n}\nif (msg['values'] == undefined) {\n    msg['values'] = {};\n}\nmsg['values']['start_epoch']= epoch;\nif (epoch == 0) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}\n\nnode.status({ fill: \"white\", shape: \"ring\", text: `${epoch} - ${dt}` });",
+        "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 290,
-        "y": 2880,
+        "x": 470,
+        "y": 2800,
         "wires": [
             [
-                "7ef27dfc5aaf648f"
-            ]
+                "835d262eba54ae5c"
+            ],
+            []
         ]
     },
     {
@@ -2326,19 +1841,19 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_print_status\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
+        "name": "Print Status",
+        "func": "flow.set(\"print_start_epoch\", msg.values.start_epoch);\n\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nif (msg['values'] == undefined) {\n    msg['values'] = {};\n}\nmsg['values']['status'] = flow.get(\"RET_\"+\"print_status\");\nif (msg.payload == undefined) {\n    msg.payload = {};\n}\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: `${msg.values.status} - ${dt}` });",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 290,
-        "y": 2920,
+        "x": 310,
+        "y": 2840,
         "wires": [
             [
-                "80fe10448625eade"
+                "c5c99a5cfe9da632"
             ]
         ]
     },
@@ -2369,7 +1884,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1410,
+        "x": 1330,
         "y": 2820,
         "wires": [
             [
@@ -2384,6 +1899,13 @@
         "g": "a3e765e96362759b",
         "name": "EId",
         "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            },
             {
                 "t": "set",
                 "p": "payload.entity_id",
@@ -2404,8 +1926,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 270,
-        "y": 2960,
+        "x": 150,
+        "y": 2940,
         "wires": [
             [
                 "417afcee7a04a0a2"
@@ -2516,15 +2038,15 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "NaN Check",
-        "func": "if (msg.error != undefined || msg.values.start_epoch == undefined || isNaN(msg.values.start_epoch)) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}",
+        "func": "if (msg.error != undefined || msg.values.start_epoch == undefined || isNaN(msg.values.start_epoch) || msg.values.start_epoch == 0) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1030,
-        "y": 2700,
+        "x": 1050,
+        "y": 2660,
         "wires": [
             [
                 "27e8750d79dc7117"
@@ -2552,39 +2074,11 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1480,
-        "y": 2880,
+        "x": 1580,
+        "y": 2860,
         "wires": [
             [
                 "dcf293279321a598"
-            ]
-        ]
-    },
-    {
-        "id": "a062127d516f2611",
-        "type": "change",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "Start Timestamp",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload_time",
-                "pt": "msg",
-                "to": "$moment(msg.payload).format(\"MMMM D, yyyy [at] h:mm A\")",
-                "tot": "jsonata"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 1140,
-        "y": 2900,
-        "wires": [
-            [
-                "1ec91432ced6f4f0"
             ]
         ]
     },
@@ -2676,24 +2170,6 @@
         ]
     },
     {
-        "id": "1036e9d3d63d4a72",
-        "type": "catch",
-        "z": "fbda6ab16491b918",
-        "g": "a3e765e96362759b",
-        "name": "",
-        "scope": [
-            "50ca810a9ab07205"
-        ],
-        "uncaught": false,
-        "x": 870,
-        "y": 2700,
-        "wires": [
-            [
-                "3d20c32e447aefca"
-            ]
-        ]
-    },
-    {
         "id": "11f9cdb5d2ee29b1",
         "type": "delay",
         "z": "fbda6ab16491b918",
@@ -2715,7 +2191,7 @@
         "y": 2780,
         "wires": [
             [
-                "380607347779a3fa"
+                "76b73ce6ce99d69d"
             ]
         ]
     },
@@ -2753,12 +2229,13 @@
         "name": "If IDLE",
         "func": "if (msg.values.status == \"IDLE\")  {\n    msg.values.status = \"FAILED\";\n}\nif(msg.values.status == \"PREPARE\") {\n    return;\n}\n\nnode.send(msg);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 590,
-        "y": 2980,
+        "x": 430,
+        "y": 2920,
         "wires": [
             [
                 "7f6eec43ae3d2fa0"
@@ -2778,8 +2255,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1730,
-        "y": 2820,
+        "x": 1370,
+        "y": 2860,
         "wires": [
             [
                 "85bdccd86c38d0e0"
@@ -3064,8 +2541,9 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Store Print Progress",
-        "func": "flow.set(\"print_progress_pct\", msg.payload);\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload });",
+        "func": "flow.set(\"print_progress_pct\", msg.payload);\nnode.status({ fill: \"blue\", shape: \"ring\", text: `${msg.payload}%` });",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -3104,6 +2582,7 @@
         "name": "Sub",
         "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/print_progress/state\",\n        \"qos\": 2\n    }\n}\n\nflow.set(\"print_progress_pct\", 0)\nnode.send(config);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -3359,8 +2838,8 @@
         "name": "Poll Print Data",
         "props": [
             {
-                "p": "printer",
-                "v": "printer_name",
+                "p": "printer_serial",
+                "v": "printer_serial",
                 "vt": "flow"
             }
         ],
@@ -3384,7 +2863,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Get Printing Time",
-        "query": "select \n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' \n      then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) \n      else EXTRACT(EPOCH FROM (end_time - start_time))end), material\nfrom prints \nwhere printer = '{{msg.printer}}' and material is not null group by material;",
+        "query": "select \n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' \n      then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) \n      else EXTRACT(EPOCH FROM (end_time - start_time))end), material\nfrom prints \nwhere printer_serial = '{{msg.printer_serial}}' and material is not null group by material;",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -3402,7 +2881,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Get Print Time",
-        "func": "if (msg.payload != undefined && msg.payload.rows != undefined \n    && msg.payload.rows.length > 0) {\n    let minutes = 0;\n    let data = {};\n    for (var filament of msg.payload.rows) {\n        data[filament[\"material\"]] = (Math.round((filament.sum / 3600) * 100) / 100).toString() + \" h\"\n        minutes += filament.sum\n    }\n    minutes = (Math.round((minutes / 60) * 100) / 100)\n    let hours = Math.round((minutes / 60) * 100) / 100; // yes again\n    msg.payload = hours;\n    msg.data = data;\n    msg.topic = \"active_print_time\"\n    msg.machine_name = flow.get(\"model\") + \"_\" + msg.printer;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: `${hours} h` });\n}",
+        "func": "if (msg.payload != undefined && msg.payload.rows != undefined \n    && msg.payload.rows.length > 0) {\n    let minutes = 0;\n    let data = {};\n    for (var filament of msg.payload.rows) {\n        if (filament['sum'] == undefined) {\n            filament['sum'] = 0;\n        }\n        data[filament[\"material\"]] = (Math.round((filament.sum / 3600) * 100) / 100).toString() + \" h\"\n        minutes += filament.sum\n    }\n    minutes = (Math.round((minutes / 60) * 100) / 100)\n    let hours = Math.round((minutes / 60) * 100) / 100; // yes again\n    msg.payload = hours;\n    msg.data = data;\n    msg.topic = \"active_print_time\"\n    msg.machine_name = flow.get(\"HA_DEVICE\");\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: `${hours} h` });\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3470,7 +2949,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Get Printing Amount",
-        "query": "select \n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat is not null and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\n        (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", (b->>'type')::text as material\n      from (\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, material_type, progress_done, material as most_mat, material_used\n            from prints \n            where jsonb_array_length(filament_data) != 0 \n            and printer = '{{msg.printer}}' and material is not null\n      ) as foo \n      group by material, material_type",
+        "query": "select \n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat is not null and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\n        (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", (b->>'type')::text as material\n      from (\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, material_type, progress_done, material as most_mat, material_used\n            from prints \n            where jsonb_array_length(filament_data) != 0 \n            and printer_serial = '{{msg.printer_serial}}' and material is not null\n      ) as foo \n      group by material, material_type",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -3488,7 +2967,7 @@
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
         "name": "Get Amounts",
-        "func": "if (msg.payload != undefined && msg.payload.rows != undefined \n    && msg.payload.rows.length > 0) {\n    let total = 0;\n    let data = {};\n    for (var filament of msg.payload.rows) {\n        \n        if (filament[\"material_unit\"] == \"g\" && filament[\"sum\"] > 0 && filament[\"material\"] != undefined && filament[\"material\"] != \"\"){\n            total += filament[\"sum\"];\n            data[filament[\"material\"]] = (Math.round((filament[\"sum\"] / 1000) * 100) / 100).toString() + \" kg\";\n        }\n    }\n    total = (Math.round((total) * 100) / 100);\n    let kg_total = (Math.round((total / 1000) * 100) / 100);\n    msg.payload = kg_total;\n    msg.topic = \"filament_printed\"\n    msg.machine_name = flow.get(\"model\") + \"_\" + msg.printer;\n    msg.data = data;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: `${kg_total} kg` });\n}",
+        "func": "if (msg.payload != undefined && msg.payload.rows != undefined \n    && msg.payload.rows.length > 0) {\n    let total = 0;\n    let data = {};\n    for (var filament of msg.payload.rows) {\n        \n        if (filament[\"material_unit\"] == \"g\" && filament[\"sum\"] > 0 && filament[\"material\"] != undefined && filament[\"material\"] != \"\"){\n            total += filament[\"sum\"];\n            data[filament[\"material\"]] = (Math.round((filament[\"sum\"] / 1000) * 100) / 100).toString() + \" kg\";\n        }\n    }\n    total = (Math.round((total) * 100) / 100);\n    let kg_total = (Math.round((total / 1000) * 100) / 100);\n    msg.payload = kg_total;\n    msg.topic = \"filament_printed\"\n    msg.machine_name = flow.get(\"HA_DEVICE\");\n    msg.data = data;\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: `${kg_total} kg` });\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3560,6 +3039,62 @@
         "wires": [
             [
                 "6ab0a0bf24afb073"
+            ]
+        ]
+    },
+    {
+        "id": "d66673d11ba1d499",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "undefined",
+                "vt": "str"
+            },
+            {
+                "t": "neq",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1470,
+        "y": 2980,
+        "wires": [
+            [],
+            [
+                "b292c53d06fe5323"
+            ]
+        ]
+    },
+    {
+        "id": "4af701019725fb0e",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "a3e765e96362759b",
+        "name": "Start Epoch",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nlet epoch = flow.get(\"RET_\"+\"print_start_epoch\");\nif (epoch != undefined && !isNaN(parseInt(epoch))) {\n    epoch = parseInt(epoch);\n}\nelse {\n    epoch = 0;\n}\nmsg['start_epoch'] = epoch;\nif (epoch == 0) {\n    node.send([null, msg]);\n}\nelse {\n    node.send([msg, null]);\n}\n\nnode.status({ fill: \"white\", shape: \"ring\", text: `${epoch} - ${dt}` });",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1570,
+        "y": 2580,
+        "wires": [
+            [
+                "d7dea15d1c35da3f"
+            ],
+            [
+                "231456032b28ba12"
             ]
         ]
     },
@@ -3678,8 +3213,9 @@
         "z": "fbda6ab16491b918",
         "g": "e2ddb329074d1a53",
         "name": "Printer State",
-        "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\n",
+        "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nlet retained = flow.get(\"retained_mqtt\");\nfor (var r of retained) {\n    if (msg.topic.endsWith(r)) {\n        msg.retain = true;\n        msg.qos = 2;\n        break;\n    }\n}\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -4195,7 +3731,6 @@
             "9f11992046e857ad",
             "4bcb45ef62c19ded",
             "c905d2cbece4a005",
-            "5f893cfbc9c8b3da",
             "5cf8b602091be9bb",
             "94d689b7678280ab",
             "9bad8e057ee821f8",
@@ -4209,7 +3744,6 @@
             "a976f52574ef2598",
             "882cd28a46933aba",
             "f8479c53a54a30e6",
-            "d702395bb3be0f21",
             "31fe7e40ca1fe0d2",
             "114bd45d2f6a3eae",
             "1303f7e11c7da28a",
@@ -4267,13 +3801,11 @@
             "c85d1f9d9cfa90ca",
             "caf209ad93829c49",
             "626e8370574c265c",
-            "a4213022bc187889",
             "b6ff9234e9c4103a",
             "f21f80a62c5be33c",
             "d0de2bfdbe4c20b5",
             "4ccfb3dfd3993e15",
             "ce55f73a8f638a6d",
-            "005198128b13fd0b",
             "9327e5ca3160a74e",
             "3f1c8e25f7805121",
             "34fb479b5e33f9c7",
@@ -4309,7 +3841,9 @@
             "6a12ca3e9a532505",
             "46f772845cc334b4",
             "e2eb37196fdf0a9c",
-            "7c37dc690184b5cd"
+            "7c37dc690184b5cd",
+            "538c82d0162f3d37",
+            "570cb26fb2fc76b1"
         ],
         "x": 54,
         "y": 1779,
@@ -4465,58 +3999,19 @@
         ]
     },
     {
-        "id": "5f893cfbc9c8b3da",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "Current Task",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 1,
-        "halt_if": "",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "filename",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1330,
-        "y": 1820,
-        "wires": [
-            [
-                "626e8370574c265c"
-            ]
-        ]
-    },
-    {
         "id": "5cf8b602091be9bb",
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Check Print File",
-        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\nlet is_gcode = false\nmsg.filename = msg.filename.replace(\".gcode.3mf\", \"\");\nif(msg.filename.endsWith(\".gcode\")) {\n    msg.filename = msg.filename.replace(\".gcode\", \"\");\n    let f = msg.filename;\n    msg.filename = msg.filename.replace(/_plate_[1-9][0-9]?[0-9]?/, \"\");\n    is_gcode = true\n    if (f.includes(\"plate\")) {\n        let plate = f.match(/_?(plate_[1-9][0-9]?[0-9]?)/)[1];\n        flow.set(\"current_platename\", plate);\n    }\n}\nfor (var obj of msg.files) {\n    if (!obj.endsWith(\".3mf\")) {\n        continue;\n    }\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" +msg.filename + \".3mf\" == obj\n        || \"/cache/\" +msg.filename + \".gcode.3mf\" == obj\n        || \"/cache\" + msg.filename == obj || \"/cache\" + msg.filename + \".3mf\" == obj\n        || \"/cache\" + msg.filename + \".gcode.3mf\" == obj\n        || \"/\" + msg.filename == obj || \"/\"+msg.filename + \".3mf\" == obj\n        || \"/\"+msg.filename + \".gcode.3mf\" == obj)  {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText});\n        found = true;\n        break;\n    }\n}\nif (!found) {\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.filename;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    node.send(msg)\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText });\n}",
+        "func": "if(msg.old_payload != undefined) {\n    msg.payload = msg.old_payload;\n}\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", { \"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\" });\n\nvar found = false;\n/*if(msg.filename.includes(\"plate_\")) {\n    msg.filename = msg.filename.replace(/_plate_[0-9]/,\"\");\n}*/\nlet is_gcode = false\nmsg.filename = msg.filename.replace(\".gcode.3mf\", \"\");\nif(msg.filename.endsWith(\".gcode\")) {\n    msg.filename = msg.filename.replace(\".gcode\", \"\");\n    let f = msg.filename;\n    msg.filename = msg.filename.replace(/_plate_[1-9][0-9]?[0-9]?/, \"\");\n    is_gcode = true\n    if (f.includes(\"plate\")) {\n        let plate = f.match(/_?(plate_[1-9][0-9]?[0-9]?)/)[1];\n        flow.set(\"current_platename\", plate);\n    }\n}\nfor (var obj of msg.files) {\n    if (!obj.endsWith(\".3mf\")) {\n        continue;\n    }\n    if (msg.filename == obj || msg.filename + \".3mf\" == obj\n        || msg.filename + \".gcode.3mf\" == obj ) {\n        msg.filename = \"/\" + obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText + ` - ${dt}` });\n        found = true;\n        break;\n    }\n    else if (\"/cache/\" + msg.filename == obj || \"/cache/\" + msg.filename + \".3mf\" == obj\n        || \"/cache/\" + msg.filename + \".gcode.3mf\" == obj\n        || \"/cache\" + msg.filename == obj || \"/cache\" + msg.filename + \".3mf\" == obj\n        || \"/cache\" + msg.filename + \".gcode.3mf\" == obj\n        || \"/\" + msg.filename == obj || \"/\" + msg.filename + \".3mf\" == obj\n        || \"/\" + msg.filename + \".gcode.3mf\" == obj) {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText + ` - ${dt}` });\n        found = true;\n        break;\n    }\n    else if (\"/sdcard/\" + msg.filename == obj || \"/sdcard/\" + msg.filename + \".3mf\" == obj\n        || \"/sdcard/\" + msg.filename + \".gcode.3mf\" == obj\n        || \"/sdcard\" + msg.filename == obj || \"/sdcard\" + msg.filename + \".3mf\" == obj\n        || \"/sdcard\" + msg.filename + \".gcode.3mf\" == obj) {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText + ` - ${dt}` });\n        found = true;\n        break;\n    }\n    else if (\"/sdcard/cache/\" + msg.filename == obj || \"/sdcard/cache/\" + msg.filename + \".3mf\" == obj\n        || \"/sdcard/cache/\" + msg.filename + \".gcode.3mf\" == obj\n        || \"/sdcard/cache\" + msg.filename == obj || \"/sdcard/cache\" + msg.filename + \".3mf\" == obj\n        || \"/sdcard/cache\" + msg.filename + \".gcode.3mf\" == obj) {\n\n        msg.filename = obj;\n        msg.payload = msg.filename;\n        node.send(msg)\n        let msgText = \"Found - \" + msg.payload;\n        node.status({ fill: \"blue\", shape: \"ring\", text: msgText + ` - ${dt}` });\n        found = true;\n        break;\n    }\n}\nif (!found) {\n    let ignored = flow.get(\"ignored_printfiles\");\n   // msg.filename = \"/local_print.gcode.3mf\"\n   // msg.payload = msg.filename;\n    let msgText = \"Not Found - \" + msg.filename;\n    msg.filename = \"\";\n    msg.payload = msg.filename;\n    if(msg.retried != undefined && !msg.retried) {\n        msg.retried = true;\n    }\n    else {\n        msg.retried = false;\n    }\n    if (!ignored.includes(msg.filename)) {\n        node.send(msg);\n    }\n    else {\n        msgText = msgText.replace(\" Found\", \" Supported\");\n    }\n    node.status({ fill: \"red\", shape: \"ring\", text: msgText + ` - ${dt}`  });\n}",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2000,
+        "x": 1820,
         "y": 1840,
         "wires": [
             [
@@ -4651,7 +4146,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Type And Sum Weights",
-        "func": "var filaments = {};\n\nvar weight = 0.0;\nvar has_only_one_plate = false;\nvar current_plate_meta = undefined;\nif (msg.payload !== undefined && msg.payload.config != undefined\n    && msg.payload.config.plate != undefined) {\n    let plates = msg.payload.config.plate;\n    if(plates.length == 1) {\n        has_only_one_plate = true;\n    }\n    for (var plate of plates) {\n        for (var p of plate.metadata) {\n            if(p.property.key == \"index\" && \n                (parseInt(p.property.value) == msg.plate_id \n                || has_only_one_plate)) {\n                    current_plate_meta = plate.metadata;\n                    msg.plate_id = parseInt(p.property.value);\n                    if(has_only_one_plate && (flow.get(\"current_platename\") == undefined || flow.get(\"current_platename\") == \"\")) {\n                        flow.set(\"current_platename\", \"plate_\"+msg.plate_id + \".gcode\");\n                        let path = flow.get(\"path_prefix\") + flow.get(\"printer_name\");\n                        \n                        msg.localFilename = path + \"/current_print.3mf\"\n                        node.send([null, msg]);\n                    }\n                    break;\n                }\n            //if (p.property.key == \"weight\") {\n            //    weight += parseFloat(p.property.value);\n            //}\n        }\n        for (var f of plate.filament) {\n            if(f.property.type != undefined && \n            !f.property.type.includes(\"Support\")\n                && f.property.type != \"PLA-S\"\n                && f.property.type != \"PA-S\"\n                ) {\n                if (filaments[f.property.type] == undefined) {\n                    filaments[f.property.type] = parseFloat(f.property.used_g);\n                }\n                else {\n                    filaments[f.property.type] = filaments[f.property.type] + parseFloat(f.property.used_g);\n                }\n            }\n        }\n    }\n}\n\nif(current_plate_meta != undefined) {\n    for (var p of current_plate_meta) {\n        if (p.property.key == \"weight\") {\n            weight += parseFloat(p.property.value);\n        }\n    }\n}\n\nmsg.payload = {};\nmsg.payload.weight = weight;\nmsg.payload.material = \"\";\nvar fil = Object.keys(filaments);\nvar max = 0;\nfor (var ff of fil) {\n    if (filaments[ff] >= max) {\n        max = filaments[ff];\n        msg.payload.material = ff;\n    }\n}\nif (max == 0) {\n    msg.payload.material = \"\";\n}\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload.weight + \"g of material, mostly or all \" + msg.payload.material });\nmsg.update_for = \"weights\";\nnode.send([msg, null]);",
+        "func": "var filaments = {};\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", { \"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\" });\n\nvar weight = 0.0;\nvar has_only_one_plate = false;\nvar current_plate_meta = undefined;\nif (msg.payload !== undefined && msg.payload.config != undefined\n    && msg.payload.config.plate != undefined) {\n    let plates = msg.payload.config.plate;\n    if(plates.length == 1) {\n        has_only_one_plate = true;\n    }\n    for (var plate of plates) {\n        for (var p of plate.metadata) {\n            if(p.property.key == \"index\" && \n                (parseInt(p.property.value) == msg.plate_id \n                || has_only_one_plate)) {\n                    current_plate_meta = plate.metadata;\n                    msg.plate_id = parseInt(p.property.value);\n                    if(has_only_one_plate && (flow.get(\"current_platename\") == undefined || flow.get(\"current_platename\") == \"\")) {\n                        flow.set(\"current_platename\", \"plate_\"+msg.plate_id + \".gcode\");\n                        let path = flow.get(\"path_prefix\") + flow.get(\"printer_name\");\n                        \n                        msg.localFilename = path + \"/current_print.3mf\"\n                        node.send([null, msg]);\n                    }\n                    break;\n                }\n            //if (p.property.key == \"weight\") {\n            //    weight += parseFloat(p.property.value);\n            //}\n        }\n        for (var f of plate.filament) {\n            if(f.property.type != undefined && \n            !f.property.type.includes(\"Support\")\n                && f.property.type != \"PLA-S\"\n                && f.property.type != \"PA-S\"\n                ) {\n                if (filaments[f.property.type] == undefined) {\n                    filaments[f.property.type] = parseFloat(f.property.used_g);\n                }\n                else {\n                    filaments[f.property.type] = filaments[f.property.type] + parseFloat(f.property.used_g);\n                }\n            }\n        }\n    }\n}\n\nif(current_plate_meta != undefined) {\n    for (var p of current_plate_meta) {\n        if (p.property.key == \"weight\") {\n            weight += parseFloat(p.property.value);\n        }\n    }\n}\n\nmsg.payload = {};\nmsg.payload.weight = weight;\nmsg.payload.material = \"\";\nvar fil = Object.keys(filaments);\nvar max = 0;\nfor (var ff of fil) {\n    if (filaments[ff] >= max) {\n        max = filaments[ff];\n        msg.payload.material = ff;\n    }\n}\nif (max == 0) {\n    msg.payload.material = \"\";\n}\nnode.status({ fill: \"blue\", shape: \"ring\", text: msg.payload.weight + \"g of material, mostly or all \" + msg.payload.material + ` - ${dt}` });\nmsg.update_for = \"weights\";\nnode.send([msg, null]);",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
@@ -4681,7 +4176,7 @@
         "globalPythonName": "",
         "importPathList": [],
         "fnCodePre": "#comment",
-        "fnCode": "import ftplib\nimport ssl\nimport platform\n\nftplib.ssl_version = ssl.PROTOCOL_TLSv1_2\n\nclass ImplicitFTP_TLS(ftplib.FTP_TLS):\n    \"\"\"FTP_TLS subclass that automatically wraps sockets in SSL to support implicit FTPS.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self._sock = None\n\n    @property\n    def sock(self):\n        \"\"\"Return the socket.\"\"\"\n        return self._sock\n\n    @sock.setter\n    def sock(self, value):\n        \"\"\"When modifying the socket, ensure that it is ssl wrapped.\"\"\"\n        if value is not None and not isinstance(value, ssl.SSLSocket):\n            value = self.context.wrap_socket(value)\n        self._sock = value\n\n    def ntransfercmd(self, cmd, rest=None):\n        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)\n        if self._prot_p:\n            session = self.sock.session\n            if isinstance(self.sock, ssl.SSLSocket):\n                    session = self.sock.session\n            conn = self.context.wrap_socket(conn,\n                                            server_hostname=self.host,\n                                            session=session)  # this is the fix\n        return conn, size\n        \n\nftps = ImplicitFTP_TLS()\n\nftps.connect(host=msg[\"printer_ip\"], port=990)\n\nftps.login(user=\"bblp\", passwd=msg[\"access_code\"])\nftps.prot_p()\n\nli = []\nif(str(msg[\"model\"]).startswith(tuple([\"P1\", \"A1\"]))):\n    li = ftps.nlst()\nelse:\n    li = ftps.nlst(\"*.3mf\")\nlitemp = ftps.nlst(\"/cache\")\nli2 = []\nfor item in litemp:\n    if not item.startswith(\"/cache\"):\n        if not item.startswith(\"/\"):\n            item = \"/\" + item\n        item = \"/cache\" + item\n    li2.append(item)\n# may need to add /cache/ in front of items maybe?\n# alter list so if items from li2 dont start with it, to pre-pend\n\nli = li + li2\nresult = [x for x in li if x.endswith(\".3mf\")] \nmsg[\"files\"] = result\nftps.close()\nreturn msg\n\n",
+        "fnCode": "import ftplib\nimport ssl\nimport platform\n\nftplib.ssl_version = ssl.PROTOCOL_TLSv1_2\n\nclass ImplicitFTP_TLS(ftplib.FTP_TLS):\n    \"\"\"FTP_TLS subclass that automatically wraps sockets in SSL to support implicit FTPS.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self._sock = None\n\n    @property\n    def sock(self):\n        \"\"\"Return the socket.\"\"\"\n        return self._sock\n\n    @sock.setter\n    def sock(self, value):\n        \"\"\"When modifying the socket, ensure that it is ssl wrapped.\"\"\"\n        if value is not None and not isinstance(value, ssl.SSLSocket):\n            value = self.context.wrap_socket(value)\n        self._sock = value\n\n    def ntransfercmd(self, cmd, rest=None):\n        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)\n        if self._prot_p:\n            session = self.sock.session\n            if isinstance(self.sock, ssl.SSLSocket):\n                    session = self.sock.session\n            conn = self.context.wrap_socket(conn,\n                                            server_hostname=self.host,\n                                            session=session)  # this is the fix\n        return conn, size\n        \n\nftps = ImplicitFTP_TLS()\n\nftps.connect(host=msg[\"printer_ip\"], port=990)\n\nftps.login(user=\"bblp\", passwd=msg[\"access_code\"])\nftps.prot_p()\n\nli = []\nif(str(msg[\"model\"]).startswith(tuple([\"P1\", \"A1\"]))):\n    li = ftps.nlst()\n    try:\n        li3 = ftps.nlst(\"/sdcard\")\n        for item in li3:\n            if item.endswith(\".3mf\"):\n                if not item.startswith(\"/sdcard\"):\n                    if not item.startswith(\"/\"):\n                        item = \"/\" + item\n                    item = \"/sdcard\" + item\n                li.append(item)\n    except:\n        pass\n    try:\n        li3 = ftps.nlst(\"/sdcard/cache\")\n        for item in li3:\n            if item.endswith(\".3mf\"):\n                if not item.startswith(\"/sdcard/cache\"):\n                    if not item.startswith(\"/\"):\n                        item = \"/\" + item\n                    item = \"/sdcard/cache\" + item\n                li.append(item)\n    except:\n        pass\n\nelse:\n    li = ftps.nlst(\"*.3mf\")\nlitemp = ftps.nlst(\"/cache\")\nli2 = []\nfor item in litemp:\n    if not item.startswith(\"/cache\"):\n        if not item.startswith(\"/\"):\n            item = \"/\" + item\n        item = \"/cache\" + item\n    li2.append(item)\n# may need to add /cache/ in front of items maybe?\n# alter list so if items from li2 dont start with it, to pre-pend\n\nli = li + li2\nresult = [x for x in li if x.endswith(\".3mf\")] \nmsg[\"files\"] = result\nftps.close()\nreturn msg\n\n",
         "fnCodePost": "#comment",
         "x": 770,
         "y": 1880,
@@ -4782,51 +4277,6 @@
         ]
     },
     {
-        "id": "d702395bb3be0f21",
-        "type": "api-current-state",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "Plate Name",
-        "server": "ed9339d3bdf92870",
-        "version": 3,
-        "outputs": 1,
-        "halt_if": "",
-        "halt_if_type": "str",
-        "halt_if_compare": "is_not",
-        "entity_id": "x",
-        "state_type": "str",
-        "blockInputOverrides": false,
-        "outputProperties": [
-            {
-                "property": "gcode_file",
-                "propertyType": "msg",
-                "value": "",
-                "valueType": "entityState"
-            },
-            {
-                "property": "from_ha",
-                "propertyType": "msg",
-                "value": "true",
-                "valueType": "bool"
-            }
-        ],
-        "for": "0",
-        "forType": "num",
-        "forUnits": "minutes",
-        "override_topic": false,
-        "state_location": "payload",
-        "override_payload": "msg",
-        "entity_location": "data",
-        "override_data": "msg",
-        "x": 1910,
-        "y": 1900,
-        "wires": [
-            [
-                "31fe7e40ca1fe0d2"
-            ]
-        ]
-    },
-    {
         "id": "31fe7e40ca1fe0d2",
         "type": "function",
         "z": "fbda6ab16491b918",
@@ -4915,7 +4365,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Printer State",
-        "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\nmsg.topic = flow.get(\"root_topic\") +\"/image/\" + msg.machine_name + \"/\" + msg.topic + \"/image\";\n\nnode.send(msg);\n",
+        "func": "if (msg.payload == undefined) {\n    return;\n}\n\n/*\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n}\n*/\n\nmsg.topic = flow.get(\"root_topic\") +\"/image/\" + msg.machine_name + \"/\" + msg.topic + \"/image\";\n\nnode.send(msg);\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -5281,8 +4731,9 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Plate Json",
-        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/plate_\"+msg.plate_id+\".json\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/plate.json\";\n    node.send(msg);\n}",
+        "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/plate_\"+msg.plate_id+\".json\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/plate.json\";\n    msg.plate_name = \"plate_\"+msg.plate_id;\n    node.send(msg);\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -5402,8 +4853,9 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Extract Plate Type",
-        "func": "if (msg.payload != undefined && msg.payload.bed_type != undefined) {\n    msg.payload = msg.payload.bed_type;\n    msg.update_for = \"plate_type\";\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: msg.payload });\n}\n",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", { \"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\" });\n\nif (msg.payload != undefined && msg.payload.bed_type != undefined) {\n    msg.payload = msg.payload.bed_type;\n    msg.update_for = \"plate_type\";\n    node.send(msg);\n    node.status({ fill: \"blue\", shape: \"ring\", text: msg.payload + \", \"+msg.plate_name + ` - ${dt}` });\n}\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -5523,6 +4975,7 @@
         "name": "Extract Project Data json",
         "func": "var f = null;\nif (msg.payload !== undefined && msg.payload.length > 0) {\n    for (var file of msg.payload) {\n        if (file.filename == \"Metadata/project_settings.config\") {\n            f = file.payload;\n            break;\n        }\n    }\n}\n\nif (f !== null) {\n    msg.payload = f;\n    if(msg.req !== undefined) {\n        msg.statusCode = 200;\n    }\n    msg.filename = flow.get(\"path_prefix\")+flow.get(\"printer_name\")+\"/project_info.json\";\n    node.send(msg);\n\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -5908,7 +5361,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Is Project URL Local?",
-        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && String(msg.payload.print.url).startsWith(\"ftp\") ){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\"ftp:/\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  let match = plate.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n                  if (match != undefined && match.length > 1) {\n                    plate = match[1];\n                  }\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }, null]);\n            }\n  else if (msg.payload.print.command == \"project_file\"\n    && msg.payload.print.url != undefined\n    && String(msg.payload.print.url).startsWith(\"http\")) {\n        node.send([null, null, msg]);\n    }\n}",
+        "func": "let filename = \"\";\nlet plate = \"\";\nflow.set(\"current_filename\", \"\");\nflow.set(\"current_platename\", \"\");\nif(msg.payload != undefined && msg.payload.print != undefined\n        && msg.payload.print.command != undefined) {\n            if(msg.payload.print.command == \"project_file\"\n              && msg.payload.print.url != undefined\n              && (String(msg.payload.print.url).startsWith(\"ftp\") \n                  || String(msg.payload.print.url).startsWith(\"file:\")\n                  )){\n                  filename = msg.payload.print.url.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\"file:///mnt/sdcard\", \"\");\n                  filename = filename.replace(\"file:///mnt/sdcard/\", \"\");\n                  filename = filename.replace(\"file:///mnt/\", \"\");\n                  filename = filename.replace(\"file:///mnt\", \"\");\n                  filename = filename.replace(\"file:///\", \"\");\n                  filename = filename.replace(\"file://\", \"\");\n                  filename = filename.replace(\"file:/\", \"\");\n                  filename = filename.replace(\"ftp://\", \"\");\n                  filename = filename.replace(\"ftp:/\", \"\");\n                  filename = filename.replace(\".gcode.3mf\", \"\");\n                  plate = msg.payload.print.param.replace(\"Metadata/\", \"\");\n                  plate = plate.replace(\".gcode\", \"\");\n                  let match = plate.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n                  if (match != undefined && match.length > 1) {\n                    plate = match[1];\n                  }\n                  msg.filename = filename;\n                  msg.plate_name = plate;\n                  delete msg.payload;\n                  flow.set(\"current_filename\", filename);\n                  flow.set(\"current_platename\", plate);\n                  node.send([msg, null, null]);\n                  node.send([null, { \"payload\": plate, \"topic\": \"plate_name\" }, null]);\n            }\n  else if (msg.payload.print.command == \"project_file\"\n    && msg.payload.print.url != undefined\n    && String(msg.payload.print.url).startsWith(\"http\")) {\n        node.send([null, null, msg]);\n    }\n}",
         "outputs": 3,
         "timeout": "",
         "noerr": 0,
@@ -5959,7 +5412,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Plate name?",
-        "func": "if(msg.access_code != undefined) {\n    delete msg.access_code;\n}\nif (msg.printer_ip != undefined) {\n    delete msg.printer_ip;\n}\n\nlet current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    msg.decompress_data = msg.payload;\n    msg.payload = {};\n    msg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_plate_name\";\n    msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
+        "func": "if(msg.access_code != undefined) {\n    delete msg.access_code;\n}\nif (msg.printer_ip != undefined) {\n    delete msg.printer_ip;\n}\n\nlet current_platename = flow.get(\"current_platename\");\n\nif(current_platename == undefined || current_platename == null || current_platename == \"\") {\n    // via ha\n    msg.decompress_data = msg.payload;\n    msg.payload = {};\n    //msg.payload.entityId = \"sensor.\" + flow.get(\"printer_ha_device_name\") + \"_plate_name\";\n    //msg.payload.entity_id = msg.payload.entityId;\n    node.send([msg, null]);\n}\nelse {\n    msg.gcode_file = \"/data/Metadata/\"+current_platename;\n    node.send([null, msg]);\n}\n",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
@@ -6212,40 +5665,14 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1470,
+        "x": 1510,
         "y": 1820,
         "wires": [
             [
-                "a4213022bc187889"
+                "32972334a68e7852"
             ],
             [
                 "f21f80a62c5be33c"
-            ]
-        ]
-    },
-    {
-        "id": "a4213022bc187889",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "delay",
-        "pauseType": "delay",
-        "timeout": "8",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 1590,
-        "y": 1820,
-        "wires": [
-            [
-                "005198128b13fd0b"
             ]
         ]
     },
@@ -6293,7 +5720,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1840,
+        "x": 1660,
         "y": 1840,
         "wires": [
             [
@@ -6356,26 +5783,6 @@
         "wires": [
             [
                 "f8479c53a54a30e6"
-            ]
-        ]
-    },
-    {
-        "id": "005198128b13fd0b",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "615e0a4a63e8487d",
-        "name": "EId",
-        "func": "msg.payload = {};\nmsg.payload.entityId = \"sensor.\" + flow.get(\"HA_DEVICE_LOWER\") + \"_subtask\";\nmsg.payload.entity_id = msg.payload.entityId;\nnode.send(msg);",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1710,
-        "y": 1820,
-        "wires": [
-            [
-                "5f893cfbc9c8b3da"
             ]
         ]
     },
@@ -6656,7 +6063,7 @@
         "g": "615e0a4a63e8487d",
         "name": "",
         "pauseType": "delay",
-        "timeout": "15",
+        "timeout": "10",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -6671,7 +6078,7 @@
         "y": 1900,
         "wires": [
             [
-                "d702395bb3be0f21"
+                "570cb26fb2fc76b1"
             ]
         ]
     },
@@ -6702,7 +6109,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Printer State",
-        "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n    else {\n        return;\n    }\n}\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\n",
+        "func": "if (msg.payload == undefined) {\n    return;\n}\nif (msg.topic == \"plate_name\" && msg.payload != \"\") {\n    let match = msg.payload.match(/_?(plate_[1-9][0-9]?[0-9]?)/);\n    if (match != undefined && match.length > 1) {\n        msg.payload = match[1];\n    }\n    else {\n        return;\n    }\n}\nlet retained = flow.get(\"retained_mqtt\");\nfor (var r of retained) {\n    if (msg.topic.endsWith(r)) {\n        msg.retain = true;\n        msg.qos = 2;\n        break;\n    }\n}\nmsg.machine_name = flow.get(\"printer_name\");\nmsg.model = flow.get(\"model\");\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.topic = flow.get(\"root_topic\") +\"/sensor/\" + msg.machine_name + \"/\" + msg.topic + \"/state\";\n\nnode.send(msg);\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -6899,7 +6306,7 @@
         "g": "615e0a4a63e8487d",
         "name": "",
         "pauseType": "delay",
-        "timeout": "5",
+        "timeout": "8",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -6910,11 +6317,11 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1180,
+        "x": 1200,
         "y": 1820,
         "wires": [
             [
-                "5f893cfbc9c8b3da"
+                "538c82d0162f3d37"
             ]
         ]
     },
@@ -6971,7 +6378,7 @@
         "z": "fbda6ab16491b918",
         "g": "615e0a4a63e8487d",
         "name": "Parse GCode",
-        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 140);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\nlet fila_costkg_line = \"\";\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_cost =\")) {\n        fila_costkg_line = n.replace(\"; filament_cost =\",\"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\"\n        && fila_costkg_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\nlet costkg = fila_costkg_line.split(\",\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim(),\n            \"kg_cost\": parseFloat(costkg[i].trim())\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] > 0.00) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != undefined && data.length != 0) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
+        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 140);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\nlet fila_costkg_line = \"\";\n\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_cost =\")) {\n        fila_costkg_line = n.replace(\"; filament_cost =\",\"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\"\n        && fila_costkg_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\nlet costkg = fila_costkg_line.split(\",\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim(),\n            \"kg_cost\": parseFloat(costkg[i].trim())\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] > 0.00) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost + ` - ${dt}` });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" + ` - ${dt}` });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != undefined && data.length != 0) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
@@ -7149,6 +6556,48 @@
         ]
     },
     {
+        "id": "538c82d0162f3d37",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Current Task",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nmsg.filename = flow.get(\"RET_\"+\"subtask\");\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: `${msg.filename} - ${dt}` });",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1350,
+        "y": 1820,
+        "wires": [
+            [
+                "626e8370574c265c"
+            ]
+        ]
+    },
+    {
+        "id": "570cb26fb2fc76b1",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "615e0a4a63e8487d",
+        "name": "Plate Name",
+        "func": "let now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nmsg.gcode_file = flow.get(\"RET_\"+\"plate_name\");\nnode.send(msg);\nnode.status({ fill: \"white\", shape: \"ring\", text: `${msg.gcode_file} - ${dt}` });",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1910,
+        "y": 1900,
+        "wires": [
+            [
+                "31fe7e40ca1fe0d2"
+            ]
+        ]
+    },
+    {
         "id": "1536199568f3f2d7",
         "type": "group",
         "z": "fbda6ab16491b918",
@@ -7195,7 +6644,7 @@
         "z": "fbda6ab16491b918",
         "g": "1536199568f3f2d7",
         "name": "Insert Update (Plate)",
-        "query": "UPDATE prints SET\n    plate_type = '{{msg.plate}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
+        "query": "UPDATE prints SET\n    plate_type = '{{msg.plate}}',\n    plate_id = '{{msg.plate_name}}'\nWHERE \n    start_epoch = '{{msg.start_epoch}}';",
         "postgresDB": "79ce3199b8eeaa1c",
         "output": true,
         "outputs": 1,
@@ -7330,7 +6779,7 @@
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
         "name": "Format Printer Name",
-        "func": "if (flow.get(\"printer_ha_device_name\") != undefined){\n    let x = flow.get(\"printer_ha_device_name\")\n    x = x.toLowerCase()\n    x = x.replaceAll(\"-\", \"_\");\n    flow.set(\"printer_ha_device_name\", x);\n}",
+        "func": "if (flow.get(\"printer_ha_device_name\") != undefined){\n    let x = flow.get(\"printer_ha_device_name\")\n    x = x.toLowerCase()\n    x = x.replaceAll(\"-\", \"_\");\n    flow.set(\"printer_ha_device_name\", x);\n}\n\nlet ignored_base = [\"auto_cali_for_user_param\", \"filament_unload\", \"filament_load\",\"auto_cali_for_user\", \"ams_unload\", \"ams_load\", \"extrusion_cali\",\n                    \"abs_flowcalib_cali\", \"auto_filament_cali\"];\nlet ignored = [];\nfor (var i of ignored_base) {\n    ignored.push(i);\n    ignored.push(i+\".gcode\")\n}\nflow.set(\"ignored_printfiles\", ignored);",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,

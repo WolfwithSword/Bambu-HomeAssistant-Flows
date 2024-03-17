@@ -5,7 +5,7 @@
       "label": "3D Prints - PG13",
       "description": "",
       "type": "datasource",
-      "pluginId": "postgres",
+      "pluginId": "grafana-postgresql-datasource",
       "pluginName": "PostgreSQL"
     }
   ],
@@ -15,11 +15,11 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.1.5"
+      "version": "10.3.3"
     },
     {
       "type": "datasource",
-      "id": "postgres",
+      "id": "grafana-postgresql-datasource",
       "name": "PostgreSQL",
       "version": "1.0.0"
     },
@@ -73,14 +73,14 @@
         "x": 0,
         "y": 0
       },
-      "id": 25,
+      "id": 125,
       "panels": [],
-      "title": "Amounts By Material",
+      "title": "Amount By Material",
       "type": "row"
     },
     {
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "${DS_3D_PRINTS - PG13}"
       },
       "fieldConfig": {
@@ -98,7 +98,8 @@
               }
             ]
           },
-          "unit": "massg"
+          "unit": "massg",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -108,8 +109,8 @@
         "x": 0,
         "y": 1
       },
-      "id": 31,
-      "maxPerRow": 8,
+      "id": 126,
+      "maxPerRow": 12,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -122,21 +123,23 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.5",
+      "pluginVersion": "10.3.3",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "${DS_3D_PRINTS - PG13}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\r\n        (CASE when material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", (b->>'type')::text as material\r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, material_type, progress_done, material as most_mat, material_used\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material, material_type",
+          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\r\n       (b->>'type')::text as material\r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, progress_done, material as most_mat, material_used\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material",
           "refId": "A",
           "sql": {
             "columns": [
@@ -157,22 +160,7 @@
           }
         }
       ],
-      "title": "$materials",
-      "transformations": [
-        {
-          "disabled": true,
-          "id": "configFromData",
-          "options": {
-            "configRefId": "A",
-            "mappings": [
-              {
-                "fieldName": "material_unit",
-                "handlerKey": "unit"
-              }
-            ]
-          }
-        }
-      ],
+      "title": "${materials}",
       "transparent": true,
       "type": "stat"
     },
@@ -191,7 +179,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "${DS_3D_PRINTS - PG13}"
       },
       "fieldConfig": {
@@ -209,7 +197,8 @@
               }
             ]
           },
-          "unit": "dthms"
+          "unit": "dthms",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -233,15 +222,17 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.5",
+      "pluginVersion": "10.3.3",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "${DS_3D_PRINTS - PG13}"
           },
           "editorMode": "code",
@@ -287,7 +278,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "${DS_3D_PRINTS - PG13}"
       },
       "fieldConfig": {
@@ -305,7 +296,8 @@
               }
             ]
           },
-          "unit": "kwatth"
+          "unit": "kwatth",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -329,15 +321,17 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.5",
+      "pluginVersion": "10.3.3",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "${DS_3D_PRINTS - PG13}"
           },
           "editorMode": "code",
@@ -383,7 +377,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "${DS_3D_PRINTS - PG13}"
       },
       "fieldConfig": {
@@ -401,7 +395,8 @@
               }
             ]
           },
-          "unit": "currencyUSD"
+          "unit": "currencyUSD",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -425,15 +420,17 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.5",
+      "pluginVersion": "10.3.3",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "${DS_3D_PRINTS - PG13}"
           },
           "editorMode": "code",
@@ -466,7 +463,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "${DS_3D_PRINTS - PG13}"
       },
       "fieldConfig": {
@@ -494,7 +491,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unitScale": true
         },
         "overrides": [
           {
@@ -567,11 +565,11 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "10.1.5",
+      "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "${DS_3D_PRINTS - PG13}"
           },
           "editorMode": "code",
@@ -644,15 +642,14 @@
   ],
   "refresh": "30s",
   "revision": 1,
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {},
         "datasource": {
-          "type": "postgres",
+          "type": "grafana-postgresql-datasource",
           "uid": "${DS_3D_PRINTS - PG13}"
         },
         "definition": "select distinct printer from prints where material_type = 'filament';",
@@ -672,7 +669,7 @@
       {
         "current": {},
         "datasource": {
-          "type": "postgres",
+          "type": "grafana-postgresql-datasource",
           "uid": "${DS_3D_PRINTS - PG13}"
         },
         "definition": "select distinct(material) from prints where material is not NULL and printer = '${printers}'",
@@ -692,7 +689,7 @@
       {
         "current": {},
         "datasource": {
-          "type": "postgres",
+          "type": "grafana-postgresql-datasource",
           "uid": "${DS_3D_PRINTS - PG13}"
         },
         "definition": "select distinct(b->>'type') from (select JSONB_ARRAY_ELEMENTS(filament_data) as b from prints where jsonb_array_length( filament_data ) != 0 and printer = '${printers}' ) as foo",
@@ -719,6 +716,6 @@
   "timezone": "",
   "title": "Printer Filament Stats",
   "uid": "J9QyupI2sk",
-  "version": 16,
+  "version": 19,
   "weekStart": ""
 }

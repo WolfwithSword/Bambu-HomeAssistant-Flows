@@ -3,7 +3,7 @@
         "id": "791d26fa232ad922",
         "type": "group",
         "z": "fbda6ab16491b918",
-        "name": "Bed Mesh Parser Advanced - {PRINTER_MODEL} {PRINTER_NAME}",
+        "name": "Bed Mesh Parser Advanced",
         "style": {
             "stroke": "#92d04f",
             "fill": "#001f60",
@@ -22,7 +22,6 @@
             "060fe49fc21270c4",
             "5db05dca795db972",
             "c0b73094bf3797c7",
-            "71b429a70f0549b8",
             "d4d9c0c56451621b",
             "ef37102da33be23c",
             "32821e386ab7692c",
@@ -39,7 +38,8 @@
             "da02d991a063da17",
             "7b6eda9e520444f9",
             "80a622e4c89bda7b",
-            "c7db32967e38c407"
+            "c7db32967e38c407",
+            "b9cd83a69de2f8d1"
         ],
         "x": 2514,
         "y": 559,
@@ -51,16 +51,16 @@
         "type": "mqtt in",
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
-        "name": "Bambu {PRINTER_MODEL} {PRINTER_NAME}",
+        "name": "Bambu MQTT In",
         "topic": "",
         "qos": "2",
         "datatype": "json",
-        "broker": "84f61d394ba2ab34",
+        "broker": "{GENERATED_PRINTER_MQTT_ID}",
         "nl": false,
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 2710,
+        "x": 2680,
         "y": 960,
         "wires": [
             [
@@ -91,8 +91,9 @@
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
         "name": "Inject Machine Details",
-        "func": "let machine_name = flow.get(\"printer_name\");\nlet machine_serial = flow.get(\"printer_serial\");\nlet manufacturer = \"Bambu Labs\";\nlet model = flow.get(\"model\");\n\n\nif(msg.payload.mc_print != undefined) {\n    msg.payload.mc_print.machine_name = machine_name;\n    msg.payload.mc_print.machine_serial = machine_serial;\n    msg.payload.mc_print.manufacturer = manufacturer;\n    if(msg.payload.mc_print.param.includes(\"[AMS]\")) {\n        msg.payload.mc_print.model = \"AMS\";\n    }\n    else {\n        msg.payload.mc_print.model = model;\n        node.send(msg);\n    }\n}\n",
+        "func": "let machine_name = flow.get(\"printer_name\");\nlet machine_serial = flow.get(\"printer_serial\");\nlet manufacturer = \"Bambu Labs\";\nlet model = flow.get(\"model\");\n\n\nif(msg.payload.mc_print != undefined) {\n    msg.payload.mc_print.machine_name = machine_name;\n    msg.payload.mc_print.machine_serial = machine_serial;\n    msg.payload.mc_print.manufacturer = manufacturer;\n    let param = msg.payload.mc_print.param;\n    if (typeof param === 'string' || param instanceof String) { \n        if(param.includes(\"[AMS]\")) {\n            msg.payload.mc_print.model = \"AMS\";\n        }\n        else {\n            msg.payload.mc_print.model = model;\n            node.send(msg);\n        }\n    }        \n    else {\n            msg.payload.mc_print.model = model;\n            node.send(msg);\n    }\n}\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -111,8 +112,9 @@
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
         "name": "Cull Fail Msg",
-        "func": "if(msg.payload != undefined && Object.keys(msg.payload).length > 0){\n    node.send(msg);\n}",
-        "outputs": 1,
+        "func": "if (msg.payload != undefined && Object.keys(msg.payload).length > 0) {\n    if (msg.payload.mc_print != undefined && msg.payload.mc_print.command != undefined &&\n         (msg.payload.mc_print.command == \"mesh\" ||msg.payload.mc_print.command == \"mesh_data\") &&\n            flow.get(\"x1plus_active\") != undefined && flow.get(\"x1plus_active\") == true) {\n        msg[\"x1plus\"] = true;\n        node.send([null, msg]);\n    }\n    else {\n        node.send([msg, null]);\n    }\n}",
+        "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -122,6 +124,9 @@
         "wires": [
             [
                 "8978c1243f654011"
+            ],
+            [
+                "c4d7905e3406300d"
             ]
         ]
     },
@@ -158,13 +163,14 @@
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
         "name": "Parse coord",
-        "func": "let param = msg.payload.mc_print.param;\nlet x = param.match(/X(\\d+\\.\\d+)/)[1];\nlet y = param.match(/Y(\\d+\\.\\d+)/)[1];\nlet z = param.match(/z_c=\\s+(-?\\d+\\.\\d+)/)[1];\nlet coords = [x, y, z];\nmsg.payload = {\"coord\": {\"x\": parseFloat(x), \"y\":parseFloat(y), \"z\":parseFloat(z)}};\n\nlet abl = flow.get('abl2');\nabl.push(msg.payload);\nnode.send(msg);\n",
+        "func": "let x, y, z = undefined;\nlet param = msg.payload.mc_print.param;\n\nif (msg[\"x1plus\"] != undefined && msg[\"x1plus\"] == true) {\n    if (typeof param === 'string' || param instanceof String) {\n        let s = param.split(\",\");\n        x = s[0];\n        y = s[1];\n        z = s[2];\n    }\n    else {\n        x = param[\"x\"];\n        y = param[\"y\"];\n        z = param[\"z\"];\n        param = `x:${x}, y:${y}, z:${z}`;\n    }\n}\n\nelse {\n    x = param.match(/X(\\d+\\.\\d+)/)[1];\n    y = param.match(/Y(\\d+\\.\\d+)/)[1];\n    z = param.match(/z_c=\\s+(-?\\d+\\.\\d+)/)[1];\n}\nlet coords = [x, y, z];\nmsg.payload = { \"coord\": { \"x\": parseFloat(x), \"y\": parseFloat(y), \"z\": parseFloat(z) } };\n\nlet abl = flow.get('abl2');\nabl.push(msg.payload);\nnode.send(msg);\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nnode.status({ fill: \"white\", shape: \"ring\", text: `Probed Pt #${abl.length} | ${param} - ${dt}` });",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2790,
+        "x": 2890,
         "y": 1040,
         "wires": [
             []
@@ -238,7 +244,7 @@
                 "91b4cf7e3ba9798d"
             ],
             [
-                "0843c63919f7f6c1"
+                "b9cd83a69de2f8d1"
             ]
         ]
     },
@@ -290,32 +296,6 @@
         ]
     },
     {
-        "id": "71b429a70f0549b8",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "791d26fa232ad922",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "1",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 3140,
-        "y": 800,
-        "wires": [
-            [
-                "ef37102da33be23c"
-            ]
-        ]
-    },
-    {
         "id": "d4d9c0c56451621b",
         "type": "inject",
         "z": "fbda6ab16491b918",
@@ -342,7 +322,8 @@
         "wires": [
             [
                 "887b8d1cc0662353",
-                "d365713e1c4dcbb0"
+                "d365713e1c4dcbb0",
+                "915c4af6b2f81d6f"
             ]
         ]
     },
@@ -352,14 +333,15 @@
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
         "name": "Create Matrix",
-        "func": "let abl = flow.get('abl2');\nif (abl.length > 0) {\n    let setX = new Set();\n    let setY = new Set();\n    for (let c of abl) {\n        setX.add(c.coord.x);\n        setY.add(c.coord.y);\n    }\n    let xs = Array.from(setX).sort(function (a, b) {\n        return a - b;\n    });\n    let ys = Array.from(setY).sort(function (a, b) {\n        return a - b;\n    });\n\n\n    let data = new Array(ys.length).fill(0).map(() => new Array(xs.length).fill(0));\n    for (var c of abl) {\n        let coord = c.coord;\n        let x = xs.indexOf(coord.x);\n        let y = ys.indexOf(coord.y);\n        data[y][x] = coord.z;\n    }\n    let strdata = JSON.stringify(data).replaceAll(\"[\", \"{\");\n    strdata = strdata.replaceAll(\"]\", \"}\");\n    msg.values = {\n        \"data\": strdata,\n        \"printer\": flow.get(\"printer_name\"),\n        \"printer_serial\": flow.get(\"printer_serial\")\n    }\n    node.send(msg);\n}",
+        "func": "let abl = flow.get('abl2');\nif (abl.length > 0) {\n    let setX = new Set();\n    let setY = new Set();\n\n    for (let c of abl) {\n        setX.add(c.coord.x);\n        setY.add(c.coord.y);\n    }\n\n    let xs = Array.from(setX).sort(function (a, b) {\n        return a - b;\n    });\n    let ys = Array.from(setY).sort(function (a, b) {\n        return a - b;\n    });\n\n    let data = new Array(ys.length).fill(0).map(() => new Array(xs.length).fill(0));\n\n    for (var c of abl) {\n        let coord = c.coord;\n        let x = xs.indexOf(coord.x);\n        let y = ys.indexOf(coord.y);\n        data[y][x] = coord.z;\n    }\n    let strdata = JSON.stringify(data).replaceAll(\"[\", \"{\");\n    strdata = strdata.replaceAll(\"]\", \"}\");\n    msg['values'] = {\n        \"data\": strdata,\n        \"printer\": flow.get(\"printer_name\"),\n        \"printer_serial\": flow.get(\"printer_serial\")\n    }\n    node.send(msg);\n    flow.set('abl2', []);\n}\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 3140,
-        "y": 840,
+        "x": 3180,
+        "y": 800,
         "wires": [
             [
                 "ba7c30e3c166b7b0"
@@ -371,8 +353,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
-        "name": "Bed Mesh Flow Advanced: Version 2.0.0",
-        "info": "Version 2.0.0: 2024-??-??\n- Rebase version with new repo\n\n===\nRev 50: 2023-05-06\n- Initial Creation for Advanced version",
+        "name": "Bed Mesh Flow Advanced: Version 2.1.0",
+        "info": "Version 2.1.0: 2024-03-13\n- Rebase version with new repo\n- X1Plus support, now works again!\n\n===\nRev 50: 2023-05-06\n- Initial Creation for Advanced version",
         "x": 2700,
         "y": 600,
         "wires": []
@@ -397,7 +379,7 @@
         "y": 760,
         "wires": [
             [
-                "71b429a70f0549b8"
+                "ef37102da33be23c"
             ]
         ]
     },
@@ -466,7 +448,7 @@
         "g": "791d26fa232ad922",
         "name": "",
         "pauseType": "delay",
-        "timeout": "2",
+        "timeout": "4",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -567,14 +549,15 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
-        "name": "Subscribe",
-        "func": "",
+        "name": "Sub",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/stage/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
-        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"root_topic\") +\"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/stage/state\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2800,
+        "x": 2790,
         "y": 660,
         "wires": [
             [
@@ -591,7 +574,8 @@
         "y": 700,
         "wires": [
             [
-                "181a2ce7852cdf7b"
+                "181a2ce7852cdf7b",
+                "da02d991a063da17"
             ]
         ]
     },
@@ -600,14 +584,15 @@
         "type": "function",
         "z": "fbda6ab16491b918",
         "g": "791d26fa232ad922",
-        "name": "Subscribe",
-        "func": "",
+        "name": "Sub",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": \"device/\" + flow.get(\"printer_serial\") + \"/report\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
-        "initialize": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": \"device/\" + flow.get(\"printer_serial\") + \"/report\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2660,
+        "x": 2650,
         "y": 920,
         "wires": [
             [
@@ -649,6 +634,7 @@
         "name": "Check Values Error",
         "func": "flow.set(\"has_adv_bedmesh_flow\", true);\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"Advanced Bed Mesh Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (testValue(flow.get(\"printer_ip\"))) {\n    node.error(\"Printer IP is not set in flow properties\");\n}\nif (testValue(flow.get(\"access_code\"))) {\n    node.error(\"Printer LAN Access Code is not set in flow properties\")\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\n\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -682,6 +668,32 @@
         "wires": [
             [
                 "fd4369e8c6dd7280"
+            ]
+        ]
+    },
+    {
+        "id": "b9cd83a69de2f8d1",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "791d26fa232ad922",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3000,
+        "y": 780,
+        "wires": [
+            [
+                "0843c63919f7f6c1"
             ]
         ]
     }

@@ -11,6 +11,8 @@ cards:
           action: toggle
         entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
         icon: mdi:printer-3d
+        confirmation:
+          text: Toggle Printer Power?
         state:
           - value: 'on'
             icon: mdi:power
@@ -231,11 +233,13 @@ cards:
   - type: custom:mushroom-entity-card
     entity: sensor.{HA_PRINTER_DEVICE_NAME}_task_name
     name: Task
+    icon: mdi:clipboard-text
   - type: horizontal-stack
     cards:
       - type: custom:mushroom-entity-card
         entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress
         name: Progress
+        icon: mdi:progress-helper
       - type: custom:mushroom-template-card
         primary: Layer
         icon_color: var(--rgb-state-entity)
