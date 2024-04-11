@@ -10,8 +10,12 @@ jobs:
   To-Zip:
     runs-on: ubuntu-latest
     steps:
+      - run: |
+          ls ./
       - uses: actions/upload-artifact@v4
         with:
           name: media
           path: files/media/
           if-no-files-found: error 
+      - run: |
+          ls ./
