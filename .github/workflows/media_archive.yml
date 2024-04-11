@@ -15,5 +15,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: media
-          path: Bambu-HomeAssistant-Flows/files/media/
+          path: /home/runner/work/Bambu-HomeAssistant-Flows/Bambu-HomeAssistant-Flows/files/media/
           if-no-files-found: error 
