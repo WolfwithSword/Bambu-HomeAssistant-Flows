@@ -19,3 +19,4 @@ jobs:
           name: bambu-ha-media-files
           path: /home/runner/work/Bambu-HomeAssistant-Flows/Bambu-HomeAssistant-Flows/files/media/
           if-no-files-found: error 
+          retention-days: 20
