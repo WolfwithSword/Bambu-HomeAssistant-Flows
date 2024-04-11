@@ -1,0 +1,17 @@
+name: GitHub Actions Zip Media
+on:
+ workflow_dispatch:
+ push:
+   branches:
+     - main
+     - master
+     - test
+jobs:
+  To-Zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/upload-artifact@v4
+        with:
+          name: media
+          path: files/media/
+          if-no-files-found: error 
