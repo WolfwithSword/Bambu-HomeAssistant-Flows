@@ -1,0 +1,20 @@
+name: GitHub Actions Zip Media
+on:
+ workflow_dispatch:
+ schedule:
+  - cron: "30 1 1,15 * *"
+ push:
+   branches:
+     - main
+jobs:
+  To-Zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bambu-ha-media-files
+          path: /home/runner/work/Bambu-HomeAssistant-Flows/Bambu-HomeAssistant-Flows/files/media/
+          if-no-files-found: error 
+          retention-days: 20
