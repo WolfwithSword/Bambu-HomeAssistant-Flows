@@ -1,0 +1,7 @@
+show_state: true
+show_name: true
+camera_view: live
+type: picture-entity
+entity: camera.{HA_PRINTER_DEVICE_NAME}_camera
+camera_image: camera.{HA_PRINTER_DEVICE_NAME}_camera
+name: Camera LiveView

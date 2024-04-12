@@ -1,6 +1,4 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
   - type: conditional
     conditions:
@@ -19,7 +17,7 @@ elements:
         type: state-label
         style:
           top: 9.8%
-          left: 25.2%
+          left: 21.8%
           font-size: 1.2em
           color: '#FFFFFF'
       - type: conditional
@@ -32,9 +30,7 @@ elements:
           - type: conditional
             conditions:
               - entity: image.{HA_PRINTER_DEVICE_NAME}_cover_image
-                state_not: 
-                  - "unavailable"
-                  - "unknown"
+                state_not: unavailable
             elements:
               - type: custom:hui-element
                 card_type: picture-entity

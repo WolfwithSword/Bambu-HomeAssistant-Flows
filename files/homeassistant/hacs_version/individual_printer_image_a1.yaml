@@ -1,6 +1,4 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
   - type: conditional
     conditions:
@@ -32,9 +30,7 @@ elements:
           - type: conditional
             conditions:
               - entity: image.{HA_PRINTER_DEVICE_NAME}_cover_image
-                state_not: 
-                  - "unavailable"
-                  - "unknown"
+                state_not: unavailable
             elements:
               - type: custom:hui-element
                 card_type: picture-entity
@@ -42,8 +38,8 @@ elements:
                 show_state: false
                 entity: image.{HA_PRINTER_DEVICE_NAME}_cover_image
                 style:
-                  top: 57%
-                  left: 38%
+                  top: 61.5%
+                  left: 47%
                   transform: translate(-45%, -40%) scale(75%, 75%)
                   '--ha-card-border-width': 0px
                   '--ha-card-background': none
@@ -74,9 +70,9 @@ elements:
 card_mod:
   style: |
     ha-card {
-      box-shadow: none !important;
       background: none !important;
-      border: none !important;
+      border: none !important; 
+      box-shadow: none !important;
     }
 image: /local/media/bambuprinter/a1_lightoff.png
 entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light

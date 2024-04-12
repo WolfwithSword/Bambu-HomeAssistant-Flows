@@ -1,0 +1,7 @@
+show_state: true
+show_name: true
+camera_view: live
+type: picture-entity
+entity: camera.{HA_CAMERA_ENTITY_NAME}
+camera_image: camera.{HA_CAMERA_ENTITY_NAME}
+name: Camera LiveView

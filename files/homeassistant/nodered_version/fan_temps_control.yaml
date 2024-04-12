@@ -1,0 +1,83 @@
+type: vertical-stack
+cards:
+  - type: conditional
+    conditions:
+      - condition: state
+        entity: fan.{HA_PRINTER_DEVICE_NAME}_big_fan1
+        state_not: unavailable
+      - condition: state
+        entity: sensor.{HA_PRINTER_DEVICE_NAME}_big_fan1
+        state_not: unknown
+    card:
+      type: custom:mushroom-fan-card
+      entity: fan.{HA_PRINTER_DEVICE_NAME}_big_fan1
+      name: Aux Fan
+      icon_animation: true
+      show_percentage_control: true
+      fill_container: false
+      layout: horizontal
+  - type: conditional
+    card:
+      type: custom:mushroom-fan-card
+      entity: fan.{HA_PRINTER_DEVICE_NAME}_big_fan2
+      name: Chamber Fan
+      icon_animation: true
+      show_percentage_control: true
+      fill_container: false
+      layout: horizontal
+    conditions:
+      - condition: state
+        entity: fan.{HA_PRINTER_DEVICE_NAME}_big_fan2
+        state_not: unavailable
+      - condition: state
+        entity: sensor.{HA_PRINTER_DEVICE_NAME}_big_fan2
+        state_not: unknown
+  - type: conditional
+    card:
+      type: custom:mushroom-fan-card
+      entity: fan.{HA_PRINTER_DEVICE_NAME}_cooling_fan
+      name: Part Cooling Fan
+      icon_animation: true
+      show_percentage_control: true
+      fill_container: false
+      layout: horizontal
+    conditions:
+      - condition: state
+        entity: fan.{HA_PRINTER_DEVICE_NAME}_cooling_fan
+        state_not: unavailable
+      - condition: state
+        entity: sensor.{HA_PRINTER_DEVICE_NAME}_cooling_fan
+        state_not: unknown
+  - type: conditional
+    card:
+      type: custom:mushroom-number-card
+      entity: number.{HA_PRINTER_DEVICE_NAME}_set_nozzle_temp
+      name: Set Nozzle Temp
+      layout: horizontal
+      display_mode: buttons
+    conditions:
+      - condition: state
+        entity: number.{HA_PRINTER_DEVICE_NAME}_set_nozzle_temp
+        state_not: unavailable
+  - type: conditional
+    card:
+      type: custom:mushroom-number-card
+      entity: number.{HA_PRINTER_DEVICE_NAME}_set_bed_temp
+      name: Set Bed Temp
+      display_mode: buttons
+      layout: horizontal
+    conditions:
+      - condition: state
+        entity: number.{HA_PRINTER_DEVICE_NAME}_set_bed_temp
+        state_not: unavailable
+  - type: conditional
+    card:
+      type: custom:mushroom-number-card
+      entity: number.{HA_PRINTER_DEVICE_NAME}_set_chamber_temp
+      name: Set Chamber Temp
+      display_mode: buttons
+      layout: horizontal
+    conditions:
+      - condition: state
+        entity: number.{HA_PRINTER_DEVICE_NAME}_set_chamber_temp
+        state_not: unavailable

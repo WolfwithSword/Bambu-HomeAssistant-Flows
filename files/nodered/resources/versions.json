@@ -1,6 +1,6 @@
 {
-    "basic_flow": "2.1.0",
-    "advanced_flow": "2.1.0",
+    "basic_flow": "2.1.1",
+    "advanced_flow": "2.1.1",
     "bedmesh_basic_flow": "2.1.0",
     "bedmesh_adv_flow": "2.1.0",
     "cloud_login": "2.0.0"

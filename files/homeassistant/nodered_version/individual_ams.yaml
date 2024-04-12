@@ -1,7 +1,28 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
+  - type: conditional
+    conditions:
+      - condition: state
+        state_not: unavailable
+        entity: sensor.{HA_AMS_DEVICE_NAME}_id
+      - condition: state
+        state_not: unknown
+        entity: sensor.{HA_AMS_DEVICE_NAME}_id
+    elements:
+      - type: state-label
+        entity: sensor.{HA_AMS_DEVICE_NAME}_id
+        tap_action:
+          action: none
+        style:
+          top: 77%
+          left: 9.6%
+          text-align: center
+          font-size: 0.8em
+          background-color: rgba(0,0,0,0)
+          box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0)
+          border-radius: 10px
+          pointer-events: none
+          color: '#FFFFFF'
   - type: custom:config-template-card
     entities:
       - sensor.{HA_AMS_DEVICE_NAME}_tray_0
@@ -138,9 +159,9 @@ elements:
       - type: conditional
         conditions:
           - entity: sensor.{HA_AMS_DEVICE_NAME}_temp
-            state_not: 
-                - "unavailable"
-                - "unknown"  
+            state_not:
+              - unavailable
+              - unknown
         elements:
           - entity: sensor.{HA_AMS_DEVICE_NAME}_temp
             type: state-badge
@@ -157,7 +178,8 @@ elements:
           entity: sensor.{HA_AMS_DEVICE_NAME}_humidity_level
           icon: >-
             ${'fapro:humidity-index-' +
-            states['sensor.{HA_AMS_DEVICE_NAME}_humidity_level'].state + '#fullcolor'}
+            states['sensor.{HA_AMS_DEVICE_NAME}_humidity_level'].state +
+            '#fullcolor'}
         style:
           top: 38.5%
           left: 92.5%
@@ -172,7 +194,7 @@ card_mod:
       background: none !important;
       border: none !important;
       box-shadow: none !important;
-      --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
+      --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif  states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
       --tray_0_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_0', 'color') }};
       --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
       --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};

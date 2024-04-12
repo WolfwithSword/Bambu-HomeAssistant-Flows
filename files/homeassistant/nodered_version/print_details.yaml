@@ -1,0 +1,74 @@
+type: vertical-stack
+cards:
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-title-card
+        title: ''
+        subtitle: Print Details
+        alignment: center
+      - type: custom:mushroom-entity-card
+        entity: sensor.{HA_PRINTER_DEVICE_NAME}_subtask
+        name: Task
+        icon: mdi:clipboard-text
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: sensor.{HA_PRINTER_DEVICE_NAME}_print
+            name: Details
+            icon: mdi:dots-horizontal
+          - type: custom:mushroom-entity-card
+            entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress
+            name: Progress
+            icon: mdi:progress-helper
+          - type: custom:mushroom-template-card
+            primary: Layer
+            icon_color: var(--rgb-state-entity)
+            secondary: >-
+              {{states('sensor.{HA_PRINTER_DEVICE_NAME}_layer_num')}} /
+              {{states('sensor.{HA_PRINTER_DEVICE_NAME}_total_layer_num')}}
+            icon: mdi:layers
+  - type: custom:tabbed-card
+    options: {}
+    tabs:
+      - card:
+          type: vertical-stack
+          cards:
+            - type: entities
+              entities:
+                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_stage
+                  name: Stage
+                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms
+                  name: HMS Notifications
+                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_start_time
+                  name: Start Time
+                  secondary_info: last-changed
+                  format: datetime
+                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_end_time
+                  name: End Time
+                  format: datetime
+                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_remaining_time
+                  name: Remaining Time
+                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_filament
+                  name: Current Filament
+                  icon: mdi:printer-3d-nozzle
+                - entity: button.{HA_PRINTER_DEVICE_NAME}_unload_filament
+                  name: Unload Filament
+        attributes:
+          label: Details
+      - card:
+          type: entities
+          entities:
+            - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms
+              name: HMS Notifications
+            - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms_info
+              name: Info
+            - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms_common
+              name: Common
+            - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms_serious
+              name: Serious
+            - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms_fatal
+              name: Fatal
+            - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms_unknown
+              name: Unknown
+        attributes:
+          label: HMS

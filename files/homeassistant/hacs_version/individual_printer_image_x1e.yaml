@@ -1,6 +1,4 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
   - type: conditional
     conditions:
@@ -32,9 +30,7 @@ elements:
           - type: conditional
             conditions:
               - entity: image.{HA_PRINTER_DEVICE_NAME}_cover_image
-                state_not: 
-                  - "unavailable"
-                  - "unknown"
+                state_not: unavailable
             elements:
               - type: custom:hui-element
                 card_type: picture-entity
@@ -71,13 +67,18 @@ elements:
           left: 51%
           font-size: 0.8em
           color: rgba(0,0,0,0)
-      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
-        type: state-badge
-        style:
-          font-size: 0.8em
-          top: 31%
-          left: 19%
-          color: rgba(0,0,0,0)
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
+            state_not: unavailable
+        elements:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
+            type: state-badge
+            style:
+              font-size: 0.8em
+              top: 31%
+              left: 19%
+              color: rgba(0,0,0,0)
 card_mod:
   style: |
       ha-card {

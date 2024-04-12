@@ -1,7 +1,28 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
+  - type: conditional
+    conditions:
+      - condition: state
+        state_not: unavailable
+        entity: sensor.{HA_AMS_DEVICE_NAME}_id
+      - condition: state
+        state_not: unknown
+        entity: sensor.{HA_AMS_DEVICE_NAME}_id
+    elements:
+      - type: state-label
+        entity: sensor.{HA_AMS_DEVICE_NAME}_id
+        tap_action:
+          action: none
+        style:
+          top: 77%
+          left: 30%
+          text-align: center
+          font-size: 0.8em
+          background-color: rgba(0,0,0,0)
+          box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0)
+          border-radius: 10px
+          pointer-events: none
+          color: '#FFFFFF'
   - type: custom:config-template-card
     entities:
       - sensor.{HA_AMS_DEVICE_NAME}_tray_0
@@ -10,7 +31,7 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_0
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_0'].state != 'Empty' ?
-        'custom:filament-1' : 'mdi:tray' }
+        'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 27%
       left: 15.4%
@@ -42,7 +63,7 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_1
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state != 'Empty' ?
-        'custom:filament-1' : 'mdi:tray' }
+        'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 62%
       left: 45.7%
@@ -74,7 +95,7 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_3
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state != 'Empty' ?
-        'custom:filament-1' : 'mdi:tray' }
+        'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 11%
       left: 44.7%
@@ -106,7 +127,7 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_2
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state != 'Empty' ?
-        'custom:filament-1' : 'mdi:tray' }
+        'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 52%
       left: 84.6%

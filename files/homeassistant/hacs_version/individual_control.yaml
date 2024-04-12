@@ -1,32 +1,43 @@
 type: vertical-stack
-view_layout:
-  column: 3
 cards:
   - type: horizontal-stack
     cards:
-      - type: custom:button-card
-        show_name: false
-        show_icon: true
-        tap_action:
-          action: toggle
-        entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
-        icon: mdi:printer-3d
-        confirmation:
-          text: Toggle Printer Power?
-        state:
-          - value: 'on'
-            icon: mdi:power
-            color: green
-          - value: 'off'
-            icon: mdi:power
-            color: grey
-        aspect_ratio: 2
-        card_mod:
-          style: |
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
+            state: unavailable
+        card:
+          type: custom:gap-card
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
+            state_not: unavailable
+        card:
+          type: custom:button-card
+          show_name: false
+          show_icon: true
+          tap_action:
+            action: toggle
+          entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
+          icon: mdi:printer-3d
+          confirmation:
+            text: Toggle Printer Power?
+          state:
+            - value: 'on'
+              icon: mdi:power
+              color: green
+            - value: 'off'
+              icon: mdi:power
+              color: grey
+          aspect_ratio: 2
+          card_mod:
+            style: |
               ha-card {
-                box-shadow: none !important;
                 background: rgba(0,0,0,0);
                 border: none;
+                box-shadow: none !important;
               }
       - type: custom:mushroom-title-card
         title: {PRINTER_TITLE}

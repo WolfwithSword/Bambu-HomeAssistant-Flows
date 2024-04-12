@@ -1,6 +1,4 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
   - type: custom:config-template-card
     entities:
@@ -53,14 +51,14 @@ elements:
 image: /local/media/bambuprinter/spool.png
 card_mod:
   style: |
-      ha-card {
-        margin-left: auto;
-        margin-right: auto;
-        width: 60%;
-        height: 60%;
-        background: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        --tray_vt_color: {{state_attr('sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray', 'color') }};
-        --tray_vt_bg: {% if is_state_attr('sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-      }
+    ha-card {
+      margin-left: auto;
+      margin-right: auto;
+      width: 60%;
+      height: 60%;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      --tray_vt_color: {{state_attr('sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray', 'color') }};
+      --tray_vt_bg: {% if is_state_attr('sensor.{HA_PRINTER_DEVICE_NAME}_vt_tray', 'in_use', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+    }

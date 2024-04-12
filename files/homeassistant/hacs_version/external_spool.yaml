@@ -1,6 +1,4 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
   - type: custom:config-template-card
     entities:

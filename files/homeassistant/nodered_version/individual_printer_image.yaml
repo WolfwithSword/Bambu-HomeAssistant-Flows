@@ -1,6 +1,4 @@
 type: picture-elements
-view_layout:
-  column: 1
 elements:
   - type: conditional
     conditions:
@@ -25,21 +23,26 @@ elements:
       - type: conditional
         conditions:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
-            state: 
-            - RUNNING
-            - PAUSE
+            state:
+              - RUNNING
+              - PAUSE
         elements:
-          - type: custom:hui-element
-            card_type: picture-entity
-            show_name: false
-            show_state: false
-            entity: image.{HA_PRINTER_DEVICE_NAME}_print_preview
-            style:
-              top: 50%
-              left: 50%
-              transform: translate(-45%, -40%) scale(75%, 75%)
-              '--ha-card-border-width': 0px
-              '--ha-card-background': none
+          - type: conditional
+            conditions:
+              - entity: image.{HA_PRINTER_DEVICE_NAME}_print_preview
+                state_not: unavailable
+            elements:
+              - type: custom:hui-element
+                card_type: picture-entity
+                show_name: false
+                show_state: false
+                entity: image.{HA_PRINTER_DEVICE_NAME}_print_preview
+                style:
+                  top: 50%
+                  left: 50%
+                  transform: translate(-45%, -40%) scale(75%, 75%)
+                  '--ha-card-border-width': 0px
+                  '--ha-card-background': none
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress
             type: state-badge
             tap_action:
@@ -60,24 +63,29 @@ elements:
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_bed_temperature
         type: state-badge
         style:
-          top: 78%
+          top: 84%
           left: 51%
           font-size: 0.8em
           color: rgba(0,0,0,0)
-      - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
-        type: state-badge
-        style:
-          font-size: 0.8em
-          top: 31%
-          left: 19%
-          color: rgba(0,0,0,0)
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
+            state_not: unavailable
+        elements:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
+            type: state-badge
+            style:
+              font-size: 0.8em
+              top: 31%
+              left: 19%
+              color: rgba(0,0,0,0)
 card_mod:
   style: |
-      ha-card {
-        box-shadow: none !important;
-        background: none !important;
-        border: none !important;
-      }
+    ha-card {
+      background: none !important;
+      border: none !important; 
+      box-shadow: none !important;
+    }
 image: /local/media/bambuprinter/on_lighton_2.png
 entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
 state_image:
