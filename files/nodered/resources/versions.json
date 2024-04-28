@@ -3,5 +3,6 @@
     "advanced_flow": "2.1.2",
     "bedmesh_basic_flow": "2.1.0",
     "bedmesh_adv_flow": "2.1.0",
-    "cloud_login": "2.0.0"
+    "cloud_login": "2.0.0",
+    "dashboard_yamls": "2.1.2"
 }
