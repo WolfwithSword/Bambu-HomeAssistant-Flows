@@ -72,3 +72,162 @@ cards:
               name: Unknown
         attributes:
           label: HMS
+      - card:
+          square: false
+          type: grid
+          cards:
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_recovery
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_recovery
+                name: Auto Step-Loss Recovery
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_first_layer_inspection
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_first_layer_inspection
+                name: First Layer Inspection
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_buildplate_detection
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_buildplate_detection
+                name: Build-Plate Marker Detection
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_nozzle_blob_detection
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_nozzle_blob_detection
+                name: Nozzle Blob Detection
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_air_print_detection
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_air_print_detection
+                name: Air Printing Detection
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_prompt_sound
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_prompt_sound
+                name: Prompt Sound
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_switch
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_switch
+                name: AMS Auto Switch Filament
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_filament_tangle
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_filament_tangle
+                name: Filament Tangle Detection
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_recording
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_recording
+                name: Toggle Video Recording
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_timelapse
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-entity-card
+                entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_timelapse
+                name: Toggle Timelapse Recording
+                secondary_info: state
+                fill_container: true
+                layout: vertical
+                tap_action:
+                  action: toggle
+            - type: conditional
+              conditions:
+                - condition: state
+                  entity: select.{HA_PRINTER_DEVICE_NAME}_camera_resolution
+                  state_not: unavailable
+              card:
+                type: custom:mushroom-select-card
+                entity: select.{HA_PRINTER_DEVICE_NAME}_camera_resolution
+                name: Camera Resolution
+                secondary_info: none
+                fill_container: true
+                layout: vertical
+          columns: 2
+        attributes:
+          label: Print Options
