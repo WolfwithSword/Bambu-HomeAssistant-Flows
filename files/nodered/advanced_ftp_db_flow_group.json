@@ -3011,7 +3011,9 @@
         "g": "10bacfd4fdd72e6f",
         "name": "zip extract files out",
         "mode": "link",
-        "links": [],
+        "links": [
+            "bd42fe6c1ee04c6b"
+        ],
         "x": 1835,
         "y": 2100,
         "wires": []
@@ -3496,7 +3498,6 @@
         "name": "Plate Type Out",
         "mode": "link",
         "links": [
-            "9a89138f9553f880",
             "2b5fbcfc32a16fa5"
         ],
         "x": 1865,
@@ -3855,7 +3856,9 @@
         "z": "fbda6ab16491b918",
         "g": "cd21fb00d1a69ef7",
         "name": "zip extract files in",
-        "links": [],
+        "links": [
+            "242f2bec903609c2"
+        ],
         "x": 655,
         "y": 2240,
         "wires": [
@@ -4466,7 +4469,7 @@
         "g": "a3e765e96362759b",
         "name": "",
         "pauseType": "delay",
-        "timeout": "1",
+        "timeout": "2",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -6226,8 +6229,7 @@
         "g": "a3e765e96362759b",
         "name": "Update_For_In",
         "links": [
-            "e5bde629696c68c3",
-            "79460dfc84945051"
+            "e5bde629696c68c3"
         ],
         "x": 1075,
         "y": 2600,
