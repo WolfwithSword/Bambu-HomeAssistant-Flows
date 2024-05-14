@@ -233,12 +233,12 @@ elements:
           type: state-icon
           entity: sensor.{HA_AMS_DEVICE_NAME}_humidity_index
           icon: >-
-            ${'fapro:humidity-index-' +
+            ${'fapro:humidity-level-dark-' +
             states['sensor.{HA_AMS_DEVICE_NAME}_humidity_index'].state + '#fullcolor'}
         style:
           top: 38.5%
           left: 92.5%
-          background-color: var(--label-badge-background-color,#fff)
+          background-color: '#1c1c1c'
           border-radius: 50px
           border: 0.12em solid var(--humidity-border-color)
           '--mdc-icon-size': 2.05em
