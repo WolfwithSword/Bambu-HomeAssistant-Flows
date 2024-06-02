@@ -144,6 +144,7 @@ blueprint:
               **Version: v1.0.0**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_auto_bentobox_fans.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
+              [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
 
               ### Information
               This automation will automatically turn on your bentobox air filtration while a print is active if the current filament is one of any from the configured list.

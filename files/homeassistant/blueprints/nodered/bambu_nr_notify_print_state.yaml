@@ -95,6 +95,7 @@ blueprint:
               **Version: v1.0.0**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_state.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
+              [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
 
               ### Information
               This automation will let you send a notification when a print is finished or failed.

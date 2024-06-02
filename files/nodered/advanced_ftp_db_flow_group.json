@@ -38,8 +38,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "20b7b2baaa0fdddd",
-        "name": "Version 2.1.3",
-        "info": "Version 2.1.3: 2024-05-15\n- Fixed up some logic around http print info mapping and backup attempts\n- Added Print Weight and Print Cost sensors\n- Fix for makerworld prints on P1 series not working for FTP File backup try when only one print is available\n - Turns out, gcode_file does not contain plate info in this case. Which makes no sense and would even break bambustudio\n- Major rework of adv flow\n - Removed dependency on zip palette and python palette (or python in general)\n - Swapped to exec nodes to run terminal commands for unzip and FTPS\n - organized into groups better\n===\nVersion 2.1.2: 2024-04-27\n- Added backup check for when \"print again\" is hit with local FTP prints.\n - Now the basic flow stores for 3 days subtask_ids and their print info, so when print again is clicked, it will look into their to try to find the correct print file to download.\n - Does not currently support HTTP (re)prints. (This is a WIP, need to better test)\n===\nVersion 2.1.1: 2024-04-10\n- Added version checking support for flow\n\n===\nVersion 2.1.0: 2024-03-13\n- Added plate_id column in db, so you can track which plate a print used\n- Remove some HA nodes in favour of flow variables set continuously from retained mqtt states from basic flow\n- Add more datetime parts to status messages \n\n===\nVersion 2.0.11: 2024-01-20\n- Added sensors that poll the DB for:\n - total tracked/recorded active printing time\n - total tracked/recorded grams of filament printed\n- misc fixes/typos\n- fix for gcode parsing missing vendor in recent orcaslicer updates.\n\n===\nVersion 2.0.10: 2023-12-30\n- Sync with basic flow update\n- Minor logic change in plate_name extraction if HA fails\n- Dashboard support change - print preview is now an image type, not camera\n\n===\nVersion 2.0.9: 2023-12-11\n- Add setting for printer device name from HA\n - this is requires after HA changed their MQTT implementation that f***ed up device names\n - makes it 10x more annoying for configurable dashboards and flows\n - it isn't configured to be used yet as I am attempting a different workaround, but it is ready for debugging and eventual permanent usage.\n\n===\nVersion 2.0.8: 2023-11-05\n- Minor tweaks around logic\n- Sync with 2.0.8\n\n===\nVersion 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.1.4",
+        "info": "Version 2.1.4: 2024-06-02\n- Very minor update\n- Adjust timings on download/unzip sections\n- cleanup\n- one more node-status info\n\n===\nVersion 2.1.3: 2024-05-15\n- Fixed up some logic around http print info mapping and backup attempts\n- Added Print Weight and Print Cost sensors\n- Fix for makerworld prints on P1 series not working for FTP File backup try when only one print is available\n - Turns out, gcode_file does not contain plate info in this case. Which makes no sense and would even break bambustudio\n- Major rework of adv flow\n - Removed dependency on zip palette and python palette (or python in general)\n - Swapped to exec nodes to run terminal commands for unzip and FTPS\n - organized into groups better\n===\nVersion 2.1.2: 2024-04-27\n- Added backup check for when \"print again\" is hit with local FTP prints.\n - Now the basic flow stores for 3 days subtask_ids and their print info, so when print again is clicked, it will look into their to try to find the correct print file to download.\n - Does not currently support HTTP (re)prints. (This is a WIP, need to better test)\n===\nVersion 2.1.1: 2024-04-10\n- Added version checking support for flow\n\n===\nVersion 2.1.0: 2024-03-13\n- Added plate_id column in db, so you can track which plate a print used\n- Remove some HA nodes in favour of flow variables set continuously from retained mqtt states from basic flow\n- Add more datetime parts to status messages \n\n===\nVersion 2.0.11: 2024-01-20\n- Added sensors that poll the DB for:\n - total tracked/recorded active printing time\n - total tracked/recorded grams of filament printed\n- misc fixes/typos\n- fix for gcode parsing missing vendor in recent orcaslicer updates.\n\n===\nVersion 2.0.10: 2023-12-30\n- Sync with basic flow update\n- Minor logic change in plate_name extraction if HA fails\n- Dashboard support change - print preview is now an image type, not camera\n\n===\nVersion 2.0.9: 2023-12-11\n- Add setting for printer device name from HA\n - this is requires after HA changed their MQTT implementation that f***ed up device names\n - makes it 10x more annoying for configurable dashboards and flows\n - it isn't configured to be used yet as I am attempting a different workaround, but it is ready for debugging and eventual permanent usage.\n\n===\nVersion 2.0.8: 2023-11-05\n- Minor tweaks around logic\n- Sync with 2.0.8\n\n===\nVersion 2.0.7: 2023-10-06\n- More GCode parsing\n- Multiple DB improvements\n - Material_used_cost is for the overall cost of all materials just as before\n - New progress_done column. To tell you how much progress a print had before it failed. Defaults to 100 for all retroactive prints.\n - New column for filament data.\n  - This column is from extracting via the gcode file *if applicable* to get details like profile, cost, weight, type, etc per filament used in a print.\n  - By default, it *removes* filament profiles that had 0 weight used. They usually come in if you keep a bunch loaded in bambustudio/orca but don't use them in a print.\n - Separated out the insert updates into a new subgroup.\n - New \"manual update\" option. Please read the NOTES for it.\n- Makerworld prints do *not* get overall weight used or cost of all filaments from gcode. It is missing.\n- Grafana dashboards updated to prioritize weight/type/cost from filament_data column. If absent or 0, will pull from the overall material columns.\n\n\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes for plate_name and filename\n- GCode extraction\n- DB Change, new column: material_used_cost\n - The previous columns meant for this were kept around but are still unused in case someone was using them\n - New column is filled in by parsing the GCode file for a print cost \n - This means you need to make sure your profiles are aligned for filament for their costs to be accurate\n - To simulate retroactively adding this to old print data (default 0.0), check the NOTES node at the bottom of the db postgres group\n===\nVersion 2.0.5: 2023-09-11\n- Fix for P1 series start time set from postgres flow being wrong (forgot to multiply epoch by 1000 for human readable override)\n- Added catch to HA node for when in P1 series, the start epoch just does not exist at all\n- FINALLY FIXED P1 FTP DOWNLOADING\n - turns out, listing from ftp the /cache directory, if it was a P1 it did not prefix the files with the path\n- Fixed start epoch resetting for p1 series\n\n===\nVersion 2.0.4: 2023-09-09\n- Additional workarounds for when start epoch is 0 or NaN (HA issues, cache issues, or P1 series issues caused)\n - When start epoch was still read as 0 for db flow, the plate/weight/material inserts also failed\n - Workaround is to have start epoch force created and if HA still reports 0, use a flow-set version which clears on print end.\n- More workarounds for plate name/id.\n\n===\nVersion 2.0.3: 2023-08-20\n- Added several workarounds for P1 series to get proper plate name/id\n- Added preventative measures in case http request fails when using P1 Cloud MQTT\n- Relying on new \"Plate name\" sensor from HA which requires basic flow 2.0.3+\n\n===\nVersion 2.0.2: 2023-08-19\n- Attempt to fix bug of FTPS flow not triggering\n- Fixed bug of db flow with forcing start epoch into db\n- Removed all HA State Trigger nodes, replaced with triggers from MQTT updates + manual fetch to HA to get previous and current state. This was done to make *all* node entity id's configurable via input, so there are no \"hardcoded\" nodes and it can be updated completely via basic flow settings group.\n  - This means it will be easy to reconfigure due to a typo or sensor name change.\n  - Do note this will mean there is at least a 10 second delay now purposefully on status updates - this was the lowest I could make it guaranteeing the HA history lookup would work.\n- Potential fixes for inability to maintain or get a plate id / name, along with workarounds\n- Fix for an error message that would sometimes come up for duplicate keys but could be ignored\n===\nVersion 2.0.0: 2023-08-05\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Reworked FTPS logic - it will prioritize using the MQTT Request msg with a url (FTP or HTTP if cloud) to parse the name. If this fails after 75 seconds, it will attempt the old approach still.\n- Removed old HTTP backup method for getting image. Preference to use MQTT, but if you want it back it is easy to make with default nodes.\n\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 1700,
         "wires": []
@@ -1607,7 +1607,7 @@
         "g": "615e0a4a63e8487d",
         "name": "delay",
         "pauseType": "delay",
-        "timeout": "5",
+        "timeout": "3",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2252,7 +2252,7 @@
         "g": "a5e2795d2edc8cf5",
         "name": "delay",
         "pauseType": "delay",
-        "timeout": "3",
+        "timeout": "2",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2351,7 +2351,7 @@
         "g": "a5e2795d2edc8cf5",
         "name": "delay",
         "pauseType": "delay",
-        "timeout": "8",
+        "timeout": "6",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2544,7 +2544,7 @@
         "g": "a5e2795d2edc8cf5",
         "name": "delay",
         "pauseType": "delay",
-        "timeout": "5",
+        "timeout": "3",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2702,7 +2702,7 @@
         "x": 1174,
         "y": 1959,
         "w": 732,
-        "h": 189.5
+        "h": 202
     },
     {
         "id": "49710497528a73bd",
@@ -2730,7 +2730,7 @@
         "g": "10bacfd4fdd72e6f",
         "name": "delay",
         "pauseType": "delay",
-        "timeout": "1",
+        "timeout": "8",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2923,7 +2923,7 @@
         "g": "10bacfd4fdd72e6f",
         "name": "delay",
         "pauseType": "delay",
-        "timeout": "10",
+        "timeout": "5",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -3014,8 +3014,8 @@
         "links": [
             "bd42fe6c1ee04c6b"
         ],
-        "x": 1835,
-        "y": 2100,
+        "x": 1825,
+        "y": 2120,
         "wires": []
     },
     {
@@ -3066,7 +3066,8 @@
             "6a711d90e2866589",
             "da318563af366402",
             "422a8525053c07c2",
-            "882cd28a46933aba"
+            "882cd28a46933aba",
+            "12e917a90c94d394"
         ],
         "x": 614,
         "y": 2171.5,
@@ -3187,7 +3188,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1630,
+        "x": 1650,
         "y": 2260,
         "wires": [
             [
@@ -3322,7 +3323,7 @@
         "sendError": false,
         "encoding": "none",
         "allProps": false,
-        "x": 1400,
+        "x": 1420,
         "y": 2340,
         "wires": [
             [
@@ -3360,7 +3361,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1590,
+        "x": 1610,
         "y": 2380,
         "wires": [
             [
@@ -3648,7 +3649,7 @@
         "sendError": false,
         "encoding": "none",
         "allProps": false,
-        "x": 1280,
+        "x": 1420,
         "y": 2300,
         "wires": [
             [
@@ -3662,14 +3663,14 @@
         "z": "fbda6ab16491b918",
         "g": "cd21fb00d1a69ef7",
         "name": "Parse GCode",
-        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 140);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\nlet fila_costkg_line = \"\";\n\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_cost =\")) {\n        fila_costkg_line = n.replace(\"; filament_cost =\",\"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\"\n        && fila_costkg_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\nlet costkg = fila_costkg_line.split(\",\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim(),\n            \"kg_cost\": parseFloat(costkg[i].trim())\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d[\"used_cost\"] >= 0.0) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost + ` - ${dt}` });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" + ` - ${dt}` });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != undefined && data.length != 0) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
+        "func": "let setup_lines = msg.payload.split(\"\\n\").slice(50, 140);\nlet fila_order_line = \"\";\nlet fila_colour_line = \"\";\nlet fila_used_line = \"\";\nlet fila_cost_line = \"\";\nlet fila_profiles_line = \"\";\nlet fila_vendor_line = \"\";\nlet fila_costkg_line = \"\";\n\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nnode.status({ fill: \"pink\", shape: \"ring\", text: \"Processing gcode file...\" + ` - ${dt}` });\nfor (var n of setup_lines) {\n    if (n.startsWith(\"; filament_type =\")) {\n        fila_order_line = n.replace(\"; filament_type =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_colour =\")) {\n        fila_colour_line = n.replace(\"; filament_colour =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_settings_id =\")) {\n        fila_profiles_line = n.replace(\"; filament_settings_id =\", \"\");\n    } \n    else if (n.startsWith(\"; filament_vendor =\")) {\n        fila_vendor_line = n.replace(\"; filament_vendor =\", \"\");\n    }\n    else if (n.startsWith(\"; filament_cost =\")) {\n        fila_costkg_line = n.replace(\"; filament_cost =\",\"\");\n    }\n    if (fila_order_line != \"\" && fila_colour_line != \"\" && fila_profiles_line != \"\" && fila_vendor_line != \"\"\n        && fila_costkg_line != \"\") {\n        break;\n    }\n}\n\n\nlet lines = msg.payload.split(\"\\n\").slice(-7);\nlet line = \"\";\nfor (var l of lines) {\n    if (l == \"\") {\n        continue;\n    }\n    if (l.startsWith(\"; filament cost =\")) {\n        line = l;\n        fila_cost_line = l.replace(\"; filament cost =\", \"\");\n    }\n    else if (l.startsWith(\"; filament used [g] =\")) {\n        fila_used_line = l.replace(\"; filament used [g] =\", \"\");\n    }\n    if (fila_cost_line != \"\" && fila_used_line != \"\") {\n        break;\n    }\n}\n\nlet data = []\n\nlet types = fila_order_line.split(\";\");\nlet col = fila_colour_line.split(\";\");\nlet used = fila_used_line.split(\",\");\nlet costs = fila_cost_line.split(\",\");\nlet profs = fila_profiles_line.split(\";\");\nlet ven = fila_vendor_line.split(\";\");\nlet costkg = fila_costkg_line.split(\",\");\n\nlet missingLines = false;\nif(fila_used_line == \"\" || fila_cost_line == \"\")  {\n    // did not find in gcode file, use fake numbers\n    used = [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\",\"0\",\"0\",\"0\",\"0\",\"0\", \"0\"];\n    costs = used;\n    missingLines = true; // we dont know if it's actually used in a print\n    // also for some reason, it may have arbitarily more filaments\n    // --- makerworld slicing is dumb\n}\n\nif(fila_order_line != \"\") {\n    for (let i = 0; i < types.length; i++) {\n        let u = \" 0 \";\n        if (used[i] != undefined) {\n            u = used[i];\n        } \n        let c = \" 0 \";\n        if (costs[i] != undefined) {\n            c = costs[i];\n        }\n        \n        let d = {\n            \"index\": i,\n            \"type\": types[i].trim(),\n            \"colour\": col[i].trim(),\n            \"used_g\": parseFloat(u.trim()),\n            \"used_cost\": parseFloat(c.trim()),\n            \"profile\": profs[i].replaceAll(\"\\\"\", \"\").replaceAll(\"'\", \"\").trim(),\n            \"vendor\": ven[i].replaceAll(\"'\", \"\").replaceAll('\"', \"\").trim(),\n            \"kg_cost\": parseFloat(costkg[i].trim())\n        }\n        d[\"used_in_print\"] = (d[\"used_g\"] > 0.00 && d['used_cost'] >= 0.0) || missingLines;\n        data.push(d);\n    }\n}\n\nlet match = [...line.matchAll(/([0-9]+.[0-9]+)/g)]\nnow = new Date();\ndt = now.toLocaleDateString(\"en-US\", { \"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\" });\n\nif (match != undefined && match.length >= 1 && match[0].length > 0 && parseFloat(match[0][1]) != undefined) {\n    let x = 0;\n    for (var i = 0; i < match.length; i++) {\n\n        if (match[i].length > 0) {\n            x += parseFloat(match[i][1])\n        }\n    }\n    msg.cost = parseFloat(x);\n    msg.payoad = {};\n    msg.topic = \"material_used_cost\"\n    msg.update_for = \"mat_cost\";\n    node.send([msg, null]);\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"$\" + msg.cost + ` - ${dt}` });\n}\nelse {\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"No cost found in gcode file\" + ` - ${dt}` });\n}\n\nif (flow.get(\"remove_unused_filaments\")) {\n    data = data.filter(val => val[\"used_in_print\"] != undefined && val[\"used_in_print\"]);\n}\n\nif(data != undefined && data.length != 0) {\n    node.send([null, {\"update_for\": \"gcode_data\", \"payload\": data}]);\n}",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1580,
+        "x": 1600,
         "y": 2320,
         "wires": [
             [
@@ -3743,7 +3744,7 @@
                 "b4dccf6d01ed92c4"
             ],
             [
-                "f3b1eca3de35dadb"
+                "12e917a90c94d394"
             ],
             [
                 "99abcec52237d2d2"
@@ -3760,7 +3761,7 @@
         "g": "cd21fb00d1a69ef7",
         "name": "delay",
         "pauseType": "delay",
-        "timeout": "2",
+        "timeout": "8",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -3926,6 +3927,27 @@
                 "ab9d3fbde618bd0f",
                 "1b3a93f1f0dd0a50",
                 "15e3ceb662c8eb6a"
+            ]
+        ]
+    },
+    {
+        "id": "12e917a90c94d394",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "cd21fb00d1a69ef7",
+        "name": "Status",
+        "func": "\nlet now = new Date();\nlet dt = now.toLocaleDateString(\"en-US\", {\"month\": \"short\", \"day\": \"numeric\", \"year\": \"numeric\", \"hour\": \"2-digit\", \"minute\": \"2-digit\"});\n\nnode.status({ fill: \"pink\", shape: \"ring\", text: \"Processing...\" + ` - ${dt}` });\nnode.send(msg);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1270,
+        "y": 2300,
+        "wires": [
+            [
+                "f3b1eca3de35dadb"
             ]
         ]
     },
@@ -4098,7 +4120,7 @@
         "z": "fbda6ab16491b918",
         "g": "f8f24fbbe7cdd785",
         "name": "Set Additional",
-        "func": "if (flow.get(\"printer_ha_device_name\") != undefined){\n    let x = flow.get(\"printer_ha_device_name\")\n    x = x.toLowerCase()\n    x = x.replaceAll(\"-\", \"_\");\n    flow.set(\"printer_ha_device_name\", x);\n}\n\nlet ignored_base = [\"auto_cali_for_user_param\", \"filament_unload\", \"filament_load\",\"auto_cali_for_user\", \"ams_unload\", \"ams_load\", \"extrusion_cali\",\n                    \"abs_flowcalib_cali\", \"auto_filament_cali\"];\nlet ignored = [];\nfor (var i of ignored_base) {\n    ignored.push(i);\n    ignored.push(i+\".gcode\")\n}\nflow.set(\"ignored_printfiles\", ignored);\n\nflow.set(\"advanced_flow_version\", \"2.1.3\");",
+        "func": "if (flow.get(\"printer_ha_device_name\") != undefined){\n    let x = flow.get(\"printer_ha_device_name\")\n    x = x.toLowerCase()\n    x = x.replaceAll(\"-\", \"_\");\n    flow.set(\"printer_ha_device_name\", x);\n}\n\nlet ignored_base = [\"auto_cali_for_user_param\", \"filament_unload\", \"filament_load\",\"auto_cali_for_user\", \"ams_unload\", \"ams_load\", \"extrusion_cali\",\n                    \"abs_flowcalib_cali\", \"auto_filament_cali\"];\nlet ignored = [];\nfor (var i of ignored_base) {\n    ignored.push(i);\n    ignored.push(i+\".gcode\")\n}\nflow.set(\"ignored_printfiles\", ignored);\n\nflow.set(\"advanced_flow_version\", \"2.1.4\");",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -5206,9 +5228,9 @@
         "type": "delay",
         "z": "fbda6ab16491b918",
         "g": "a3e765e96362759b",
-        "name": "",
+        "name": "delay",
         "pauseType": "delay",
-        "timeout": "60",
+        "timeout": "52",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -5219,7 +5241,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 1180,
+        "x": 1170,
         "y": 2600,
         "wires": [
             [
@@ -7225,6 +7247,7 @@
         "name": "Convert",
         "func": "msg.params = [JSON.stringify(msg.gcode_data)];\nnode.send(msg);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
