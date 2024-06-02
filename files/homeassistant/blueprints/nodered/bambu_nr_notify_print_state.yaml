@@ -1,5 +1,6 @@
 variables:
   status_s: !input print_status
+  image_s: !input image_or_camera
 
 mode: single
 trigger:
@@ -38,6 +39,13 @@ action:
               {% elif is_state(status_s, 'FAILED') %}
                 Print Failed
               {% endif %}
+            data:
+              image: >-
+                  {% if image_s %}
+                    /api/{{states[image_s].domain}}_proxy/{{image_s}}
+                  {% else %}
+                    ""
+                  {% endif %}
   - alias: Send notification to each desktop device
     repeat:
       for_each: !input notify_devices_desktops
@@ -92,7 +100,7 @@ blueprint:
   description: |
               Send a notification on print completed or failure
 
-              **Version: v1.0.0**
+              **Version: v1.0.1**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_state.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
               [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
@@ -105,6 +113,8 @@ blueprint:
                 - Mobile-App push notifications (via HA mobile_app)
                 - Amazon Alexa Speakers TTS announcements (via alexa media player integration)
                 - Desktop notification centres (via HASS Agent integration)
+
+              For mobile-apps, you can also optionally choose a camera or image entity to send to the push notification. When blank, it will not send an image.
 
               ## Requirements
               - [My Bambu -> HomeAssistant Integration via NodeRed](https://www.wolfwithsword.com/bambulab-to-home-assistant-nodered-configurator/)
@@ -121,6 +131,16 @@ blueprint:
           filter:
             - domain: sensor
               integration: mqtt
+    image_or_camera:
+      name: "Optional: Image or Camera Snapshot Entity"
+      default: ""
+      description: "An Image or Camera Entity to send a preview with to mobile-app. Leave empty if you do not want to use this."
+      # Technically should work with hass.agent, but did not for me...
+      selector:
+        entity:
+          filter:
+            - domain: camera
+            - domain: image
     notify_ha_persist:
       name: Send Notification in HomeAssistant Notification Centre
       default: false
