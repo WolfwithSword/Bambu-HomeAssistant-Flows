@@ -1,0 +1,163 @@
+variables:
+  error_s: !input error_sensor
+
+mode: single
+trigger:
+  - platform: state
+    entity_id:
+      - !input error_sensor
+    attribute: code
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+condition:
+  - condition: and
+    conditions:
+    - condition: not
+      conditions:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: !input print_status
+            state: OFFLINE
+          - condition: state
+            entity_id: !input error_sensor
+            attribute: code
+            state: 0
+          - condition: state
+            entity_id: !input error_sensor
+            attribute: description
+            state: Printing was cancelled.
+          - condition: state
+            entity_id: !input error_sensor
+            attribute: description
+            state: Printing was cancelled
+    - condition: state
+      entity_id: !input error_sensor
+      state: Error
+action:
+  - alias: Send notification to each mobile device
+    repeat:
+      for_each: !input notify_devices_mobile
+      sequence:
+        - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          data:
+            title: >-
+              {{device_attr(error_s, 'name')|replace("_"," ")}} - Print error detected!
+            message: >-
+              {{state_attr(error_s, 'description')}}
+  - alias: Send notification to each desktop device
+    repeat:
+      for_each: !input notify_devices_desktops
+      sequence:
+        - service: "notify.{{ device_attr(repeat.item, 'name') | slugify }}"
+          data:
+            title: >-
+              {{device_attr(error_s, 'name')|replace("_"," ")}} - Print error detected!
+            message: >-
+              {{state_attr(error_s, 'description')}}
+  - alias: Send notification to each alexa media device
+    repeat:
+      for_each: !input notify_devices_alexa
+      sequence:
+        - service: "notify.alexa_media_{{ device_attr(repeat.item, 'name') | slugify }}"
+          data:
+            title: >-
+              {{device_attr(error_s, 'name')|replace("_"," ")}} - Print error detected!
+            message: >-
+              Bambu {{device_attr(error_s, 'name')|replace("_"," ")}} has a print error! {{state_attr(error_s, 'description')}}
+            data:
+              type: "announce"
+  - alias: Send notification to HA Notif Centre
+    choose:
+      - conditions:
+        - condition: template
+          value_template: !input notify_ha_persist
+        sequence:
+          - service: "notify.persistent_notification"
+            data:
+              title: >-
+                {{device_attr(error_s, 'name')|replace("_"," ")}} - Print error detected!
+              message: >-
+                {{state_attr(error_s, 'description')}}
+
+blueprint:
+  name: "[BAMBU] Notify on Print Error"
+  source_url: "https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_error.yaml"
+  author: "WolfwithSword"
+  description: |
+              Send a notification of a print error to a valid device
+
+              **Version: v1.0.0**
+              [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_error.yaml)
+              [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
+
+              ### Information
+              This automation will let you send a notification of each new top-level error from your Bambu printer that requires immediate attention.
+
+              It will not notify you for each unique HMS information push, only print errors which usually halt prints.
+
+              You can send notifications to the following:
+                - Home Assistant Notification Centre
+                - Mobile-App push notifications (via HA mobile_app)
+                - Amazon Alexa Speakers TTS announcements (via alexa media player integration)
+                - Desktop notification centres (via HASS Agent integration)
+
+              ## Requirements
+              - [My Bambu -> HomeAssistant Integration via NodeRed](https://www.wolfwithsword.com/bambulab-to-home-assistant-nodered-configurator/)
+              
+  domain: automation
+  input:
+    error_sensor:
+      name: Print Error Sensor
+      description: |
+                    The print error sensor from the integration. Not any of the HMS sensors!
+                    NodeRed Integration: `sensor.<model>_<printer_name>_print_error`
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+              integration: mqtt
+    print_status:
+      name: Print Status Sensor
+      description: |
+                    Print status sensor from the integration.
+                    NodeRed Integration: `sensor.<model>_<printer_name>_print_status`
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+              integration: mqtt
+    notify_ha_persist:
+      name: Send Notification in HomeAssistant Notification Centre
+      default: false
+      selector:
+        boolean:
+    notify_devices_mobile:
+      name: Mobile Notify Devices
+      description: "Mobile Devices that can work with the notify service. Sends push notifications."
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    notify_devices_desktops:
+      name: Desktop Notify Devices (HASS Agent)
+      description: "Desktop Devices that can work with the notify service. Sends push notifications."
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: hass_agent
+    notify_devices_alexa:
+      name: Alexa Notify Devices (Alexa Media)
+      description: "Alexa Devices that can work with the notify service for tts announcements"
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: alexa_media

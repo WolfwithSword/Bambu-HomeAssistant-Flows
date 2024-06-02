@@ -1,0 +1,154 @@
+variables:
+  status_s: !input print_status
+
+mode: single
+trigger:
+  - platform: state
+    entity_id:
+      - !input print_status
+    to: FAILED
+    from: PAUSE
+  - platform: state
+    entity_id:
+      - !input print_status
+    to: FINISH
+    from: RUNNING
+  - platform: state
+    entity_id:
+      - !input print_status
+    to: FAILED
+    from: RUNNING
+  - platform: state
+    entity_id:
+      - !input print_status
+    to: IDLE
+    from: RUNNING
+action:
+  - alias: Send notification to each mobile device
+    repeat:
+      for_each: !input notify_devices_mobile
+      sequence:
+        - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+          data:
+            title: >-
+              {{device_attr(status_s, 'name')|replace("_"," ")}}
+            message: >-
+              {% if is_state(status_s, 'FINISH') or is_state(status_s, 'IDLE') %}
+                Print Success
+              {% elif is_state(status_s, 'FAILED') %}
+                Print Failed
+              {% endif %}
+  - alias: Send notification to each desktop device
+    repeat:
+      for_each: !input notify_devices_desktops
+      sequence:
+        - service: "notify.{{ device_attr(repeat.item, 'name') | slugify }}"
+          data:
+            title: >-
+              {{device_attr(status_s, 'name')|replace("_"," ")}}
+            message: >-
+              {% if is_state(status_s, 'FINISH') or is_state(status_s, 'IDLE') %}
+                Print Success
+              {% elif is_state(status_s, 'FAILED') %}
+                Print Failed
+              {% endif %}
+  - alias: Send notification to each alexa media device
+    repeat:
+      for_each: !input notify_devices_alexa
+      sequence:
+        - service: "notify.alexa_media_{{ device_attr(repeat.item, 'name') | slugify }}"
+          data:
+            title: >-
+              {{device_attr(status_s, 'name')|replace("_"," ")}} - Print {{states(status_s)}}
+            message: >-
+              {% if is_state(status_s, 'FINISH') or is_state(status_s, 'IDLE') %}
+                Bambu {{device_attr(status_s, 'name')|replace("_"," ")}} - Print complete
+              {% elif is_state(status_s, 'FAILED') %}
+                Bambu {{device_attr(status_s, 'name')|replace("_"," ")}} - Print has failed
+              {% endif %}
+            data:
+              type: "announce"
+  - alias: Send notification to HA Notif Centre
+    choose:
+      - conditions:
+        - condition: template
+          value_template: !input notify_ha_persist
+        sequence:
+          - service: "notify.persistent_notification"
+            data:
+              title: >-
+                {{device_attr(status_s, 'name')|replace("_"," ")}}
+              message: >-
+                {% if is_state(status_s, 'FINISH') or is_state(status_s, 'IDLE') %}
+                  Print Success
+                {% elif is_state(status_s, 'FAILED') %}
+                  Print Failed
+                {% endif %}
+
+blueprint:
+  name: "[BAMBU] Notify on Print Ending"
+  source_url: "https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_state.yaml"
+  author: "WolfwithSword"
+  description: |
+              Send a notification on print completed or failure
+
+              **Version: v1.0.0**
+              [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_state.yaml)
+              [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
+
+              ### Information
+              This automation will let you send a notification when a print is finished or failed.
+
+              You can send notifications to the following:
+                - Home Assistant Notification Centre
+                - Mobile-App push notifications (via HA mobile_app)
+                - Amazon Alexa Speakers TTS announcements (via alexa media player integration)
+                - Desktop notification centres (via HASS Agent integration)
+
+              ## Requirements
+              - [My Bambu -> HomeAssistant Integration via NodeRed](https://www.wolfwithsword.com/bambulab-to-home-assistant-nodered-configurator/)
+              
+  domain: automation
+  input:
+    print_status:
+      name: Print Status Sensor
+      description: |
+                    Print status sensor from the integration.
+                    NodeRed Integration: `sensor.<model>_<printer_name>_print_status`
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+              integration: mqtt
+    notify_ha_persist:
+      name: Send Notification in HomeAssistant Notification Centre
+      default: false
+      selector:
+        boolean:
+    notify_devices_mobile:
+      name: Mobile Notify Devices
+      description: "Mobile Devices that can work with the notify service. Sends push notifications."
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    notify_devices_desktops:
+      name: Desktop Notify Devices (HASS Agent)
+      description: "Desktop Devices that can work with the notify service. Sends push notifications."
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: hass_agent
+    notify_devices_alexa:
+      name: Alexa Notify Devices (Alexa Media)
+      description: "Alexa Devices that can work with the notify service for tts announcements"
+      default: []
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: alexa_media
