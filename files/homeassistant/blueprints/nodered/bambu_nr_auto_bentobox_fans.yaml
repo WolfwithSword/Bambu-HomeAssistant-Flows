@@ -195,7 +195,7 @@ blueprint:
                     - ABS, ASA, ABS-GF, ASA-Aero
                     - PLA, PLA-AERO, PLA-CF
                     - PETG, PETG-CF, PET, PET-CF
-                    - PA, PA-CF, PA-GF, PA6-CF, PAHT, PAHT-CF
+                    - PA, PA-CF, PA-GF, PA6-CF, PA6-GF, PAHT, PAHT-CF
                     - PPS, PPS-CF, PPA-CF, PPA-GF
                     - TPU, PC, PVA, HIPS, BVOH, EVA, PHA
                     - PP, PP-CF, PP-GF
@@ -203,7 +203,7 @@ blueprint:
                     - Support
                     
                     If it's selectable as a "Type" on the printer / filament profile, it can go here
-      default: ["ABS", "ASA", "ABS-GF", "ASA-Aero", "PLA-CF", "PET-CF", "PETG-CF", "PA", "PA6", "PAHT", "PA-CF", "PA-GF", "PA6-CF", "PAHT-CF", "PAHT-GF", "PPS", "PPS-CF", "PC", "PPA", "PPA-GF", "PPA-CF", "PP", "PP-CF", "PP-GF", "PE", "PE-CF"]
+      default: ["ABS", "ASA", "ABS-GF", "ASA-Aero", "PLA-CF", "PET-CF", "PETG-CF", "PA", "PA6", "PAHT", "PA-CF", "PA-GF", "PA6-CF", "PA6-GF", "PAHT-CF", "PAHT-GF", "PPS", "PPS-CF", "PC", "PPA", "PPA-GF", "PPA-CF", "PP", "PP-CF", "PP-GF", "PE", "PE-CF"]
       selector:
         text:
           multiple: true
