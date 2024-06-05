@@ -26,6 +26,7 @@ Organization will be as follows:
     - all images, svg's and such that require being copied for use in my integrations 
   - homeassistant/
     - each yaml file for dashboards in homeassistant
+    - a folder for blueprint automations/scripts
   - misc/ (misc files that don't really do well being separated)
     - hardware/
       - e.g., my bentobox and light controller
