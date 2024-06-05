@@ -38,7 +38,7 @@ condition:
       entity_id: !input error_sensor
       state: Error
 action:
-  - alias: "Run the customs actions"
+  - alias: "Run the custom actions"
     choose: []
     default: !input custom_actions
   - alias: Send notification to each mobile device
