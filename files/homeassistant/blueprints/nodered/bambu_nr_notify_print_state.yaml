@@ -25,6 +25,9 @@ trigger:
     to: IDLE
     from: RUNNING
 action:
+  - alias: "Run the customs actions"
+    choose: []
+    default: !input custom_actions
   - alias: Send notification to each mobile device
     repeat:
       for_each: !input notify_devices_mobile
@@ -100,7 +103,7 @@ blueprint:
   description: |
               Send a notification on print completed or failure
 
-              **Version: v1.0.1**
+              **Version: v1.0.2**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_state.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
               [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
@@ -115,6 +118,8 @@ blueprint:
                 - Desktop notification centres (via HASS Agent integration)
 
               For mobile-apps, you can also optionally choose a camera or image entity to send to the push notification. When blank, it will not send an image.
+
+              Additionally, you can now also set any number of custom actions to run on print end.
 
               ## Requirements
               - [My Bambu -> HomeAssistant Integration via NodeRed](https://www.wolfwithsword.com/bambulab-to-home-assistant-nodered-configurator/)
@@ -173,3 +178,8 @@ blueprint:
           multiple: true
           filter:
             - integration: alexa_media
+    custom_actions:
+      name: Custom Actions
+      description: "Custom Actions to run. Please provide proper structure, devices, and service data as applicable"
+      selector:
+        action: {}
