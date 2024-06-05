@@ -190,5 +190,6 @@ blueprint:
     custom_actions:
       name: Custom Actions
       description: "Custom Actions to run. Please provide proper structure, devices, and service data as applicable"
+      default: []
       selector:
         action: {}
