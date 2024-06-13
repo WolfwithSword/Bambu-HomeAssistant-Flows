@@ -40,7 +40,7 @@ cards:
                 box-shadow: none !important;
               }
       - type: custom:mushroom-title-card
-        title: { PRINTER_TITLE }
+        title: {PRINTER_TITLE}
         alignment: center
       - type: custom:gap-card
   - type: custom:gap-card
