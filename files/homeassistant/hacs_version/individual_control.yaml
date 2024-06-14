@@ -40,7 +40,7 @@ cards:
                 box-shadow: none !important;
               }
       - type: custom:mushroom-title-card
-        title: {PRINTER_TITLE}
+        title: { PRINTER_TITLE }
         alignment: center
       - type: custom:gap-card
   - type: custom:gap-card
@@ -261,18 +261,17 @@ cards:
     cards:
       - type: entities
         entities:
-          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_remaining_time
-            name: Remaining Time
-          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_start_time
-            name: Start Time
-            secondary_info: last-changed
-            attribute: start_time
-          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_end_time
-            name: End Time
-            attribute: end_time
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_current_stage
             name: Stage
           - entity: binary_sensor.{HA_PRINTER_DEVICE_NAME}_hms_errors
             name: HMS Notifications
-          - entity: binary_sensor.a1mini_0309da3b0702005_firmware_update
-            name: Updates
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_start_time
+            name: Start Time
+            secondary_info: last-changed
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_end_time
+            name: End Time
+            attribute: end_time
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_remaining_time
+            name: Remaining Time
+          - entity: binary_sensor.{HA_PRINTER_DEVICE_NAME}_firmware_update
+            name: Firmware
