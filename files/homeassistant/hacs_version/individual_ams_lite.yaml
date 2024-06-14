@@ -36,9 +36,10 @@ elements:
       top: 27%
       left: 45%
       '--paper-item-icon-color': var(--tray_1_color)
-      background-color: var(--tray_1_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_1_bg)
       border-radius: 50px
       '--mdc-icon-size': 2.4em
   - type: state-label
@@ -51,9 +52,10 @@ elements:
       left: 45%
       text-align: center
       font-size: 1em
-      background-color: var(--tray_1_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_1_bg)
       border-radius: 50px
       pointer-events: none
       color: '#FFFFFF'
@@ -70,9 +72,10 @@ elements:
       top: 63%
       left: 12%
       '--paper-item-icon-color': var(--tray_2_color)
-      background-color: var(--tray_2_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_2_bg)
       border-radius: 50px
       '--mdc-icon-size': 2.4em
   - type: state-label
@@ -85,9 +88,10 @@ elements:
       left: 12%
       text-align: center
       font-size: 1em
-      background-color: var(--tray_2_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_2_bg)
       border-radius: 50px
       pointer-events: none
       color: '#FFFFFF'
@@ -104,9 +108,10 @@ elements:
       top: 63%
       left: 63%
       '--paper-item-icon-color': var(--tray_3_color)
-      background-color: var(--tray_3_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_3_bg)
       border-radius: 50px
       '--mdc-icon-size': 2.4em
   - type: state-label
@@ -119,9 +124,10 @@ elements:
       left: 63%
       text-align: center
       font-size: 1em
-      background-color: var(--tray_3_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_3_bg)
       border-radius: 50px
       pointer-events: none
       color: '#FFFFFF'
@@ -138,9 +144,10 @@ elements:
       top: 27%
       left: 88%
       '--paper-item-icon-color': var(--tray_4_color)
-      background-color: var(--tray_4_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_4_bg)
       border-radius: 50px
       '--mdc-icon-size': 2.4em
   - type: state-label
@@ -153,9 +160,10 @@ elements:
       left: 88%
       text-align: center
       font-size: 1em
-      background-color: var(--tray_4_bg)
+      background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
+      box-shadow: 0 0 5px 5px var(--tray_4_bg)
       border-radius: 50px
       pointer-events: none
       color: '#FFFFFF'
@@ -170,8 +178,8 @@ card_mod:
       --tray_2_color: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color', '#00000000') %} rgb(255, 255, 255); {% else %} {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }}; {% endif %}
       --tray_3_color: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color', '#00000000') %} rgb(255, 255, 255); {% else %} {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }}; {% endif %}
       --tray_4_color: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color', '#00000000') %} rgb(255, 255, 255); {% else %} {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color') }}; {% endif %}
-      --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-      --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-      --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
-      --tray_4_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
+      --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0); {% endif %}
+      --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0); {% endif %}
+      --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0); {% endif %}
+      --tray_4_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0); {% endif %}
     }
