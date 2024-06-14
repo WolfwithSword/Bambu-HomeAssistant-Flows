@@ -101,8 +101,8 @@ elements:
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state != 'Empty' ?
         'custom:filament-1' : 'mdi:tray' }
     style:
-      top: 27%
-      left: 88%
+      top: 63%
+      left: 63%
       '--paper-item-icon-color': var(--tray_3_color)
       background-color: var(--tray_3_bg)
       padding: 7px
@@ -115,8 +115,8 @@ elements:
     tap_action:
       action: none
     style:
-      top: 41%
-      left: 88%
+      top: 77%
+      left: 63%
       text-align: center
       font-size: 1em
       background-color: var(--tray_3_bg)
@@ -135,8 +135,8 @@ elements:
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_4'].state != 'Empty' ?
         'custom:filament-1' : 'mdi:tray' }
     style:
-      top: 63%
-      left: 63%
+      top: 27%
+      left: 88%
       '--paper-item-icon-color': var(--tray_4_color)
       background-color: var(--tray_4_bg)
       padding: 7px
@@ -149,8 +149,8 @@ elements:
     tap_action:
       action: none
     style:
-      top: 77%
-      left: 63%
+      top: 41%
+      left: 88%
       text-align: center
       font-size: 1em
       background-color: var(--tray_4_bg)
