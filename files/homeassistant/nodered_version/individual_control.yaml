@@ -44,7 +44,7 @@ cards:
         alignment: center
       - type: custom:gap-card
   - type: custom:gap-card
-    height: 25
+    height: 5
   - type: custom:hui-element
     card_type: horizontal-stack
     cards:
@@ -219,7 +219,7 @@ cards:
           view_layout:
             grid-areA: right
   - type: custom:gap-card
-    height: 25
+    height: 5
   - type: custom:hui-element
     card_type: horizontal-stack
     cards:
@@ -390,7 +390,7 @@ cards:
               box-shadow: none !important;
               background-color: rgba(0,0,0,0);
               border: none;
-              --paper-item-icon-color: {% if is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'RUNNING') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'PAUSE') %} red; {% else %} grey; {% endif %};
+              --paper-item-icon-color: {% if is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'RUNNING') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'PAUSE') %} red; {% else %} grey; {% endif %}
             }
   - type: conditional
     card:

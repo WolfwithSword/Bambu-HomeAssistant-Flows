@@ -30,7 +30,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_0
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_0'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_0'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -62,7 +62,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_1
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -94,7 +94,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_2
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -126,7 +126,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_3
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state != 'Empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%

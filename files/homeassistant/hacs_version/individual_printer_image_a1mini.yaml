@@ -40,7 +40,7 @@ elements:
                 style:
                   top: 57%
                   left: 38%
-                  transform: translate(-45%, -40%) scale(75%, 75%)
+                  transform: translate(-45%, -40%) scale(68%, 68%)
                   '--ha-card-border-width': 0px
                   '--ha-card-background': none
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress

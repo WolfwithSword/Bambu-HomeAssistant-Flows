@@ -42,7 +42,9 @@ cards:
                   name: End Time
                 - entity: sensor.{HA_PRINTER_DEVICE_NAME}_remaining_time
                   name: Remaining Time
-                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_active_tray_2
+                - entity: binary_sensor.{HA_PRINTER_DEVICE_NAME}_firmware_update
+                  name: Firmware
+                - entity: sensor.{HA_PRINTER_DEVICE_NAME}_active_tray
                   name: Current Filament
         attributes:
           label: Details

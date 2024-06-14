@@ -30,7 +30,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_1
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state != 'empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -62,14 +62,14 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_2
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state != 'empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
       left: 39.7%
       '--paper-item-icon-color': var(--tray_2_color)
       background-color: rgba(0,0,0,0.5)
-      box-shadow: 0 0 5px 5px  var(--tray_2_bg)
+      box-shadow: 0 0 5px 5px var(--tray_2_bg)
       border-radius: 50px
       '--mdc-icon-size': 2.4em
   - type: state-label
@@ -94,14 +94,14 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_3
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state != 'empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
       left: 59.7%
       '--paper-item-icon-color': var(--tray_3_color)
       background-color: rgba(0,0,0,0.5)
-      box-shadow: 0 0 5px 5px  var(--tray_3_bg)
+      box-shadow: 0 0 5px 5px var(--tray_3_bg)
       border-radius: 50px
       '--mdc-icon-size': 2.4em
   - type: state-label
@@ -126,7 +126,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_4
       icon: >-
-        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_4'].state != 'empty' ?
+        ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_4'].state.lower != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 28%
@@ -194,10 +194,10 @@ card_mod:
         border: none !important;
         box-shadow: none !important;
         --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_index') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
-        --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
-        --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};
-        --tray_3_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }};
-        --tray_4_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color') }};
+        --tray_1_color: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color', '#00000000') %} rgb(255, 255, 255); {% else %} {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }}; {% endif %}
+        --tray_2_color: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color', '#00000000') %} rgb(255, 255, 255); {% else %} {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }}; {% endif %}
+        --tray_3_color: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color', '#00000000') %} rgb(255, 255, 255); {% else %} {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'color') }}; {% endif %}
+        --tray_4_color: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color', '#00000000') %} rgb(255, 255, 255); {% else %} {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_4', 'color') }}; {% endif %}
         --tray_1_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
         --tray_2_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
         --tray_3_bg: {% if is_state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_3', 'active', true) %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,0,0,0.5); {% endif %}
