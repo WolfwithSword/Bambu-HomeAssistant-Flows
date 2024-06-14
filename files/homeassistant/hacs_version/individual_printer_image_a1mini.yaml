@@ -60,7 +60,6 @@ elements:
           left: 40.8%
           font-size: 0.8em
           color: rgba(0,0,0,0)
-          '--label-badge-red': '#0c0c0c'
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_bed_temperature
         type: state-badge
         style:
@@ -68,7 +67,6 @@ elements:
           left: 40.8%
           font-size: 0.8em
           color: rgba(0,0,0,0)
-          '--label-badge-red': '#0c0c0c'
 card_mod:
   style: |
     ha-card {
