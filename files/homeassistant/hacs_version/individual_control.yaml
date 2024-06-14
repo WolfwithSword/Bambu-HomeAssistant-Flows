@@ -31,7 +31,7 @@ cards:
             - value: 'off'
               icon: mdi:power
               color: grey
-          aspect_ratio: 1
+          aspect_ratio: 2
           card_mod:
             style: |
               ha-card {
