@@ -8,7 +8,11 @@ cards:
     show_state: false
     layout: icon_name
     tap_action:
-      action: toggle
+      action: |
+        [[[
+          if (entity) return 'toggle';
+          else return 'none';
+        ]]]
     confirmation:
       text: Toggle Printer Power?
     state:
@@ -22,8 +26,14 @@ cards:
       grid:
         - grid-template-columns: |
             [[[
-              if (entity) return '40% 1fr';
-              else return '0% 1fr';
+              if (entity) return '20% 1fr 20%';
+              else return '20% 1fr 20%';
+            ]]]
+      icon:
+        - width: |
+            [[[
+              if (entity) return '50px';
+              else return '0px';
             ]]]
       name:
         - text-wrap: balance
