@@ -32,12 +32,13 @@ cards:
       icon:
         - width: |
             [[[
-              if (entity) return '50px';
+              if (entity) return '65px';
               else return '0px';
             ]]]
+        - padding-left: 20px
       name:
         - text-wrap: balance
-        - font-weight: bold
+        - font-size: 1.4em
     card_mod:
       style: |
         ha-card {
