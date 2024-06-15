@@ -70,7 +70,7 @@ elements:
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 62%
-      left: 45.7%
+      left: 12%
       '--paper-item-icon-color': var(--tray_2_color)
       background-color: rgba(0,0,0,0.5)
       padding: 7px
