@@ -40,7 +40,7 @@ elements:
                 style:
                   top: 57%
                   left: 38%
-                  transform: translate(-45%, -40%) scale(75%, 75%)
+                  transform: translate(-45%, -40%) scale(68%, 68%)
                   '--ha-card-border-width': 0px
                   '--ha-card-background': none
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress
@@ -57,14 +57,14 @@ elements:
         type: state-badge
         style:
           top: 30%
-          left: 40.5%
+          left: 40.8%
           font-size: 0.8em
           color: rgba(0,0,0,0)
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_bed_temperature
         type: state-badge
         style:
-          top: 93%
-          left: 40.5%
+          top: 95%
+          left: 40.8%
           font-size: 0.8em
           color: rgba(0,0,0,0)
 card_mod:

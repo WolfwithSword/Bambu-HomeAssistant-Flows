@@ -1,50 +1,53 @@
 type: vertical-stack
 cards:
-  - type: horizontal-stack
-    cards:
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
-            state: unavailable
-        card:
-          type: custom:gap-card
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
-            state_not: unavailable
-        card:
-          type: custom:button-card
-          show_name: false
-          show_icon: true
-          tap_action:
-            action: toggle
-          entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
-          icon: mdi:printer-3d
-          confirmation:
-            text: Toggle Printer Power?
-          state:
-            - value: 'on'
-              icon: mdi:power
-              color: green
-            - value: 'off'
-              icon: mdi:power
-              color: grey
-          aspect_ratio: 2
-          card_mod:
-            style: |
-              ha-card {
-                background: rgba(0,0,0,0);
-                border: none;
-                box-shadow: none !important;
-              }
-      - type: custom:mushroom-title-card
-        title: {PRINTER_TITLE}
-        alignment: center
-      - type: custom:gap-card
+  - type: custom:button-card
+    entity: switch.{HA_PRINTER_SMARTPLUG_NAME}
+    name: {PRINTER_TITLE}
+    icon: mdi:printer-3d
+    show_icon: true
+    show_state: false
+    layout: icon_name
+    tap_action:
+      action: |
+        [[[
+          if (entity) return 'toggle';
+          else return 'none';
+        ]]]
+    confirmation:
+      text: Toggle Printer Power?
+    state:
+      - value: 'on'
+        icon: mdi:power
+        color: green
+      - value: 'off'
+        icon: mdi:power
+        color: grey
+    styles:
+      grid:
+        - grid-template-columns: |
+            [[[
+              if (entity) return '20% 1fr 20%';
+              else return '20% 1fr 20%';
+            ]]]
+      icon:
+        - width: |
+            [[[
+              if (entity) return '65px';
+              else return '0px';
+            ]]]
+        - padding-left: 20px
+      name:
+        - text-wrap: balance
+        - font-size: 1.4em
+    card_mod:
+      style: |
+        ha-card {
+          background: rgba(0,0,0,0);
+          border: none;
+          box-shadow: none !important;
+        }
   - type: custom:gap-card
-    height: 25
+    height: 5
   - type: custom:hui-element
     card_type: horizontal-stack
     cards:
@@ -66,8 +69,8 @@ cards:
               box-shadow: none !important;
               background-color: rgba(0,0,0,0);
               border: none;
-              --pbs-button-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Silent') %} yellow; {% else %} grey; {% endif %}
-              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Silent') %} yellow; {% else %} grey; {% endif %}
+              --pbs-button-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Silent') or is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'silent') %} yellow; {% else %} grey; {% endif %}
+              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Silent') or is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'silent') %} yellow; {% else %} grey; {% endif %}
             }
       - type: custom:hui-element
         card_type: button
@@ -87,7 +90,7 @@ cards:
               box-shadow: none !important;
               background-color: rgba(0,0,0,0);
               border: none;
-              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Standard') %} yellow; {% else %} grey; {% endif %}
+              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Standard') or is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'standard') %} yellow; {% else %} grey; {% endif %}
             }
       - type: custom:hui-element
         card_type: button
@@ -107,7 +110,7 @@ cards:
               box-shadow: none !important;
               background-color: rgba(0,0,0,0);
               border: none;
-              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Sport') %} yellow; {% else %} grey; {% endif %}
+              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Sport') or is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'sport') %} yellow; {% else %} grey; {% endif %}
             }
       - type: custom:hui-element
         card_type: button
@@ -127,7 +130,7 @@ cards:
               box-shadow: none !important;
               background-color: rgba(0,0,0,0);
               border: none;
-              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Ludicrous') %} yellow; {% else %} grey; {% endif %}
+              --paper-item-icon-color: {% if is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'Ludicrous') or is_state('select.{HA_PRINTER_DEVICE_NAME}_speed', 'ludicrous') %} yellow; {% else %} grey; {% endif %}
             }
   - type: custom:gap-card
     height: 16
@@ -219,7 +222,7 @@ cards:
           view_layout:
             grid-areA: right
   - type: custom:gap-card
-    height: 25
+    height: 5
   - type: custom:hui-element
     card_type: horizontal-stack
     cards:
@@ -229,34 +232,55 @@ cards:
           start_entity: button.{HA_PRINTER_DEVICE_NAME}_resume_print
         entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         name: |
-          [[[  if (entity.state == 'RUNNING') return "Pause";
-           else if (entity.state =='PAUSE') return "Resume";
+          [[[  if (entity.state.upper == 'RUNNING') return "Pause";
+           else if (entity.state.upper == 'PAUSE') return "Resume";
           else return '';  ]]]
         state:
           - value: RUNNING
             icon: mdi:pause
             color: orange
+          - value: running
+            icon: mdi:pause
+            color: orange
           - value: PAUSE
+            icon: mdi:play
+            color: orange
+          - value: pause
             icon: mdi:play
             color: orange
           - value: OFFLINE
             icon: mdi:void
             color: grey
+          - value: offline
+            icon: mdi:void
+            color: grey
           - value: IDLE
+            icon: mdi:void
+            color: grey
+          - value: idle
             icon: mdi:void
             color: grey
           - value: FAILED
             icon: mdi:void
             color: grey
+          - value: failed
+            icon: mdi:void
+            color: grey
           - value: FINISH
+            icon: mdi:void
+            color: grey
+          - value: finish
             icon: mdi:void
             color: grey
           - value: PREPARE
             icon: mdi:void
             color: grey
+          - value: prepare
+            icon: mdi:void
+            color: grey
         tap_action:
           action: >
-            [[[ if (entity.state == 'RUNNING' || entity.state == 'PAUSE') return
+            [[[ if (entity.state.upper == 'RUNNING' || entity.state.upper == 'PAUSE') return
             "call-service"; 
 
             else return "none";
@@ -265,10 +289,10 @@ cards:
           service: button.press
           service_data:
             entity_id: >
-              [[[ if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state ==
+              [[[ if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state.upper ==
               'RUNNING') 
                   return variables.pause_entity; 
-                  if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state == 'PAUSE') 
+                  if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state.upper == 'PAUSE') 
                   return variables.start_entity; 
                 else return "";
                 ]]]
@@ -278,7 +302,7 @@ cards:
               box-shadow: none !important;
               background-color: rgba(0,0,0,0);
               border: none;
-              --paper-item-icon-color: {% if is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'RUNNING') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'PAUSE') %} orange; {% else %} grey; {% endif %};            
+              --paper-item-icon-color: {% if is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'RUNNING') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'PAUSE') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'running') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'pause') %} orange; {% else %} grey; {% endif %}    
             }
       - type: conditional
         conditions:
@@ -350,8 +374,8 @@ cards:
       - type: custom:button-card
         entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         name: |
-          [[[  if (entity.state == 'RUNNING') return "Cancel";
-           else if (entity.state =='PAUSE') return "Cancel";
+          [[[  if (entity.state.upper == 'RUNNING') return "Cancel";
+           else if (entity.state.upper =='PAUSE') return "Cancel";
           else return '';  ]]]
         confirmation:
           text: Cancel Print?
@@ -359,27 +383,48 @@ cards:
           - value: RUNNING
             icon: mdi:cancel
             color: red
+          - value: running
+            icon: mdi:cancel
+            color: red
           - value: PAUSE
+            icon: mdi:cancel
+            color: red
+          - value: pause
             icon: mdi:cancel
             color: red
           - value: OFFLINE
             icon: mdi:void
             color: grey
+          - value: offline
+            icon: mdi:void
+            color: grey
           - value: IDLE
+            icon: mdi:void
+            color: grey
+          - value: idle
             icon: mdi:void
             color: grey
           - value: FAILED
             icon: mdi:void
             color: grey
+          - value: failed
+            icon: mdi:void
+            color: grey
           - value: FINISH
+            icon: mdi:void
+            color: grey
+          - value: finish
             icon: mdi:void
             color: grey
           - value: PREPARE
             icon: mdi:void
             color: grey
+          - value: prepare
+            icon: mdi:void
+            color: grey
         tap_action:
           action: >
-            [[[ if (entity.state == 'RUNNING' || entity.state == 'PAUSE') return
+            [[[ if (entity.state.upper == 'RUNNING' || entity.state.upper == 'PAUSE') return
             "call-service";  else return "none"; ]]]
           service: button.press
           service_data:
@@ -390,7 +435,7 @@ cards:
               box-shadow: none !important;
               background-color: rgba(0,0,0,0);
               border: none;
-              --paper-item-icon-color: {% if is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'RUNNING') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'PAUSE') %} red; {% else %} grey; {% endif %};
+              --paper-item-icon-color: {% if is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'RUNNING') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'PAUSE') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'running') or is_state('sensor.{HA_PRINTER_DEVICE_NAME}_print_status', 'pause') %} red; {% else %} grey; {% endif %}
             }
   - type: conditional
     card:

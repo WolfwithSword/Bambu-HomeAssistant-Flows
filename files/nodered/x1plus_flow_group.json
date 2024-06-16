@@ -1,0 +1,1181 @@
+[
+    {
+        "id": "258d2ebeb830080f",
+        "type": "group",
+        "z": "fbda6ab16491b918",
+        "name": "X1Plus Flow",
+        "style": {
+            "label": true,
+            "stroke": "#ff6ec7",
+            "stroke-opacity": "0.79"
+        },
+        "nodes": [
+            "c04f0d9ac33ddee4",
+            "9ddb5f1c6c042857",
+            "63cb25b0b3390abf",
+            "c51ffe65798e3ad0",
+            "0921abdf5ca846a7",
+            "b40eb17c209db4c0",
+            "fd827cec23e820a7",
+            "dfcb31cf0f7f617d",
+            "3b9d220ae298e011",
+            "0e0a2b17a34779be",
+            "11f4eac19de85456",
+            "b38ba7ae4c7d25f9",
+            "d7bf9926978d9ca2",
+            "37f98456e01c47ed",
+            "98a75131aaea5d83",
+            "d1170d82585b6399",
+            "3729cdb3a9c371da",
+            "18297b64b530425f",
+            "5419be9ee829cc54",
+            "4b10d09eef7c7c1c",
+            "6a388503aaeba2f3",
+            "7b9a5ca5140f37b3",
+            "b0793fb8ace218dc",
+            "a7ddd8b166826cb5",
+            "4bcefa9372ca97e6",
+            "fcf29b0f2dc78f32",
+            "61787f7cdcf6f9fe",
+            "6eda42f8775005a2",
+            "d3e43c60d019b381",
+            "11a6a2888c1bcfaa",
+            "8714cce0e1fd33b7",
+            "b77d19b0dc426542",
+            "a5d95fb2f330ee20",
+            "95b9c5baad441f84",
+            "83482ddfc52fe41f",
+            "9b1ce388b299bf27",
+            "e1954a2288c2954c",
+            "c1117a99b091310d",
+            "f59ad696058cbaf5",
+            "01ee9f8fbe3efefd",
+            "80896d6b31b5696f",
+            "a4263aa421ba39f2",
+            "9a5353ceee6f03ab",
+            "aafdc3a8b2f1d814",
+            "0c2c6580527c710b",
+            "4a52bf13e2d84ee8",
+            "ded3eca7bd7d20a2",
+            "9a7d857ef5ab166e",
+            "83b842d45c552277",
+            "9b68fcd061891975",
+            "ddbdb7c6e09899b3",
+            "51f2598eb4ce62db",
+            "7e443df3b2c1e689"
+        ],
+        "x": 2514,
+        "y": 1099,
+        "w": 1142,
+        "h": 442
+    },
+    {
+        "id": "c04f0d9ac33ddee4",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Init",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "5",
+        "topic": "",
+        "x": 2630,
+        "y": 1180,
+        "wires": [
+            [
+                "63cb25b0b3390abf",
+                "9ddb5f1c6c042857"
+            ]
+        ]
+    },
+    {
+        "id": "9ddb5f1c6c042857",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Check Values Error",
+        "func": "flow.set(\"has_x1p_flow\", true);\nflow.set(\"x1plus_flow_version\", \"2.1.5\");\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"X1Plus Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (!flow.get(\"x1plus_installed\")) {\n    node.error(\"X1Plus Flow requires X1Plus to be installed and set in the settings [x1plus_installed]\");\n    return;\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2810,
+        "y": 1140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "63cb25b0b3390abf",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Sub",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    //\"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/status/state\"\n    \"topic\": flow.get(\"root_topic\") + \"/sensor/\" + flow.get(\"HA_DEVICE\") + \"/x1plus/state\"\n};\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });\nnode.send(config);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2630,
+        "y": 1220,
+        "wires": [
+            [
+                "ded3eca7bd7d20a2",
+                "9a7d857ef5ab166e"
+            ]
+        ]
+    },
+    {
+        "id": "c51ffe65798e3ad0",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2920,
+        "y": 1220,
+        "wires": [
+            [
+                "0921abdf5ca846a7"
+            ]
+        ]
+    },
+    {
+        "id": "0921abdf5ca846a7",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 3050,
+        "y": 1200,
+        "wires": [
+            [
+                "b40eb17c209db4c0"
+            ]
+        ]
+    },
+    {
+        "id": "b40eb17c209db4c0",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Is X1P Active?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Active",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 3100,
+        "y": 1240,
+        "wires": [
+            [
+                "fd827cec23e820a7"
+            ]
+        ]
+    },
+    {
+        "id": "fd827cec23e820a7",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3260,
+        "y": 1240,
+        "wires": [
+            [
+                "4a52bf13e2d84ee8"
+            ]
+        ]
+    },
+    {
+        "id": "dfcb31cf0f7f617d",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Get Versions",
+        "func": "msg.payload = `cat /opt/x1plus/etc/version.json`;\nmsg.topic = \"versions\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2910,
+        "y": 1260,
+        "wires": [
+            [
+                "d3e43c60d019b381"
+            ]
+        ]
+    },
+    {
+        "id": "3b9d220ae298e011",
+        "type": "sshexec",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "SSH",
+        "sshccfg": "",
+        "command": "",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "25",
+        "sigint": false,
+        "x": 3250,
+        "y": 1180,
+        "wires": [
+            [
+                "0e0a2b17a34779be"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "0e0a2b17a34779be",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "success",
+        "property": "rc.code",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 3400,
+        "y": 1180,
+        "wires": [
+            [
+                "ddbdb7c6e09899b3"
+            ]
+        ]
+    },
+    {
+        "id": "11f4eac19de85456",
+        "type": "json",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Versions",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 3340,
+        "y": 1360,
+        "wires": [
+            [
+                "3729cdb3a9c371da"
+            ]
+        ]
+    },
+    {
+        "id": "b38ba7ae4c7d25f9",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "reset",
+        "rules": [
+            {
+                "t": "set",
+                "p": "reset",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"\"",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2910,
+        "y": 1180,
+        "wires": [
+            [
+                "0921abdf5ca846a7"
+            ]
+        ]
+    },
+    {
+        "id": "d7bf9926978d9ca2",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Printer Config",
+        "func": "let data = {};\nlet payload = {};\nlet device = {};\nif (msg.topic == \"x1plus_date\" || msg.topic == \"ssh_enabled\" || msg.topic == \"update_info\") {\n    return;\n}\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    return word.join(' ');\n}\nmsg.machine_name = flow.get(\"model\")+\"_\" + flow.get(\"printer_name\");\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet old_topic = msg.topic;\n\npayload.name = getFriendlyName(old_topic);\npayload.name = payload.name.replace(\"X1plus\", \"X1Plus\");\npayload.name = payload.name.replace(\"Oem\", \"OEM\");\npayload.name = payload.name.replace(\"Ota\", \"OTA\");\npayload.name = payload.name.replace(\"Vnc\", \"VNC\");\npayload.has_entity_name = false;\n\ndevice.identifiers = [];\ndevice.identifiers[0] = { \"bambu_lab\": msg.machine_name, \"type\": \"printer\", \"serial\": flow.get(\"printer_serial\") , \"model\": flow.get(\"model\")};\ndevice.identifiers[1] = msg.machine_name;\ndevice.identifiers[2] = flow.get(\"printer_serial\");\ndevice.identifiers[0] = JSON.stringify(device.identifiers[0]);\ndevice.manufacturer = \"Bambu Labs\";\ndevice.model = flow.get(\"model\");\ndevice.name = msg.machine_name;\n\nlet config_items = [\"x1plus_ota\", \"x1plus_vnc\"];\nlet switches = [\"x1plus_ota\", \"x1plus_vnc\"];\nlet buttons = [\"x1plus_ota_check\"];\nlet update = [\"x1plus_update\"];\n\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\nelse if (old_topic.includes(\"version\")){\n    payload.icon = \"mdi:chip\";\n    payload.entity_category = \"diagnostic\";\n}\nelse if (config_items.includes(old_topic)) {\n    payload.entity_category = \"config\";\n}\n\nif (switches.includes(old_topic)) {\n    type = \"switch\";\n}\nelse if (buttons.includes(old_topic)) {\n    type = \"button\";\n    payload.entity_category = \"diagnostic\";\n}\nelse if (old_topic == \"x1plus_update\") {\n    type = \"update\";\n}\nif (old_topic == \"x1plus_vnc\"){\n    payload.icon = \"mdi:monitor-screenshot\";\n}\nelse if (old_topic == \"x1plus_ota\") {\n    payload.icon = \"mdi:cloud-check-variant\";\n}\n\nlet base_topic = flow.get(\"root_topic\") + \"/\" + type + \"/\" + msg.machine_name + \"/\" + old_topic;\ndata.topic = base_topic + \"/config\";\n\npayload.device = device;\npayload.unique_id = msg.machine_name + \"_\" + old_topic;\npayload.object_id = payload.unique_id;\n\npayload.state_topic = base_topic + \"/state\";\n\npayload.json_attributes_topic = base_topic + \"/attr\";\nif (type == \"button\") {\n    payload.command_topic = base_topic + \"/x1p\";\n    delete payload.state_topic;\n    delete payload.json_attributes_topic;\n}\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\nif(old_topic != \"ssh_enabled\") {\n    payload.availability =[\n        {\n            \"payload_available\": \"Active\",\n            \"payload_not_available\": \"Inactive\",\n            \"topic\": flow.get(\"root_topic\") + \"/\" + \"sensor\" + \"/\" + msg.machine_name + \"/\" + \"x1plus\" + \"/state\",\n            \"value_template\": '{{ \"Active\" if value == \"Active\" else \"Inactive\" }}'\n        },\n        \n        {\n            \"payload_available\": \"online\",\n            \"payload_not_available\": \"offline\",\n            \"topic\": flow.get(\"root_topic\") + \"/\" + \"sensor\" + \"/\" + msg.machine_name + \"/\" + \"status\" + \"/state\",\n        }\n    ];\n\n    if (old_topic == \"x1plus_update\") {\n        let a = {\n            \"payload_available\": \"Available\",\n            \"payload_not_available\": \"Unavailable\",\n            \"topic\": flow.get(\"root_topic\") + \"/\" + \"sensor\" + \"/\" + msg.machine_name + \"/\" + \"print_status\" + \"/state\",\n            \"value_template\": '{{ \"Available\" if value == \"FAILED\" or value == \"IDLE\" or value == \"FINISH\" else \"Unavailable\" }}'\n        }\n        payload.availability.push(a);\n        payload[\"release_url\"] = \"https://github.com/X1Plus/X1Plus/releases/latest\";\n        payload[\"name\"] = \"X1Plus Firmware Update\";\n        payload[\"title\"] = \"X1Plus Firmware\";\n        payload[\"entity_picture\"] = \"https://raw.githubusercontent.com/X1Plus/X1Plus/dcd201d1d29ed9111a5b39156ef4f1400c91da57/installer-clientside/install-gui/icon.svg\";\n        payload[\"payload_install\"] = \"update_fw\";\n        payload.device_class = \"firmware\";\n        payload.state_topic = flow.get(\"root_topic\") + \"/\" + \"sensor\" + \"/\" + msg.machine_name + \"/\" + \"x1plus_version\" + \"/info\",\n        payload.command_topic = flow.get(\"root_topic\") + \"/\" + type + \"/\" + msg.machine_name + \"/\" + \"x1plus_update\" + \"/command\";\n        //payload.value_template = \"{{ {'installed_version': value_json.current.x1plus_version + '   | ' + value_json.current.date, 'latest_version': value_json.latest.x1plus_version + '   | ' + value_json.latest.date } | to_json }}\"\n        payload.value_template = \"{{ {'installed_version': value_json.current.x1plus_version, 'latest_version': value_json.latest.x1plus_version} | to_json }}\"\n    }\n\n}\nif (old_topic == \"update_info\") {\n    payload.state_topic = flow.get(\"root_topic\") + \"/\" + \"sensor\" + \"/\" + msg.machine_name + \"/\" + \"x1plus_version\" + \"/info\";\n}\n\n\nif (type == \"switch\") {\n    payload.command_topic = base_topic + \"/x1p/set\";\n    delete payload.json_attributes_topic;\n}\n\n\ndata.payload = payload\n\ndata.qos = 1;\ndata.retain = true;\nnode.send(data);\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3240,
+        "y": 1280,
+        "wires": [
+            [
+                "a7ddd8b166826cb5"
+            ]
+        ]
+    },
+    {
+        "id": "37f98456e01c47ed",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Printer State",
+        "func": "if (msg.payload == undefined) {\n    return;\n}\nlet old_topic = msg.topic;\nmsg.machine_name = flow.get(\"model\")+\"_\" + flow.get(\"printer_name\");\nlet printer_name = msg.machine_name;\n\nlet type = \"sensor\";\nlet switches = [\"x1plus_ota\", \"x1plus_vnc\"];\nlet buttons = [\"x1plus_ota_check\"];\nif (buttons.includes(msg.topic)  || msg.topic == \"x1plus_update\") {\n    return;\n}\nif (switches.includes(msg.topic)) {\n    type = \"switch\";\n    if (msg.payload == true) {\n        msg.payload = \"ON\";\n    }\n    else {\n        msg.payload = \"OFF\";\n    }\n}\n\nmsg.topic = flow.get(\"root_topic\") +\"/\"+type+\"/\" + msg.machine_name + \"/\" + old_topic + \"/state\";\n\nif (old_topic == \"x1plus_date\") {\n    msg.topic = flow.get(\"root_topic\") + \"/\"+type+\"/\" + msg.machine_name + \"/\" + \"x1plus_version\" + \"/attr\";\n    msg.payload = {\"date\": msg.payload};\n}\n\nif (old_topic == \"update_info\") {\n    msg.topic = flow.get(\"root_topic\") + \"/\"+type+\"/\" + msg.machine_name + \"/\" + \"x1plus_version\" + \"/info\";\n}\n// availability is for x1plus active\n\n\nif (switches.includes(msg.topic)) {\n    type = \"switch\";\n    if (msg.payload == true) {\n        msg.payload = \"ON\";\n    }\n    else {\n        msg.payload = \"OFF\";\n    }\n}\n\nnode.send(msg);\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3230,
+        "y": 1320,
+        "wires": [
+            [
+                "98a75131aaea5d83"
+            ]
+        ]
+    },
+    {
+        "id": "98a75131aaea5d83",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3390,
+        "y": 1320,
+        "wires": [
+            [
+                "a7ddd8b166826cb5"
+            ]
+        ]
+    },
+    {
+        "id": "d1170d82585b6399",
+        "type": "mqtt out",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT Out",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "489094618c340eef",
+        "x": 3450,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "3729cdb3a9c371da",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Parse",
+        "func": "let data = {\n    \"x1plus_version\": msg.payload['cfwVersion'],\n    \"x1plus_date\": msg.payload['date'],\n    \"oem_firmware_version\": msg.payload['base']['version'],\n    \"x1plus_ota_check\": \"\",\n    \"x1plus_update\": \"\"\n};\nmsg.payload = data;\n\nflow.set(\"x1plus_version\", data);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3470,
+        "y": 1360,
+        "wires": [
+            [
+                "18297b64b530425f"
+            ]
+        ]
+    },
+    {
+        "id": "18297b64b530425f",
+        "type": "split",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "x": 3530,
+        "y": 1400,
+        "wires": [
+            [
+                "61787f7cdcf6f9fe"
+            ]
+        ]
+    },
+    {
+        "id": "5419be9ee829cc54",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Get Settings",
+        "func": "let x1plus = \"/opt/x1plus/bin/x1plus\"\n\nlet settings = {\n    \"vnc\": \"vnc.enabled\", // bool\n    \"ota\": \"ota.enabled\", // bool\n    \"ota_url\": \"ota.json_url\", // str\n    \"quick_boot\": \"boot.quick_boot\", // bool\n    \"dump_emmc\": \"boot.dump_emmc\", // bool\n    \"perf_log\": \"boot.perf_log\", //bool\n    \"syslog\": \"boot.sdcard_syslog\", //bool\n    // all the filepaths for images todo\n}\n\nmsg.payload = x1plus + \" settings show\";\n\nmsg.topic = \"settings\";\nmsg.legend = settings;\nnode.send(msg);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2910,
+        "y": 1300,
+        "wires": [
+            [
+                "d3e43c60d019b381"
+            ]
+        ]
+    },
+    {
+        "id": "4b10d09eef7c7c1c",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "versions",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "settings",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "set-setting",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ota-check",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 3190,
+        "y": 1380,
+        "wires": [
+            [
+                "11f4eac19de85456"
+            ],
+            [
+                "6a388503aaeba2f3"
+            ],
+            [],
+            [
+                "01ee9f8fbe3efefd"
+            ]
+        ]
+    },
+    {
+        "id": "6a388503aaeba2f3",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Read Settings",
+        "func": "let vnc_status = false;\nlet ota_status = false;\nlet ssh_status = false;\nlet settings = msg.payload.split(\"\\n\");\nfor (var s of settings) {\n    let a = s.split(/:/);\n    let key = a.shift();\n    let val = a.join(':').trim();\n    if (key == \"vnc.enabled\") {\n        if (val.toLowerCase() == \"true\") {\n            vnc_status = true;\n        }\n    }\n    else if (key == \"ota.enabled\") {\n        if (val.toLowerCase() == \"true\") {\n            ota_status = true;\n        }\n    }\n    else if (key == \"ssh.enabled\") {\n        if (val.toLowerCase() == \"true\") {\n            ssh_status = true;\n        }\n    }\n}\n\nlet x = {\n    \"x1plus_vnc\": vnc_status,\n    \"x1plus_ota\": ota_status,\n    \"ssh_enabled\": ssh_status,\n    \"x1plus_ota_check\":\"\"\n}\n\nmsg.payload = x;\nnode.send(msg);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3360,
+        "y": 1400,
+        "wires": [
+            [
+                "18297b64b530425f"
+            ]
+        ]
+    },
+    {
+        "id": "7b9a5ca5140f37b3",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2940,
+        "y": 1380,
+        "wires": [
+            [
+                "4bcefa9372ca97e6"
+            ]
+        ]
+    },
+    {
+        "id": "b0793fb8ace218dc",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 3140,
+        "y": 1300,
+        "wires": [
+            [
+                "37f98456e01c47ed",
+                "d7bf9926978d9ca2"
+            ]
+        ]
+    },
+    {
+        "id": "a7ddd8b166826cb5",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 3360,
+        "y": 1280,
+        "wires": [
+            [
+                "d1170d82585b6399"
+            ]
+        ]
+    },
+    {
+        "id": "4bcefa9372ca97e6",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 2760,
+        "y": 1340,
+        "wires": [
+            [
+                "5419be9ee829cc54"
+            ]
+        ]
+    },
+    {
+        "id": "fcf29b0f2dc78f32",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "x1p_MQTTOut-In",
+        "links": [
+            "61787f7cdcf6f9fe"
+        ],
+        "x": 3105,
+        "y": 1300,
+        "wires": [
+            [
+                "b0793fb8ace218dc"
+            ]
+        ]
+    },
+    {
+        "id": "61787f7cdcf6f9fe",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "x1p_MQTTOut-Out",
+        "mode": "link",
+        "links": [
+            "fcf29b0f2dc78f32"
+        ],
+        "x": 3615,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "6eda42f8775005a2",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "x1p_SSH-In",
+        "links": [
+            "d3e43c60d019b381",
+            "83482ddfc52fe41f"
+        ],
+        "x": 2985,
+        "y": 1140,
+        "wires": [
+            [
+                "9b1ce388b299bf27"
+            ]
+        ]
+    },
+    {
+        "id": "d3e43c60d019b381",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "x1p_SSH-Out",
+        "mode": "link",
+        "links": [
+            "6eda42f8775005a2"
+        ],
+        "x": 3015,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "11a6a2888c1bcfaa",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Sub",
+        "func": "let topic = flow.get(\"root_topic\");\nlet device = flow.get(\"HA_DEVICE\");\n\nlet config1 = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": topic + \"/switch/\" + device + \"/+/x1p/set\",\n        \"qos\": 2\n    }\n}\n\nlet config2 = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": topic + \"/button/\" + device + \"/+/x1p\",\n        \"qos\": 2\n    }\n}\nlet config3 = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": topic + \"/update/\"+device+\"/x1plus_update/command\",\n        \"qos\":2\n    }\n}\nnode.send([config1, config2, config3]);\nnode.status({ fill: \"white\", shape: \"ring\", text: \"Init\" });",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2650,
+        "y": 1480,
+        "wires": [
+            [
+                "8714cce0e1fd33b7"
+            ],
+            [
+                "f59ad696058cbaf5"
+            ],
+            [
+                "a4263aa421ba39f2"
+            ]
+        ]
+    },
+    {
+        "id": "8714cce0e1fd33b7",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2800,
+        "y": 1420,
+        "wires": [
+            [
+                "a5d95fb2f330ee20"
+            ]
+        ]
+    },
+    {
+        "id": "b77d19b0dc426542",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Init",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.2",
+        "topic": "",
+        "x": 2630,
+        "y": 1420,
+        "wires": [
+            [
+                "e1954a2288c2954c"
+            ]
+        ]
+    },
+    {
+        "id": "a5d95fb2f330ee20",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Switches",
+        "func": "let x1plus = \"/opt/x1plus/bin/x1plus\";\nlet cmd = \"\";\nif (msg.payload == undefined || (msg.payload.toUpperCase() != \"ON\" && msg.payload.toUpperCase() != \"OFF\") ) {\n    return;\n}\nlet value = msg.payload.toUpperCase() == \"ON\";\nif (msg.topic.includes(\"/x1plus_ota/x1p/set\")) {\n    cmd = `${x1plus} settings set ota.enabled ${value}`\n}\nelse if (msg.topic.includes(\"/x1plus_vnc/x1p/set\")) {\n    cmd = `${x1plus} settings set vnc.enabled ${value}`\n}\n\nif (cmd != \"\") {\n    msg.payload = cmd;\n    msg.topic = \"set-setting\";\n    node.send(msg);\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2940,
+        "y": 1420,
+        "wires": [
+            [
+                "7b9a5ca5140f37b3",
+                "83482ddfc52fe41f"
+            ]
+        ]
+    },
+    {
+        "id": "95b9c5baad441f84",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "5min",
+        "props": [],
+        "repeat": "300",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "95",
+        "topic": "",
+        "x": 2630,
+        "y": 1340,
+        "wires": [
+            [
+                "4bcefa9372ca97e6"
+            ]
+        ]
+    },
+    {
+        "id": "83482ddfc52fe41f",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "x1p_SSH-Out",
+        "mode": "link",
+        "links": [
+            "6eda42f8775005a2"
+        ],
+        "x": 3065,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "9b1ce388b299bf27",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Filter",
+        "func": "let x1p = flow.get(\"x1plus_active\");\nlet is_online = flow.get(\"is_printer_reachable\");\nif (x1p != undefined && x1p == true && is_online != undefined && is_online == true) {\n    node.send(msg);\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3070,
+        "y": 1140,
+        "wires": [
+            [
+                "3b9d220ae298e011"
+            ]
+        ]
+    },
+    {
+        "id": "e1954a2288c2954c",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 2560,
+        "y": 1460,
+        "wires": [
+            [
+                "11a6a2888c1bcfaa"
+            ]
+        ]
+    },
+    {
+        "id": "c1117a99b091310d",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Buttons",
+        "func": "let x1plus = \"/opt/x1plus/bin/x1plus ota\";\nlet cmd = \"\";\n\n/*if (msg.topic.includes(\"/x1plus_ota_status/x1p/\")) {\n    cmd = `${x1plus} status`\n}\nelse*/ if (msg.topic.includes(\"/x1plus_ota_check/x1p\") || (msg.payload == \"Active\" && msg.topic.includes(\"/x1plus/state\"))) {\n    cmd = `${x1plus} check`;\n    msg.topic = \"ota-check\"\n}\n/*else if (msg.topic.includes('/x1plus_ota_download/x1p')) {\n    cmd = `${x1plus} download`\n}*/\n\nif (cmd != \"\") {\n    msg.payload = cmd;\n    node.send(msg);\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2940,
+        "y": 1460,
+        "wires": [
+            [
+                "83482ddfc52fe41f"
+            ]
+        ]
+    },
+    {
+        "id": "f59ad696058cbaf5",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2800,
+        "y": 1460,
+        "wires": [
+            [
+                "c1117a99b091310d"
+            ]
+        ]
+    },
+    {
+        "id": "01ee9f8fbe3efefd",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Parse Check",
+        "func": "let latest = \"\";\nlet current_data = flow.get(\"x1plus_version\");\ndelete current_data['oem_firmware_version'];\ndelete current_data['x1plus_ota_check'];\ncurrent_data['date'] = current_data['x1plus_date'];\ndelete current_data['x1plus_date'];\ndelete current_data['x1plus_update'];\nlet current = current_data[\"x1plus_version\"];\nlatest = current;\nlet latest_data = {};\n\nif (msg.payload.includes(\"No updates are available\")) {\n    latest = current;\n    latest_data = current_data;\n}\nelse if (msg.payload.includes(\"New version:\")) {\n    let lines = msg.payload.split(\"\\n\");\n    for (var line of lines) {\n        if (line.trim().includes(\"New version:\")) {\n            let a = line.split(/:/);\n            let x = a.shift();\n            let remain = a.join(':').trim();\n            x = remain.split(\",\");\n            let ver = x.shift();\n            remain = x.join(\",\").trim();\n            let date = remain.replace(\"built\", \"\").trim();\n            latest_data[\"x1plus_version\"] = ver;\n            latest_data[\"date\"] = date;\n            latest = ver;\n        }\n    }\n}\n\nif ((new Date(current_data['date'])) >= (new Date(latest_data['date']))) {\n    latest_data = current_data;\n}\nmsg.payload = {\"current\": current_data, \"latest\": latest_data};\nmsg.topic = \"update_info\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3350,
+        "y": 1440,
+        "wires": [
+            [
+                "83b842d45c552277"
+            ]
+        ]
+    },
+    {
+        "id": "80896d6b31b5696f",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Check",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "21600",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "/x1plus_ota_check/x1p",
+        "x": 2620,
+        "y": 1380,
+        "wires": [
+            [
+                "c1117a99b091310d"
+            ]
+        ]
+    },
+    {
+        "id": "a4263aa421ba39f2",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "489094618c340eef",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2800,
+        "y": 1500,
+        "wires": [
+            [
+                "aafdc3a8b2f1d814"
+            ]
+        ]
+    },
+    {
+        "id": "9a5353ceee6f03ab",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Init",
+        "props": [],
+        "repeat": "21600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "120",
+        "topic": "",
+        "x": 2630,
+        "y": 1260,
+        "wires": [
+            [
+                "dfcb31cf0f7f617d"
+            ]
+        ]
+    },
+    {
+        "id": "aafdc3a8b2f1d814",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Update",
+        "func": "let x1plus = \"/opt/x1plus/bin/x1plus\"\nif (msg.payload == \"update_fw\") {\n    msg.payload = `${x1plus} ota update`;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2940,
+        "y": 1500,
+        "wires": [
+            [
+                "83482ddfc52fe41f"
+            ]
+        ]
+    },
+    {
+        "id": "0c2c6580527c710b",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "6",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2620,
+        "y": 1300,
+        "wires": [
+            [
+                "5419be9ee829cc54",
+                "c1117a99b091310d"
+            ]
+        ]
+    },
+    {
+        "id": "4a52bf13e2d84ee8",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 2800,
+        "y": 1280,
+        "wires": [
+            [
+                "dfcb31cf0f7f617d",
+                "0c2c6580527c710b"
+            ]
+        ]
+    },
+    {
+        "id": "ded3eca7bd7d20a2",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "3",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2780,
+        "y": 1220,
+        "wires": [
+            [
+                "c51ffe65798e3ad0"
+            ]
+        ]
+    },
+    {
+        "id": "9a7d857ef5ab166e",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2780,
+        "y": 1180,
+        "wires": [
+            [
+                "b38ba7ae4c7d25f9"
+            ]
+        ]
+    },
+    {
+        "id": "83b842d45c552277",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3500,
+        "y": 1440,
+        "wires": [
+            [
+                "61787f7cdcf6f9fe"
+            ]
+        ]
+    },
+    {
+        "id": "9b68fcd061891975",
+        "type": "comment",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Version 2.1.5",
+        "info": "Version 2.1.5: 2024-06-17\n - Initial Release\n - Requires X1Plus v2.0+\n - Provides a toggle switch for VNC and OTA\n - Provides sensor for current X1P version and OEM version\n - Provides update OTA functionality if a new version of X1Plus is present and detected by X1P\n - Provides a button to force check for firmware OTA updates\n - Currently polls the printer when it turns on and every 5 minutes for settings, 6 hours for Fw",
+        "x": 2610,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "ddbdb7c6e09899b3",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "x1p_success_out",
+        "mode": "link",
+        "links": [
+            "51f2598eb4ce62db"
+        ],
+        "x": 3495,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "51f2598eb4ce62db",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "x1p_success_in",
+        "links": [
+            "ddbdb7c6e09899b3"
+        ],
+        "x": 3105,
+        "y": 1380,
+        "wires": [
+            [
+                "4b10d09eef7c7c1c"
+            ]
+        ]
+    },
+    {
+        "id": "7e443df3b2c1e689",
+        "type": "comment",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "NOTE",
+        "info": "Configure the below SSH node with a new SSH Config to use\n\nEnter in the IP of your printer (set it to a static IP so you don't need to change it)\n\nUser: root\nPassword: your X1Plus SSH Password\nPort: 22\nHost: IP of the printer\nName: Whatever you want for the config entry\n\nYou do not need to setup \"Private Key Authentication\" section",
+        "x": 3250,
+        "y": 1140,
+        "wires": []
+    }
+]
