@@ -1,30 +1,55 @@
 [
     {
-        "id": "a8bb36f4c96539fb",
-        "type": "tab",
-        "label": "Bambu Labs Login",
-        "disabled": false,
-        "info": "",
-        "env": []
+        "id": "ceb9c7af8ac85208",
+        "type": "group",
+        "z": "a8bb36f4c96539fb",
+        "name": "Cloud Login Flow",
+        "style": {
+            "stroke": "#ff7f7f",
+            "fill": "#b797cf",
+            "label": true,
+            "color": "#6f2fa0",
+            "fill-opacity": "0.08"
+        },
+        "nodes": [
+            "513f7a6c71b056d2",
+            "e2d0cff94bf02e27",
+            "2926dee3ddcfdc55",
+            "5f3335d6cd76a63f",
+            "955f493ad09c081d",
+            "7a0cfe215e0a7604",
+            "3470ef99be2e6022",
+            "b42f23c0c54390bc",
+            "ca527d3979a0003e",
+            "d85c73e5dbb9cf5b",
+            "a6fdcf9dea19d6e8",
+            "74b588f633523219",
+            "96c348b1bb273ffc"
+        ],
+        "x": 14,
+        "y": 19,
+        "w": 892,
+        "h": 322
     },
     {
         "id": "513f7a6c71b056d2",
         "type": "http request",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "sign in",
         "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
         "url": "https://api.bambulab.com/v1/user-service/user/login",
-        "tls": "",
+        "tls": "fc2996321cee14d8",
         "persist": false,
         "proxy": "",
         "insecureHTTPParser": false,
         "authType": "",
-        "senderr": false,
+        "senderr": true,
         "headers": [],
-        "x": 610,
-        "y": 80,
+        "x": 630,
+        "y": 120,
         "wires": [
             [
                 "2926dee3ddcfdc55"
@@ -35,15 +60,17 @@
         "id": "e2d0cff94bf02e27",
         "type": "function",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Build header and payload",
         "func": "msg.headers = {\n  'Content-Type' : 'application/json'\n};\n\n\nmsg.payload = {\n  \"account\": flow.get(\"BAMBU_EMAIL\"),\n  \"password\": flow.get(\"BAMBU_PASSWORD\")\n};\n\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 430,
-        "y": 80,
+        "x": 450,
+        "y": 120,
         "wires": [
             [
                 "513f7a6c71b056d2"
@@ -54,12 +81,13 @@
         "id": "2926dee3ddcfdc55",
         "type": "json",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "",
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 390,
-        "y": 120,
+        "x": 410,
+        "y": 160,
         "wires": [
             [
                 "3470ef99be2e6022",
@@ -71,6 +99,7 @@
         "id": "5f3335d6cd76a63f",
         "type": "inject",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Init",
         "props": [
             {
@@ -84,8 +113,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 100,
-        "y": 100,
+        "x": 120,
+        "y": 140,
         "wires": [
             [
                 "955f493ad09c081d"
@@ -96,6 +125,7 @@
         "id": "955f493ad09c081d",
         "type": "change",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Bambu Account Config",
         "rules": [
             {
@@ -125,8 +155,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 140,
-        "y": 140,
+        "x": 160,
+        "y": 180,
         "wires": [
             [
                 "e2d0cff94bf02e27"
@@ -137,25 +167,28 @@
         "id": "7a0cfe215e0a7604",
         "type": "comment",
         "z": "a8bb36f4c96539fb",
-        "name": "NOTES",
-        "info": "Change the following in *Bambu Account Config*\n\nBAMBU_EMAIL: Your bambu account email\nBAMBU_PASSWORD: Your bambu account password\nBAMBU_REGION: \n    If in China, use:     cn.mqtt.bambulab.com\n    Anywhere else, use:   us.mqtt.bambulab.com\n\nIf you signed up with a third party such as google, do the following:\n\n1) Go to bambulab website and log out if you are signed in\n2) In sign in page, click on Forgot (Forgot password)\n3) Complete the reset password flow\n\nYou now will have a password for your bambu account \nusing the same email from the third party.\n\nBonus: The third party login STILL WORKS!\n\n",
-        "x": 90,
-        "y": 60,
+        "g": "ceb9c7af8ac85208",
+        "name": "NOTES - READ ME",
+        "info": "# YOU ONLY NEED THIS FLOW ONCE NO MATTER HOW MANY PRINTERS YOU HAVE\n# AND HAVE IT IN ITS OWN TAB\n\nChange the following in *Bambu Account Config*\n\nBAMBU_EMAIL: Your bambu account email\nBAMBU_PASSWORD: Your bambu account password\nBAMBU_REGION: \n    If in China or region locked printer, use:     cn.mqtt.bambulab.com\n    Anywhere else, use:                            us.mqtt.bambulab.com\n\nIf you signed up with a third party such as google, do the following:\n\n1) Go to bambulab website and log out if you are signed in\n2) In sign in page, click on Forgot (Forgot password)\n3) Complete the reset password flow\n\nYou now will have a password for your bambu account \nusing the same email from the third party.\n\nBonus: The third party login STILL WORKS!\n\n",
+        "x": 150,
+        "y": 100,
         "wires": []
     },
     {
         "id": "3470ef99be2e6022",
         "type": "function",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Set Access Token Global",
-        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);",
+        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 570,
-        "y": 120,
+        "x": 590,
+        "y": 160,
         "wires": [
             []
         ]
@@ -164,6 +197,7 @@
         "id": "b42f23c0c54390bc",
         "type": "inject",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Trigger Token Delete",
         "props": [],
         "repeat": "",
@@ -172,7 +206,7 @@
         "onceDelay": 0.1,
         "topic": "",
         "x": 150,
-        "y": 220,
+        "y": 300,
         "wires": [
             [
                 "ca527d3979a0003e"
@@ -183,15 +217,17 @@
         "id": "ca527d3979a0003e",
         "type": "function",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Delete Access Token",
         "func": "global.set(\"BAMBU_ACCESS_TOKEN\", null);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 400,
-        "y": 220,
+        "y": 300,
         "wires": [
             []
         ]
@@ -200,15 +236,17 @@
         "id": "d85c73e5dbb9cf5b",
         "type": "function",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Get jwt half",
         "func": "msg.payload.jwthalf = msg.payload.accessToken.split(\".\")[1]\n\nlet pad = \"=\".repeat(((4 - (msg.payload.jwthalf).length % 4) % 4));\nmsg.payload.jwthalf = msg.payload.jwthalf + pad;\n\nvar payload = Buffer.from(msg.payload.jwthalf, 'base64')\nmsg = {\n    \"payload\": payload.toString()\n}\nnode.send(msg);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 530,
-        "y": 160,
+        "x": 550,
+        "y": 200,
         "wires": [
             [
                 "a6fdcf9dea19d6e8"
@@ -219,12 +257,13 @@
         "id": "a6fdcf9dea19d6e8",
         "type": "json",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "",
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 670,
-        "y": 160,
+        "x": 690,
+        "y": 200,
         "wires": [
             [
                 "74b588f633523219"
@@ -235,17 +274,44 @@
         "id": "74b588f633523219",
         "type": "function",
         "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
         "name": "Set Bambu MQTT Username Global",
-        "func": "global.set(\"BAMBU_MQTT_USER\", msg.payload.username);",
+        "func": "global.set(\"BAMBU_MQTT_USER\", msg.payload.username);\nglobal.set(\"BAMBU_TOKEN_EXPIRY\", msg.payload.exp);",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 710,
-        "y": 200,
+        "x": 730,
+        "y": 240,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "96c348b1bb273ffc",
+        "type": "comment",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Version 2.1.5",
+        "info": "Version 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "x": 130,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "fc2996321cee14d8",
+        "type": "tls-config",
+        "name": "Dummy TLS Config - Cloud",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": false,
+        "alpnprotocol": ""
     }
 ]
