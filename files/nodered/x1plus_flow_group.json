@@ -19,7 +19,6 @@
             "fd827cec23e820a7",
             "dfcb31cf0f7f617d",
             "3b9d220ae298e011",
-            "0e0a2b17a34779be",
             "11f4eac19de85456",
             "b38ba7ae4c7d25f9",
             "d7bf9926978d9ca2",
@@ -63,7 +62,11 @@
             "ddbdb7c6e09899b3",
             "51f2598eb4ce62db",
             "7e443df3b2c1e689",
-            "244898be88deb495"
+            "244898be88deb495",
+            "4bc3c29a05efab8b",
+            "4844dea44c06e38b",
+            "447f62955b2e9a06",
+            "3d81077e930e34c7"
         ],
         "x": 2514,
         "y": 1099,
@@ -97,7 +100,7 @@
         "z": "fbda6ab16491b918",
         "g": "258d2ebeb830080f",
         "name": "Check Values Error",
-        "func": "flow.set(\"has_x1p_flow\", true);\nflow.set(\"x1plus_flow_version\", \"2.1.5\");\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"X1Plus Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (!flow.get(\"x1plus_installed\")) {\n    node.error(\"X1Plus Flow requires X1Plus to be installed and set in the settings [x1plus_installed]\");\n    return;\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}",
+        "func": "flow.set(\"has_x1p_flow\", true);\nflow.set(\"x1plus_flow_version\", \"2.1.5.1\");\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"X1Plus Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (!flow.get(\"x1plus_installed\")) {\n    node.error(\"X1Plus Flow requires X1Plus to be installed and set in the settings [x1plus_installed]\");\n    return;\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -186,16 +189,24 @@
         "rules": [
             {
                 "t": "eq",
+                "v": "Inactive",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
                 "v": "Active",
                 "vt": "str"
             }
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 1,
+        "outputs": 2,
         "x": 3100,
         "y": 1240,
         "wires": [
+            [
+                "3d81077e930e34c7"
+            ],
             [
                 "fd827cec23e820a7"
             ]
@@ -259,42 +270,16 @@
         "addpay": "payload",
         "append": "",
         "useSpawn": "false",
-        "timer": "25",
-        "sigint": false,
-        "x": 3250,
+        "timer": "20",
+        "sigint": true,
+        "x": 3350,
         "y": 1180,
         "wires": [
             [
-                "0e0a2b17a34779be"
+                "4844dea44c06e38b"
             ],
             [],
             []
-        ]
-    },
-    {
-        "id": "0e0a2b17a34779be",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "258d2ebeb830080f",
-        "name": "success",
-        "property": "rc.code",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "0",
-                "vt": "num"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 3400,
-        "y": 1180,
-        "wires": [
-            [
-                "ddbdb7c6e09899b3"
-            ]
         ]
     },
     {
@@ -674,7 +659,7 @@
             "d3e43c60d019b381",
             "83482ddfc52fe41f"
         ],
-        "x": 2985,
+        "x": 2965,
         "y": 1140,
         "wires": [
             [
@@ -827,18 +812,18 @@
         "z": "fbda6ab16491b918",
         "g": "258d2ebeb830080f",
         "name": "Filter",
-        "func": "let x1p = flow.get(\"x1plus_active\");\nlet is_online = flow.get(\"is_printer_reachable\");\nif (x1p != undefined && x1p == true && is_online != undefined && is_online == true) {\n    node.send(msg);\n}",
+        "func": "let x1p = flow.get(\"x1plus_active\");\nlet is_online = flow.get(\"is_printer_reachable\");\nif (msg.payload == undefined) {\n    msg.payload = \"echo \\\"hello\\\"\";\n}\nif (x1p != undefined && x1p == true && is_online != undefined && is_online == true) {\n    node.send(msg);\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 3070,
+        "x": 3050,
         "y": 1140,
         "wires": [
             [
-                "3b9d220ae298e011"
+                "447f62955b2e9a06"
             ]
         ]
     },
@@ -1131,9 +1116,9 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "258d2ebeb830080f",
-        "name": "Version 2.1.5",
+        "name": "Version 2.1.5.1",
         "info": "Version 2.1.5: 2024-06-17\n - Initial Release\n - Requires X1Plus v2.0+\n - Provides a toggle switch for VNC and OTA\n - Provides sensor for current X1P version and OEM version\n - Provides update OTA functionality if a new version of X1Plus is present and detected by X1P\n - Provides a button to force check for firmware OTA updates\n - Currently polls the printer when it turns on and every 5 minutes for settings, 6 hours for Fw",
-        "x": 2610,
+        "x": 2620,
         "y": 1140,
         "wires": []
     },
@@ -1147,7 +1132,7 @@
         "links": [
             "51f2598eb4ce62db"
         ],
-        "x": 3495,
+        "x": 3585,
         "y": 1180,
         "wires": []
     },
@@ -1175,7 +1160,7 @@
         "g": "258d2ebeb830080f",
         "name": "NOTE",
         "info": "Configure the below SSH node with a new SSH Config to use\n\nEnter in the IP of your printer (set it to a static IP so you don't need to change it)\n\nUser: root\nPassword: your X1Plus SSH Password\nPort: 22\nHost: IP of the printer\nName: Whatever you want for the config entry\n\nYou do not need to setup \"Private Key Authentication\" section",
-        "x": 3250,
+        "x": 3350,
         "y": 1140,
         "wires": []
     },
@@ -1185,12 +1170,110 @@
         "z": "fbda6ab16491b918",
         "g": "258d2ebeb830080f",
         "name": "",
-        "scope": "group",
+        "scope": [
+            "3b9d220ae298e011"
+        ],
         "uncaught": false,
-        "x": 3210,
+        "x": 3190,
         "y": 1500,
         "wires": [
-            []
+            [
+                "4bc3c29a05efab8b"
+            ]
+        ]
+    },
+    {
+        "id": "4bc3c29a05efab8b",
+        "type": "debug",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Debug SSH Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3390,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "4844dea44c06e38b",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Success?",
+        "func": "if (msg != undefined && msg.rc != undefined && msg.rc.code != undefined) {\n    if (msg.rc.code == 0) {\n        node.send(msg);\n    }\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3480,
+        "y": 1180,
+        "wires": [
+            [
+                "ddbdb7c6e09899b3"
+            ]
+        ]
+    },
+    {
+        "id": "447f62955b2e9a06",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 3180,
+        "y": 1140,
+        "wires": [
+            [
+                "3b9d220ae298e011"
+            ]
+        ]
+    },
+    {
+        "id": "3d81077e930e34c7",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Kill",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "echo \"hello\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "kill",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "kill_ssh",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3190,
+        "y": 1180,
+        "wires": [
+            [
+                "447f62955b2e9a06"
+            ]
         ]
     }
 ]
