@@ -21,14 +21,14 @@
             "e00ec6d70ce9ed4e",
             "2c85ae767fb7b15d",
             "fa96932f13cc3d89",
-            "14f23434a23cdae7",
             "7952a4df8f4bb6a4",
             "36af78d3bdf6f143",
             "e424761f7ba242f0",
             "24db277c53bd7477",
             "92735e048f2071c3",
             "346ec007b697e9b4",
-            "7ca49c9b3babbf11"
+            "7ca49c9b3babbf11",
+            "b56f3cd7ce590023"
         ],
         "x": 28,
         "y": 13,
@@ -40,8 +40,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "296274a0d2a6c675",
-        "name": "VERSION 2.1.5",
-        "info": "Version 2.1.5: 2024-06-17\n - cleanup\n - slight changes to http requests to improve security\n - mini fix for end time and time remaining errors\n - support for upcoming X1Plus flow\n\n===\nVersion 2.1.4: 2024-06-02\n - Added Print Error\n   - This is a top-level print-halting error. The same one that sends push notifications and such.\n - Reorganized/cleaned up flow.\n - Added in function to check cloud-connectivity and status of printer when in cloud-only mqtt mode.\n\n===\nVersion 2.1.3: 2024-05-15\n- Added more queue data to ignored list for cleanup\n- Added count of currently skipped objects in print\n- Fix the print start time again\n- Invert humidity level\n\n===\nVersion 2.1.2: 2024-04-27\n- Store subtask_id's and print name/filenames for up to 3 days to add extra checks in adv flow\n- Added control for multiple print-options dependign on what's supported \n- Added future fix for missing print start time and possibly workaround for missing in P1 series\n\n===\nVersion 2.1.1: 2024-04-10\n- Added baseline speed_percent sensor\n- Added custom speed percent control\n  - Can adjust a custom speed percent modifier from 30 to 180%.\n    - I initially had down to 10%, but values below 50 and above 166 tend to get weird and not easy to extrapolate.\n    - 30-50 was okay in testing, above 166 not worth it but 180 seemed \"okay\" enough.\n    - Done in steps of 2, as even numbers do math better\n  - Will override speed modes\n  - Setting speed mode will override custom value\n  - Custom values may get rounded off to a slightly different percentage by printer (usually +-3ish)\n  - If you match an exact speed percentage to a preset, it will instead call setting the preset, as values calculated are slightly different.\n  - Thanks Jon!\n- Add retaining for AMS ID's so dashboard yamls can always display them\n- Fixed bed/nozzle set-target options from not having proper state linking to actual target temps\n- More icon changes\n- Made print preview image *only* exist if user has adv flow. Dashboard YAML now has it as conditional if available\n- Added version check. It will only check basic and advanced flows (not bedmesh).\n  - Sensors added for flow versions and flow status.\n\n===\nVersion 2.1.0: 2024-03-13\n- Add support for newer style of HMS errors\n- X1Plus CFW info compatibility\n- Reorganise and reduce MQTT subscriptions. Should help optimize flow a bit more.\n- Made some state values retained and stored in flow\n- Added an optional setting (default false) to allow sending arbitrary gcode to the printer\n  - AT YOUR OWN RISK\n  - To enable, go to \"Set Flow Properties\" and set \"allow_gcode_control\" to true.\n  - This will create a text input sensor called \"gcode command\" in HA, enter in your gcode command here\n  - Then, after it updates (give it a second or two), call the service or press the button \"send gcode\"\n  - Highly recommend to set the gcode_command text to empty when done in your automation or other\n\n===\nVersion 2.0.11: 2024-01-20\n- Added Uptime sensor. counts updatime since nodered deploy/connected to printer.\n- Converted start and end time to proper timestamp sensors!\n- Misc fixes, typos\n\n===\nVersion 2.0.10: 2023-12-30\n- Updated filament dictionary\n- Added A1 support\n- Added Loop-Reconnect logic for cloud mqtt connections\n- Misc edits\n\n===\nVersion 2.0.9: 2023-12-11\n- Added door sensor for X1 series (new firmware only)\n- Added new stages\n- Added some new sensor values found from printer\n\n===\nVersion 2.0.8: 2023-11-05\n- Added 10 new stages from Bambulabs\n- Added sensor for whether the printer is connected to network via wired ethernet or wireless\n- Added sensor for how the printer is homed\n - None, X, Y, Z, XY, XZ, YZ, XYZ\n- Added SSDP*\n - If this does not work for you, you may need to open ports 2021 and 1990 from your nodered instance to the host machine. This will depend on firewalls, network type, deployment type etc. It is non-critical at this stage though.\n - This is *not* used for discovery, but rather to augment existing data\n - For example, getting IP address, Real model info, Series info, Dev name, etc.\n - This unfortunately does not make it possible for me to make a single flow work for multiple printers, as the mqtt nodes for both the printer in/out and homeassistant in can only be to one IP at a time.\n   - There might be some possible way, but it'll be in the far future\n- Added chamber target temperature setting WIP, waiting for X1E\n- Added target temps as standalone sensors, to avoid people relying on attributes for automations\n- Added new diagnostic sensors\n- Experimental A1 Mini support\n- Experimental X1E support\n\n===\nVersion 2.0.7: 2023-10-06\n- Misc fixes and version sync for adv flow\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes and code cleanup\n- Parity for Adv flow\n\n===\nVersion 2.0.5: 2023-09-11\n- Fix for start time being invalid for a few seconds\n- Fixed method to initiate a pushall request on print start\n===\nVersion 2.0.4: 2023-09-09\n\n- Misc bug fixes (minor)\n- Added parsing for AMS Status and AMS RFID Status\n- Added debug capability for full print message if set to temperature\n- Logic to help support plate id for advanced flow in edge case of P1 series not working\n\n===\nVersion 2.0.3: 2023-08-20\n- Added plate_name sensor to support advanced flow changes and P1 series\n\n===\nVersion 2.0.2: 2023-08-19\n- Fixed several bugs regarding start time\n- Fixed issues regarding print real Action\n- Fixed minor bugs surrounding HMS errors not resetting to 0\n- Changed HMS error attributes format\n- Separated HMS notifications to be separate sensors per severity level (unknown, info, common, and then serious and fatal). Existing automations will have the \"sum\" of all HMS messages as expected before.\n- Provided failsafe for if the PING command is killed for unknown reasons resulting in it not being \"reachable\", when ping next succeeds it will shortly force a reset - MQTT stays connected during this, so only a momentary notice of \"offline\". If you have any automations depending on the printer suddenly going offline, please make sure it's offline for at least 60 seconds continuously to be sure.\n- Fixed bug where changing or setting fan speeds was not working anymore\n- Fixed HMS description lookup\n\n===\nVersion 2.0.1: 2023-08-07\n- Minor bug fixes for Set Nozzle/Bed Temperature not working\n- Bug fix for nozzle or bed temp sometimes being unavailable when a target temperature is set\n\n===\nVersion 2.0.0: 2023-08-06\n- Reset version - Very soon it will be moved from gists into a repository instead, with its own github pages to configure off of my site if desired.\n- Some cleanup\n- Added a \"State Change\" select - THIS DOES NOT LET YOU CHANGE STATE. It is purely to auto add the device triggers for print stage, since MQTT Device Trigger does not let me supply a list of values for a custom one.\n    - Note: Stage is very unreliable now with recent firmware and should not be depended on for automations. It is left for older firmwares or if BBL makes it reliable again.\n    - If you want an automation to turn off lights during calibration steps, make it look for print status = RUNNING and layer = 0. Once layer = 1 or higher, it is equivalent to \"printing\" stage, but as 0 it is equiv to any calibration stage\n- Did the same for a \"Print Status Change\" select. Setting an option for it does nothing! Just used for automation triggers with prefilled values.\n- Added button to force FTP fetch if exists in flow\n- Added more error handling regarding MQTT connections (Printer + Your output such as HA). Separated into connection of MQTT to printer and if printer ip is reachable on network via ping. This should present any issues of either MQTT being disconnected when both are online as it will retry on several timers now - unless your IPs have changed.\n- Added some additional controls for toggling video (not timelapse!!!) (only when camera exists)\n- Added Parsing for Print-Real_Action as Print Action. This uses the same IDs as current stage, however it's limited to just stages during printing, such as printing, pause, etc. I also manually inject idle if stg_cur comes back as idle (this is the only reliable stg_cur btw)\n- Added Camera Resolution setting - will only show up after some camera messages populate in. If it shows up but as unavailable, wait 5 minutes or press the reset filter button.\n- Added a few flow-based values to override certain settings based on received data - necessary for new firmwares.\n- Added a bunch of warning and error messages depending on present flows, invalid stuff, etc. Some are ignorable and will be prefixed as [Ignorable]. Please ignore these if you understand the context a bit.\n\n===\nRev 48: 2023-05-01\n- Changed the p1p cloud mqtt connection, even though it should not ever be used except for one older firmware\n\n===\nRev 46/47: 2023-05-01\n- Removing MQTT configs to be external nodes passing in, so importing multiple flows and updating are easier\n- Added a reconnect for when printer comes online with new mqtt flow. Shouldn't be necessary but added as a backup\n- When HA connects in MQTT now, it will reset the filter so no more waiting 5m on setup. Hopefully\n\n===\nRev 45: 2023-04-29\n- Added Filament Unload button which runs the built in unload procedure\n\n===\nRev 42: 2023-04-27\n- Added sensor for storing the last Pressure Advance value from LIDAR calibration for 24 hours\n\n===\nRev 40/41: 2023-04-27\n- Whoops forgot to change this for 40\n- Added new button to \"clear\" external spool\n\n===\nRev 39: 2023-04-26\n- Add support for plate_type sensor (only filled out by advanced flow with FTP)\n- Support for newest firmware release of X1C 01.05.01.00 (20230426)\n- VT_Tray already implemented for P1P, but renamed to External Spool now.\n\n===\nRev 36: 2023-04-07\n- Changed logic of the global connected status to be ping-based\nEvery 30s we will ping the printer to check if it's online or not.\nThis is because the MQTT will be online if P1P cloud mode, even if printer is not.\n\n\n===\nRev 35: 2023-04-05\n- Added in workaround for allowing P1P to connect using Cloud mode\nThis requires an additional setup flow to set a global attribute\nAnd requires a local flow boolean for P1P_CLOUD_MODE\n\n====\nRev 34: 2023-03-14\n- Added fan speed controls for Chamber, Part and Aux fans.\n- Heatbreak fan is read only currently.\n\n====\nRev 33: 2023-03-11\n\n- Fixed EndTime continuing to increment after print ended\n- In progress but not yet activated placeholders for camera entities\n\n====\nRev 31: 2023-03-05\n\n- Added default icons to some more sensors\n- Added Number Boxes to set Bed and Nozzle Temps within ranges (0-100 bed, 0-300 nozzle)\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n\nChanged a bit how filament fetching works.\nNow it will be unknown, none or the sensor unavailable depending on \"how\" it can't get the filament type in use.\nThis is such that the advanced flow fetching filament type can work better\n(i.e., when it's unavailable here, then filament fetch will work)\n\nIT IS OKAY if the filament sensor is not working fully, that's expected due to limitations.\n\n====\nRev 29: 2023-02-23\n\nFixed: Issue with a junction not being in the group of the last update\n\nAdded: \n    - Button to turn on and off nozzle light.\n\n====\nRev 28: 2023-02-23\n\nAdded:\n    - New Filament Sensor. This will attempt to get the *type* of filament in use. Really only works for AMS users. Don't worry if it doesn't show up or is unavailable, it just means it can't make a default one and is not considered an error - I just have no way of handling / finding out.\n    - New buttons to turn on or off the Logo Light via GCODE - these are buttons and not a light or switch, as I cannot poll for the light status.\n I also from now on will not be including the flow page in the exports, but JUST the group, this should make importing easier for replacement.\n\n",
+        "name": "VERSION 2.1.5.1",
+        "info": "Version 2.1.5.1: 2024-06-24\n - Add in a force flag to mqtt connections, hopefully preventing in case for cloud users if it ever did not exit cleanly\n\n===\nVersion 2.1.5: 2024-06-17\n - cleanup\n - slight changes to http requests to improve security\n - mini fix for end time and time remaining errors\n - support for upcoming X1Plus flow\n\n===\nVersion 2.1.4: 2024-06-02\n - Added Print Error\n   - This is a top-level print-halting error. The same one that sends push notifications and such.\n - Reorganized/cleaned up flow.\n - Added in function to check cloud-connectivity and status of printer when in cloud-only mqtt mode.\n\n===\nVersion 2.1.3: 2024-05-15\n- Added more queue data to ignored list for cleanup\n- Added count of currently skipped objects in print\n- Fix the print start time again\n- Invert humidity level\n\n===\nVersion 2.1.2: 2024-04-27\n- Store subtask_id's and print name/filenames for up to 3 days to add extra checks in adv flow\n- Added control for multiple print-options dependign on what's supported \n- Added future fix for missing print start time and possibly workaround for missing in P1 series\n\n===\nVersion 2.1.1: 2024-04-10\n- Added baseline speed_percent sensor\n- Added custom speed percent control\n  - Can adjust a custom speed percent modifier from 30 to 180%.\n    - I initially had down to 10%, but values below 50 and above 166 tend to get weird and not easy to extrapolate.\n    - 30-50 was okay in testing, above 166 not worth it but 180 seemed \"okay\" enough.\n    - Done in steps of 2, as even numbers do math better\n  - Will override speed modes\n  - Setting speed mode will override custom value\n  - Custom values may get rounded off to a slightly different percentage by printer (usually +-3ish)\n  - If you match an exact speed percentage to a preset, it will instead call setting the preset, as values calculated are slightly different.\n  - Thanks Jon!\n- Add retaining for AMS ID's so dashboard yamls can always display them\n- Fixed bed/nozzle set-target options from not having proper state linking to actual target temps\n- More icon changes\n- Made print preview image *only* exist if user has adv flow. Dashboard YAML now has it as conditional if available\n- Added version check. It will only check basic and advanced flows (not bedmesh).\n  - Sensors added for flow versions and flow status.\n\n===\nVersion 2.1.0: 2024-03-13\n- Add support for newer style of HMS errors\n- X1Plus CFW info compatibility\n- Reorganise and reduce MQTT subscriptions. Should help optimize flow a bit more.\n- Made some state values retained and stored in flow\n- Added an optional setting (default false) to allow sending arbitrary gcode to the printer\n  - AT YOUR OWN RISK\n  - To enable, go to \"Set Flow Properties\" and set \"allow_gcode_control\" to true.\n  - This will create a text input sensor called \"gcode command\" in HA, enter in your gcode command here\n  - Then, after it updates (give it a second or two), call the service or press the button \"send gcode\"\n  - Highly recommend to set the gcode_command text to empty when done in your automation or other\n\n===\nVersion 2.0.11: 2024-01-20\n- Added Uptime sensor. counts updatime since nodered deploy/connected to printer.\n- Converted start and end time to proper timestamp sensors!\n- Misc fixes, typos\n\n===\nVersion 2.0.10: 2023-12-30\n- Updated filament dictionary\n- Added A1 support\n- Added Loop-Reconnect logic for cloud mqtt connections\n- Misc edits\n\n===\nVersion 2.0.9: 2023-12-11\n- Added door sensor for X1 series (new firmware only)\n- Added new stages\n- Added some new sensor values found from printer\n\n===\nVersion 2.0.8: 2023-11-05\n- Added 10 new stages from Bambulabs\n- Added sensor for whether the printer is connected to network via wired ethernet or wireless\n- Added sensor for how the printer is homed\n - None, X, Y, Z, XY, XZ, YZ, XYZ\n- Added SSDP*\n - If this does not work for you, you may need to open ports 2021 and 1990 from your nodered instance to the host machine. This will depend on firewalls, network type, deployment type etc. It is non-critical at this stage though.\n - This is *not* used for discovery, but rather to augment existing data\n - For example, getting IP address, Real model info, Series info, Dev name, etc.\n - This unfortunately does not make it possible for me to make a single flow work for multiple printers, as the mqtt nodes for both the printer in/out and homeassistant in can only be to one IP at a time.\n   - There might be some possible way, but it'll be in the far future\n- Added chamber target temperature setting WIP, waiting for X1E\n- Added target temps as standalone sensors, to avoid people relying on attributes for automations\n- Added new diagnostic sensors\n- Experimental A1 Mini support\n- Experimental X1E support\n\n===\nVersion 2.0.7: 2023-10-06\n- Misc fixes and version sync for adv flow\n\n===\nVersion 2.0.6: 2023-09-19\n- Misc fixes and code cleanup\n- Parity for Adv flow\n\n===\nVersion 2.0.5: 2023-09-11\n- Fix for start time being invalid for a few seconds\n- Fixed method to initiate a pushall request on print start\n===\nVersion 2.0.4: 2023-09-09\n\n- Misc bug fixes (minor)\n- Added parsing for AMS Status and AMS RFID Status\n- Added debug capability for full print message if set to temperature\n- Logic to help support plate id for advanced flow in edge case of P1 series not working\n\n===\nVersion 2.0.3: 2023-08-20\n- Added plate_name sensor to support advanced flow changes and P1 series\n\n===\nVersion 2.0.2: 2023-08-19\n- Fixed several bugs regarding start time\n- Fixed issues regarding print real Action\n- Fixed minor bugs surrounding HMS errors not resetting to 0\n- Changed HMS error attributes format\n- Separated HMS notifications to be separate sensors per severity level (unknown, info, common, and then serious and fatal). Existing automations will have the \"sum\" of all HMS messages as expected before.\n- Provided failsafe for if the PING command is killed for unknown reasons resulting in it not being \"reachable\", when ping next succeeds it will shortly force a reset - MQTT stays connected during this, so only a momentary notice of \"offline\". If you have any automations depending on the printer suddenly going offline, please make sure it's offline for at least 60 seconds continuously to be sure.\n- Fixed bug where changing or setting fan speeds was not working anymore\n- Fixed HMS description lookup\n\n===\nVersion 2.0.1: 2023-08-07\n- Minor bug fixes for Set Nozzle/Bed Temperature not working\n- Bug fix for nozzle or bed temp sometimes being unavailable when a target temperature is set\n\n===\nVersion 2.0.0: 2023-08-06\n- Reset version - Very soon it will be moved from gists into a repository instead, with its own github pages to configure off of my site if desired.\n- Some cleanup\n- Added a \"State Change\" select - THIS DOES NOT LET YOU CHANGE STATE. It is purely to auto add the device triggers for print stage, since MQTT Device Trigger does not let me supply a list of values for a custom one.\n    - Note: Stage is very unreliable now with recent firmware and should not be depended on for automations. It is left for older firmwares or if BBL makes it reliable again.\n    - If you want an automation to turn off lights during calibration steps, make it look for print status = RUNNING and layer = 0. Once layer = 1 or higher, it is equivalent to \"printing\" stage, but as 0 it is equiv to any calibration stage\n- Did the same for a \"Print Status Change\" select. Setting an option for it does nothing! Just used for automation triggers with prefilled values.\n- Added button to force FTP fetch if exists in flow\n- Added more error handling regarding MQTT connections (Printer + Your output such as HA). Separated into connection of MQTT to printer and if printer ip is reachable on network via ping. This should present any issues of either MQTT being disconnected when both are online as it will retry on several timers now - unless your IPs have changed.\n- Added some additional controls for toggling video (not timelapse!!!) (only when camera exists)\n- Added Parsing for Print-Real_Action as Print Action. This uses the same IDs as current stage, however it's limited to just stages during printing, such as printing, pause, etc. I also manually inject idle if stg_cur comes back as idle (this is the only reliable stg_cur btw)\n- Added Camera Resolution setting - will only show up after some camera messages populate in. If it shows up but as unavailable, wait 5 minutes or press the reset filter button.\n- Added a few flow-based values to override certain settings based on received data - necessary for new firmwares.\n- Added a bunch of warning and error messages depending on present flows, invalid stuff, etc. Some are ignorable and will be prefixed as [Ignorable]. Please ignore these if you understand the context a bit.\n\n===\nRev 48: 2023-05-01\n- Changed the p1p cloud mqtt connection, even though it should not ever be used except for one older firmware\n\n===\nRev 46/47: 2023-05-01\n- Removing MQTT configs to be external nodes passing in, so importing multiple flows and updating are easier\n- Added a reconnect for when printer comes online with new mqtt flow. Shouldn't be necessary but added as a backup\n- When HA connects in MQTT now, it will reset the filter so no more waiting 5m on setup. Hopefully\n\n===\nRev 45: 2023-04-29\n- Added Filament Unload button which runs the built in unload procedure\n\n===\nRev 42: 2023-04-27\n- Added sensor for storing the last Pressure Advance value from LIDAR calibration for 24 hours\n\n===\nRev 40/41: 2023-04-27\n- Whoops forgot to change this for 40\n- Added new button to \"clear\" external spool\n\n===\nRev 39: 2023-04-26\n- Add support for plate_type sensor (only filled out by advanced flow with FTP)\n- Support for newest firmware release of X1C 01.05.01.00 (20230426)\n- VT_Tray already implemented for P1P, but renamed to External Spool now.\n\n===\nRev 36: 2023-04-07\n- Changed logic of the global connected status to be ping-based\nEvery 30s we will ping the printer to check if it's online or not.\nThis is because the MQTT will be online if P1P cloud mode, even if printer is not.\n\n\n===\nRev 35: 2023-04-05\n- Added in workaround for allowing P1P to connect using Cloud mode\nThis requires an additional setup flow to set a global attribute\nAnd requires a local flow boolean for P1P_CLOUD_MODE\n\n====\nRev 34: 2023-03-14\n- Added fan speed controls for Chamber, Part and Aux fans.\n- Heatbreak fan is read only currently.\n\n====\nRev 33: 2023-03-11\n\n- Fixed EndTime continuing to increment after print ended\n- In progress but not yet activated placeholders for camera entities\n\n====\nRev 31: 2023-03-05\n\n- Added default icons to some more sensors\n- Added Number Boxes to set Bed and Nozzle Temps within ranges (0-100 bed, 0-300 nozzle)\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n\nChanged a bit how filament fetching works.\nNow it will be unknown, none or the sensor unavailable depending on \"how\" it can't get the filament type in use.\nThis is such that the advanced flow fetching filament type can work better\n(i.e., when it's unavailable here, then filament fetch will work)\n\nIT IS OKAY if the filament sensor is not working fully, that's expected due to limitations.\n\n====\nRev 29: 2023-02-23\n\nFixed: Issue with a junction not being in the group of the last update\n\nAdded: \n    - Button to turn on and off nozzle light.\n\n====\nRev 28: 2023-02-23\n\nAdded:\n    - New Filament Sensor. This will attempt to get the *type* of filament in use. Really only works for AMS users. Don't worry if it doesn't show up or is unavailable, it just means it can't make a default one and is not considered an error - I just have no way of handling / finding out.\n    - New buttons to turn on or off the Logo Light via GCODE - these are buttons and not a light or switch, as I cannot poll for the light status.\n I also from now on will not be including the flow page in the exports, but JUST the group, this should make importing easier for replacement.\n\n",
         "x": 200,
         "y": 60,
         "wires": []
@@ -1278,7 +1278,7 @@
         "z": "fbda6ab16491b918",
         "g": "0504d7acd6810522",
         "name": "Set Additional",
-        "func": "flow.set(\"basic_flow_version\", \"2.1.5\");\n\nif (flow.get(\"model\") == \"A1 Mini\") {\n    flow.set(\"model\", \"A1Mini\");\n}\n\nflow.set(\"has_humidity_pct\", false);\n\nflow.set(\"is_connected\", \"false\");\nflow.set(\"ha_mqtt_is_connected\", false);\nflow.set(\"is_printer_reachable\", false);\n\nflow.set(\"print_start_epoch\", 0);\n\nflow.set(\"HA_DEVICE\", flow.get(\"model\") + \"_\" + flow.get(\"printer_name\"));\nlet lower = flow.get(\"HA_DEVICE\").toLowerCase();\nlower = lower.replaceAll(\"-\", \"_\");\nflow.set(\"HA_DEVICE_LOWER\", lower);\nflow.set(\"serial_number\", flow.get(\"printer_serial\"));\n\nflow.set(\"printer_report_topic\", \"device/\"+flow.get(\"printer_serial\")+\"/report\");\nflow.set(\"printer_request_topic\", \"device/\" + flow.get(\"printer_serial\") + \"/request\");\n\nflow.set(\"fw_version\", \"\");\nflow.set(\"is_220_voltage\", false);\n\nlet versions = {\n    \"mc_print_versions\": {\n        \"X1\": [\"01.05.01.00\", \"01.04.01.00\"],\n        \"X1C\": [\"01.05.01.00\", \"01.04.01.00\"],\n        \"P1P\": [],\n        \"P1S\": [],\n        \"A1Mini\": [],\n        \"A1\":[],\n        \"X1E\": []\n    }//,\n    //\"non_calib_versions\" : {\n    //    \"X1\": [\"01.05.02.00\", \"01.05.01.00\", \"01.04.01.00\", \"01.04.00.00\", \"01.03.00.00\", \"01.01.01.00\", \"01.01.00.00\", \"01.00.00.07\", \"01.00.00.00\"],\n   //     \"X1C\": [\"01.05.02.00\", \"01.05.01.00\", \"01.04.01.00\", \"01.04.00.00\", \"01.03.00.00\", \"01.01.01.00\", \"01.01.00.00\", \"01.00.00.07\", \"01.00.00.00\"],\n   //     \"P1P\": [\"01.03.00.00\", \"01.02.03.00\", \"01.02.02.00\", \"01.02.01.00\", \"01.01.01.00\", \"01.01.00.00\"],\n //   }\n};\n\nflow.set(\"supports_calibration\", false);\nflow.set(\"mc_print_versions\", versions[\"mc_print_versions\"]);\nflow.set(\"can_bedmesh\", true);\n\nfunction getHMSLevel(code) {\n    let uint_id = (code >> 16);\n    switch (uint_id) {\n        case 1:\n            return \"Fatal\";\n        case 2:\n            return \"Serious\";\n        case 3:\n            return \"Common\";\n        case 4:\n            return \"Info\";\n        default:\n            return \"Unknown\";\n    }\n}\n\nfunction getHMSModule(attr) {\n    let uint_id = ((attr >> 24) & 0xFF);\n    switch (uint_id) {\n        case 0x05:\n            return \"MainBoard\";\n        case 0x0C:\n            return \"XCam\";\n        case 0x07:\n            return \"AMS\";\n        case 0x08:\n            return \"Toolhead\";\n        case 0x03:\n            return \"MC\";\n        default:\n            return \"Unknown - \"+ uint_id.toString();\n    }\n}\n\nfunction toHex(value, min_length) {\n    let hex = value.toString(16);\n    while (hex.length < min_length) {\n        hex = \"0\"+ hex;\n    }\n    return hex;\n}\n\nfunction getHMSLongCode(attr, code) {\n    var module_id = (attr >> 24) & 0xFF;\n    var module_num = (attr >> 16) & 0xFF;\n    var part_id = (attr >> 8) & 0xFF;\n    var reserved = (attr >> 0) & 0xFF;\n\n    var level = code>>16;\n    if (level > 4 || level < 0) {\n        level = 0;\n    }\n\n    var msg_code = code & 0xFFFF;\n\n    var longcode = toHex(module_id,2) + \"\"+toHex(module_num,2) +\"\"+toHex(part_id,2)+\"00000\"+ toHex(parseInt(level),0) +\"\"+ toHex(msg_code, 4);\n    return longcode;\n}\n\nflow.set(\"hms_longcode_parser\", getHMSLongCode);\nflow.set(\"hms_level_parser\", getHMSLevel);\nflow.set(\"hms_module_parser\", getHMSModule);\n\nflow.set(\"has_ipcam\", false);\nflow.set(\"current_filament\", \"\");\nflow.set(\"ams_count\", 0)\nflow.set(\"nozzle_diameter\", \"\");\nflow.set(\"stage_override\", -2);\n\nlet allowed_resolutions = [\"720p\"];\nif(flow.get(\"model\").startsWith(\"X1\")) {\n    allowed_resolutions = [\"720p\", \"1080p\"];\n}\nif(flow.get(\"model\").startsWith(\"A1\")) {\n    allowed_resolutions=[\"1920x1080\", \"1536x1080\"]\n}\nflow.set(\"camera_resolutions\", allowed_resolutions);\n\n\nlet maintenance_wip = {\n    \"3\": \"None\",\n    \"131075\": \"Lead screws may need lubrication\"\n};\n\n\n/*\nSN's\n\n00M : X1C\n00W : X1\n03W : X1E\n01S : P1P\n01P : P1S\n030 : A1\n039 : A1 Mini\n\n\n*//*\nlet cannot_request_min_versions = {\n    \"P1P\": [],\n    \"P1S\": [],\n    \"X1C\": [],\n    \"X1\": [],\n    \"X1E\": [],\n    \"A1\": [],\n    \"A1Mini\": []\n}*/\n/*\nif(flow.get(\"fw_version\") != \"\") {\n    if (flow.get(\"model\").startsWith(\"P1\")) {\n    // flow.set(\"can_request\", False);\n    //node.warn\n    }\n}*/",
+        "func": "flow.set(\"basic_flow_version\", \"2.1.5.1\");\n\nif (flow.get(\"model\") == \"A1 Mini\") {\n    flow.set(\"model\", \"A1Mini\");\n}\n\nflow.set(\"has_humidity_pct\", false);\n\nflow.set(\"is_connected\", \"false\");\nflow.set(\"ha_mqtt_is_connected\", false);\nflow.set(\"is_printer_reachable\", false);\n\nflow.set(\"print_start_epoch\", 0);\n\nflow.set(\"HA_DEVICE\", flow.get(\"model\") + \"_\" + flow.get(\"printer_name\"));\nlet lower = flow.get(\"HA_DEVICE\").toLowerCase();\nlower = lower.replaceAll(\"-\", \"_\");\nflow.set(\"HA_DEVICE_LOWER\", lower);\nflow.set(\"serial_number\", flow.get(\"printer_serial\"));\n\nflow.set(\"printer_report_topic\", \"device/\"+flow.get(\"printer_serial\")+\"/report\");\nflow.set(\"printer_request_topic\", \"device/\" + flow.get(\"printer_serial\") + \"/request\");\n\nflow.set(\"fw_version\", \"\");\nflow.set(\"is_220_voltage\", false);\n\nlet versions = {\n    \"mc_print_versions\": {\n        \"X1\": [\"01.05.01.00\", \"01.04.01.00\"],\n        \"X1C\": [\"01.05.01.00\", \"01.04.01.00\"],\n        \"P1P\": [],\n        \"P1S\": [],\n        \"A1Mini\": [],\n        \"A1\":[],\n        \"X1E\": []\n    }//,\n    //\"non_calib_versions\" : {\n    //    \"X1\": [\"01.05.02.00\", \"01.05.01.00\", \"01.04.01.00\", \"01.04.00.00\", \"01.03.00.00\", \"01.01.01.00\", \"01.01.00.00\", \"01.00.00.07\", \"01.00.00.00\"],\n   //     \"X1C\": [\"01.05.02.00\", \"01.05.01.00\", \"01.04.01.00\", \"01.04.00.00\", \"01.03.00.00\", \"01.01.01.00\", \"01.01.00.00\", \"01.00.00.07\", \"01.00.00.00\"],\n   //     \"P1P\": [\"01.03.00.00\", \"01.02.03.00\", \"01.02.02.00\", \"01.02.01.00\", \"01.01.01.00\", \"01.01.00.00\"],\n //   }\n};\n\nflow.set(\"supports_calibration\", false);\nflow.set(\"mc_print_versions\", versions[\"mc_print_versions\"]);\nflow.set(\"can_bedmesh\", true);\n\nfunction getHMSLevel(code) {\n    let uint_id = (code >> 16);\n    switch (uint_id) {\n        case 1:\n            return \"Fatal\";\n        case 2:\n            return \"Serious\";\n        case 3:\n            return \"Common\";\n        case 4:\n            return \"Info\";\n        default:\n            return \"Unknown\";\n    }\n}\n\nfunction getHMSModule(attr) {\n    let uint_id = ((attr >> 24) & 0xFF);\n    switch (uint_id) {\n        case 0x05:\n            return \"MainBoard\";\n        case 0x0C:\n            return \"XCam\";\n        case 0x07:\n            return \"AMS\";\n        case 0x08:\n            return \"Toolhead\";\n        case 0x03:\n            return \"MC\";\n        default:\n            return \"Unknown - \"+ uint_id.toString();\n    }\n}\n\nfunction toHex(value, min_length) {\n    let hex = value.toString(16);\n    while (hex.length < min_length) {\n        hex = \"0\"+ hex;\n    }\n    return hex;\n}\n\nfunction getHMSLongCode(attr, code) {\n    var module_id = (attr >> 24) & 0xFF;\n    var module_num = (attr >> 16) & 0xFF;\n    var part_id = (attr >> 8) & 0xFF;\n    var reserved = (attr >> 0) & 0xFF;\n\n    var level = code>>16;\n    if (level > 4 || level < 0) {\n        level = 0;\n    }\n\n    var msg_code = code & 0xFFFF;\n\n    var longcode = toHex(module_id,2) + \"\"+toHex(module_num,2) +\"\"+toHex(part_id,2)+\"00000\"+ toHex(parseInt(level),0) +\"\"+ toHex(msg_code, 4);\n    return longcode;\n}\n\nflow.set(\"hms_longcode_parser\", getHMSLongCode);\nflow.set(\"hms_level_parser\", getHMSLevel);\nflow.set(\"hms_module_parser\", getHMSModule);\n\nflow.set(\"has_ipcam\", false);\nflow.set(\"current_filament\", \"\");\nflow.set(\"ams_count\", 0)\nflow.set(\"nozzle_diameter\", \"\");\nflow.set(\"stage_override\", -2);\n\nlet allowed_resolutions = [\"720p\"];\nif(flow.get(\"model\").startsWith(\"X1\")) {\n    allowed_resolutions = [\"720p\", \"1080p\"];\n}\nif(flow.get(\"model\").startsWith(\"A1\")) {\n    allowed_resolutions=[\"1920x1080\", \"1536x1080\"]\n}\nflow.set(\"camera_resolutions\", allowed_resolutions);\n\n\nlet maintenance_wip = {\n    \"3\": \"None\",\n    \"131075\": \"Lead screws may need lubrication\"\n};\n\n\n/*\nSN's\n\n00M : X1C\n00W : X1\n03W : X1E\n01S : P1P\n01P : P1S\n030 : A1\n039 : A1 Mini\n\n\n*//*\nlet cannot_request_min_versions = {\n    \"P1P\": [],\n    \"P1S\": [],\n    \"X1C\": [],\n    \"X1\": [],\n    \"X1E\": [],\n    \"A1\": [],\n    \"A1Mini\": []\n}*/\n/*\nif(flow.get(\"fw_version\") != \"\") {\n    if (flow.get(\"model\").startsWith(\"P1\")) {\n    // flow.set(\"can_request\", False);\n    //node.warn\n    }\n}*/",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -5039,1091 +5039,6 @@
         ]
     },
     {
-        "id": "14f23434a23cdae7",
-        "type": "group",
-        "z": "fbda6ab16491b918",
-        "g": "296274a0d2a6c675",
-        "name": "Initialize",
-        "style": {
-            "label": true
-        },
-        "nodes": [
-            "b1c1923cb89b667b",
-            "7c5bb5efa50cfa5b",
-            "69b4c2a7d4558125",
-            "a365818fb4a53f52",
-            "dce813c208a9da90",
-            "ab7f1b7beb3a2f80",
-            "ebe6d4b6979d7c94",
-            "92a884a3331bfa4b",
-            "5cd82175da584146",
-            "d944c995cf7771e0",
-            "6835f39fb902578a",
-            "9362a1b7e3670507",
-            "92b557ed537a1451",
-            "dcf228c59349178a",
-            "b04f934b4958c998",
-            "a6a549b513fe916b",
-            "4c8011bd5cb181a7",
-            "c5cc9910c88c94d9",
-            "cc63110a9c0b3341",
-            "b7c12d7bbd8b2bf6",
-            "4e46edc8200fcf64",
-            "123228b4999f2d36",
-            "c74f41e5232489b6",
-            "f0580207cb1f90ff",
-            "b21b873582a6bd25",
-            "5fb6dc8d8d5ee7ab",
-            "4f076de3fb5b0359",
-            "98a14b986eac3260",
-            "0c500deed02f9729",
-            "98dbb6a29829b692",
-            "8eb8d0318afc5c0b",
-            "0a5d92c3648ea7af",
-            "0e9d8e65b9383827",
-            "76065a5b0c44ed07",
-            "4c873d61ff726024",
-            "b47c61fe043f6351",
-            "f4a1da1e7f145ef5",
-            "4ee144b6fbfc2fb8",
-            "b26670bf1f3f93ff",
-            "96223de14da95f0a",
-            "eba20ea13f37261c",
-            "9c6461a60c6a8bd2",
-            "81ac7533c0fa0a23",
-            "d2e5a31a0167dbb9",
-            "7ce5a5d895d667a5",
-            "dcefe7310cd723d0",
-            "f98243db0b2ce567",
-            "8a0353bb8f4d07e7"
-        ],
-        "x": 54,
-        "y": 59,
-        "w": 952,
-        "h": 462
-    },
-    {
-        "id": "b1c1923cb89b667b",
-        "type": "mqtt in",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Bambu MQTT In",
-        "topic": "",
-        "qos": "2",
-        "datatype": "json",
-        "broker": "{GENERATED_PRINTER_MQTT_ID}",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 1,
-        "x": 240,
-        "y": 280,
-        "wires": [
-            [
-                "69b4c2a7d4558125"
-            ]
-        ]
-    },
-    {
-        "id": "7c5bb5efa50cfa5b",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Inject Machine Details",
-        "func": "let can_request = flow.get(\"can_request\");\n\nif (msg.status_change != undefined) {\n    if(msg.status_change == \"no_data\")\n        node.status({ fill: \"red\", shape: \"ring\", text: \"No Data\" });\n    else if (msg.status_change == \"warn_no_data\")\n        node.status({ fill: \"yellow\", shape: \"ring\", text: \"No Recent Data\" });\n    return;\n}\nif (msg.payload == undefined || \n    (Object.keys(msg.payload) != undefined\n     && Object.keys(msg.payload).length == 0)) { return };\nlet machine_name = flow.get(\"printer_name\");\nlet machine_serial = flow.get(\"serial_number\");\nlet manufacturer = \"Bambu Labs\";\nlet model = flow.get(\"model\");\n\nlet camera_stream_url = \"{STREAM_URL}\";\n//let camera_rtsp = \"{RTSP}\"\nlet snapshot_url = \"{SNAPSHOT_URL}\";\n\nif(msg.payload.original_host != undefined){\n    flow.set(\"printer_real_ip\", msg.payload.original_host);\n    delete msg.payload.original_host;\n}\n\nif(msg.payload.status != undefined) {\n    if (msg.payload.status == \"offline\") {\n        msg.payload.print[\"uptime\"] = 0;\n        flow.set(\"online_time\", -1);\n        node.send([null, msg]);\n        return;\n    }\n    delete msg.payload.status;\n}\n\nif(msg.payload.mc_print != undefined) {\n    msg.payload.mc_print.machine_name = machine_name;\n    msg.payload.mc_print.machine_serial = machine_serial;\n    msg.payload.mc_print.manufacturer = manufacturer;\n    let param = msg.payload.mc_print.param;\n    if (typeof param === 'string' || param instanceof String) { \n        if(param.includes(\"[AMS]\")) {\n            msg.payload.mc_print.model = \"AMS\";\n            node.send([msg, null]);\n        }\n        else {\n            msg.payload.mc_print.model = model;\n            node.send([msg, null]);\n        }\n    }        \n    else {\n        msg.payload.mc_print.model = model;\n        node.send([msg, null]);\n    }\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Data Received\" });\n}\n\nif (msg.payload.print != undefined) {\n    if (msg.payload.print.command != undefined && msg.payload.print.command == \"project_file\") {\n        if (flow.get(\"printjob_mapping\") == undefined) {\n            flow.set(\"printjob_mapping\", {});\n        }\n        let mapping = flow.get(\"printjob_mapping\");\n        let d = msg.payload.print;\n        if (d['subtask_id'] != undefined && d['subtask_name'] != undefined && d['url'] != undefined) {\n            if (!d['url'].startsWith(\"file:///data/model/history\")) {\n                let is_update = false;\n                if (mapping[d['subtask_id']] != undefined) {\n                    is_update = true;\n                }\n                mapping[d['subtask_id']] = {\n                    \"subtask_name\": d[\"subtask_name\"],\n                    \"param\": d['param'],\n                    \"url\": d['url'],\n                    \"timestamp\": new Date()\n                };\n                flow.set(\"printjob_mapping\", mapping);\n\n                // delete unique jobs older than 3 days, but only trigger once we get a new one to add\n                if (!is_update) {\n                    let keys = Object.keys(mapping);\n                    let cutoff = new Date();\n                    cutoff.setDate(cutoff.getDate() - 7); //7 days\n                    // https ones expire after 2 hours, should I keep in mapping and let http fail and try ftp after, or delete\n                    // may only be certain http's, makerworld might be longer?\n                    for (var k of keys) {\n                        if (cutoff.getTime() > (new Date(mapping[k]['timestamp'])).getTime()) {\n                            delete mapping[k];\n                        }\n                    }\n                    flow.set(\"printjob_mapping\", mapping);\n                }\n            }\n            \n        }\n    }\n\n    if (msg.payload.print.command != undefined && msg.payload.print.command == \"project_file\" && msg.payload.print.timestamp != undefined) {\n        let start = msg.payload.print.timestamp.toString();\n        msg.payload.print = {\n            \"gcode_start_time\": start,\n            \"command\": \"manual\"\n        }\n    }\n    else if (msg.payload.print.command != undefined && msg.payload.print.command == \"project_file\" && msg.payload.print.timestamp == undefined) {\n       let start = Math.round(Date.now() / 1000).toString();\n        msg.payload.print = {\n            \"gcode_start_time\": start,\n            \"command\": \"manual\"\n        }\n    }\n\n    msg.payload.print.machine_name = machine_name;\n    msg.payload.print.machine_serial = machine_serial;\n    msg.machine_serial = machine_serial;\n    msg.payload.print.manufacturer = manufacturer;\n    msg.payload.print.model = model;\n\n    if (msg.payload.print.ams !== undefined && msg.payload.print.ams.ams != undefined) {\n        for (var ams of msg.payload.print.ams.ams) {\n            ams.printer_name = machine_name\n            ams.printer_serial = machine_serial\n        }\n        if (Object.keys(msg.payload.print).length > 50) {\n        }\n    }\n    msg.payload.print.status = \"online\";\n    if (flow.get(\"online_time\") == -1 || flow.get(\"online_time\") == undefined) {\n        flow.set(\"online_time\", new Date());\n        flow.set(\"last_time\")\n        msg.payload.print[\"uptime\"] = 0;\n    }\n\n    let now = new Date()\n    if (flow.get(\"online_time\") != undefined && flow.get(\"online_time\") != -1){ //&& Math.abs(flow.get(\"online_time\").getTime() - now.getTime())/1000 >= 1*60) {\n        // whenever we get a msg, update uptime\n        msg.payload.print[\"uptime\"] = Math.abs(flow.get(\"online_time\").getTime() - now.getTime()) / 1000;\n    }\n\n    msg.payload.print.reset_filter = \"\";\n\n    if (can_request) {\n        msg.payload.print.pause_print = \"\";\n        msg.payload.print.resume_print = \"\";\n        msg.payload.print.stop_print = \"\";\n    \n        msg.payload.print.force_update = \"\";\n        if (flow.get(\"allow_gcode_control\") == true) {\n            msg.payload.print.gcode_command = \"\";\n            msg.payload.print.send_gcode = \"\";\n        }\n    }\n\n    if (flow.get(\"basic_is_latest_flow\") != undefined) {\n        if (flow.get(\"basic_is_latest_flow\")) {\n            msg.payload.print.nodered_flow_status = \"Up to Date\";\n        }\n        else {\n            msg.payload.print.nodered_flow_status = \"Update Available\";\n        }\n    }\n    if(flow.get(\"basic_flow_version\") != undefined) {\n        msg.payload.print.nodered_flow_version = flow.get(\"basic_flow_version\");\n    }\n\n    if (flow.get(\"has_adv_flow\")) {\n        if (flow.get(\"advanced_flow_version\") != undefined) {\n            msg.payload.print.nodered_advanced_flow_version = flow.get(\"advanced_flow_version\");\n        }\n\n        if (flow.get(\"advanced_is_latest_flow\") != undefined) {\n            if (flow.get(\"advanced_is_latest_flow\")) {\n                msg.payload.print.nodered_advanced_flow_status = \"Up to Date\";\n            }\n            else {\n                msg.payload.print.nodered_advanced_flow_status = \"Update Available\";\n            }\n        }\n    }\n    if (flow.get(\"has_x1p_flow\")) {\n        if (flow.get(\"x1plus_flow_version\") != undefined) {\n            msg.payload.print.nodered_x1p_flow_version = flow.get(\"x1plus_flow_version\");\n        }\n\n        if (flow.get(\"x1p_is_latest_flow\") != undefined) {\n            if (flow.get(\"x1p_is_latest_flow\")) {\n                msg.payload.print.nodered_x1p_flow_status = \"Up to Date\";\n            }\n            else {\n                msg.payload.print.nodered_x1p_flow_status = \"Update Available\";\n            }\n        }\n    }\n    \n    if(!model.startsWith(\"A1\")) {\n        if (can_request) {\n            msg.payload.print.logo_light_on = \"\";\n            msg.payload.print.logo_light_off = \"\";\n            msg.payload.print.nozzle_light_on = \"\";\n            msg.payload.print.nozzle_light_off = \"\";\n        }\n    }\n    if (flow.get(\"has_db_flow\") != undefined && flow.get(\"has_db_flow\") == true) {\n        msg.payload.print.active_print_time = \"\";\n        msg.payload.print.filament_printed = \"\";\n    }\n\n    if (can_request) \n        msg.payload.print.home = \"\";\n    \n    msg.payload.print.mqtt_connection_type = flow.get(\"P1P_CLOUD_MODE\") ? \"Bambu Cloud\" : \"Local\";\n    if (flow.get(\"has_ipcam\") && can_request) {\n        msg.payload.print.toggle_recording = \"\";\n        //msg.payload.print.toggle_timelapse = \"\";////////////////////////\n    }\n    \n    if (can_request) {\n        if(flow.get(\"ams_count\") > 0) {\n            msg.payload.print.toggle_auto_switch = \"\";\n        }\n        if (flow.get(\"model\").startsWith(\"X1\")) {\n            msg.payload.print.toggle_first_layer_inspection = \"\";\n            msg.payload.print.toggle_buildplate_detection = \"\";\n        }\n        msg.payload.print.set_bed_temp = \"\";\n        msg.payload.print.set_nozzle_temp = \"\";\n        msg.payload.print.set_speed_percent = \"\";\n        msg.payload.print.toggle_auto_recovery = \"\";\n        let can_heat_chamber = (flow.get(\"model\") == \"X1E\"); // change if retroactive\n        if(can_heat_chamber) {\n            msg.payload.print.set_chamber_temp = \"\";\n        }\n    }\n\n    //msg.payload.print.print_preview = \"\";\n\n    if (flow.get(\"has_adv_flow\")) {\n        //msg.payload.print.plate_type = \"\";\n        msg.payload.print.print_preview = \"\";\n        msg.payload.print.force_ftp_fetch = \"\";\n    }\n\n    if (can_request){\n        msg.payload.print.clear_external_spool = \"\";\n    }\n    if(model == \"X\"+\"1C\" || model == \"X\"+\"1\") {\n        let versions = flow.get(\"mc_print_versions\");\n        if (versions[model] != undefined) {\n            let valid_versions = versions[model];\n            if (valid_versions.length > 0 && valid_versions.includes(flow.get(\"fw_version\"))) {\n                msg.payload.print.last_calibrated_pa = \"\";\n            }\n        }\n\n      /*  if (msg.payload.printer != undefined && msg.payload.printer.SW_version != undefined && msg.payload.printer.SW_version != \"\"\n        && flow.get(\"x1plus_installed\") != undefined && flow.get(\"x1plus_installed\") == true) {\n            if(msg.payload.printer.SW_version.startsWith(\"99\")) {\n                if(flow.get(\"x1plus_active\") == undefined || flow.get(\"x1plus_active\") == false) {\n                    node.warn(\"[INFO] X1Plus CFW is currently Active\");\n                }\n                flow.set(\"x1plus_active\", true); \n            }\n            else{\n                if(flow.get(\"x1plus_active\") == undefined || flow.get(\"x1plus_active\") == true){\n                    node.warn(\"[INFO] X1Plus CFW is currently Not Active\");\n                }\n                flow.set(\"x1plus_active\", false); \n            }\n        }*/\n        if (flow.get(\"x1plus_installed\") != undefined && flow.get(\"x1plus_installed\") == true) {\n            if (flow.get(\"x1plus_active\") != undefined) {\n                if (flow.get(\"x1plus_active\")) \n                    msg.payload.print.x1plus = \"Active\";\n                else\n                    msg.payload.print.x1plus = \"Inactive\";\n            }\n        }\n    }\n\n    if (can_request)\n        msg.payload.print.unload_filament = \"\";\n\n    if(snapshot_url != undefined && snapshot_url != \"\" && snapshot_url != \"{\" + \"SNAPSHOT_URL\" + \"}\") {\n        msg.payload.print.snapshot_url = snapshot_url;\n    }\n\n    if (camera_stream_url != undefined && camera_stream_url != \"\" && camera_stream_url != \"{\" + \"STREAM_URL\" + \"}\") {\n        msg.payload.print.camera_stream_url = camera_stream_url;\n    }\n\n    if(msg.payload.print.ipcam != undefined && msg.payload.print.ipcam.rtsp_url != undefined) {\n        if(msg.payload.print.ipcam.rtsp_url == \"disable\") {\n            msg.payload.print.camera_rtsp = \"Disabled\";\n        }\n        else if (msg.payload.print.ipcam.rtsp_url.startsWith(\"rtsp\")) {\n            msg.payload.print.camera_rtsp = msg.payload.print.ipcam.rtsp_url;\n            if(msg.payload.print.ipcam.ipcam_dev == undefined) {\n                delete msg.payload.print.ipcam;\n            }\n        }\n        // rtsps://bblp:[access_code]@[lan_ip]:322/streaming/live/1    TCP\n    }\n\n    if(msg.payload.print.cali_version != undefined && msg.payload.print.cali_version >= 0 && model.includes(\"X1\")) {\n        flow.set(\"supports_calibration\", true);\n    }\n\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Data Received\" });\n\n    if (flow.get(\"wws_bambu_\" + flow.get(\"printer_serial\")) != undefined) {\n        let d = flow.get(\"wws_bambu_\" + flow.get(\"printer_serial\"));\n        msg.payload.print[\"IP_Address\"] = d[\"IP Address\"];\n        msg.payload.print[\"Device_Dev_Name\"] = d[\"Name\"];\n        msg.payload.print[\"Connection_Type\"] = d[\"Connection Type\"];\n        msg.payload.print[\"Series\"] = d[\"Series\"];\n        msg.payload.print[\"SSDP_Model\"] = d[\"Model\"];\n    }\n\n}\n\n\nif (msg.payload.info != undefined || msg.payload.security != undefined || msg.payload.system != undefined) {\n    msg.printer_name = machine_name;\n    msg.machine_serial = machine_serial;\n    msg.manufacturer = manufacturer;\n    msg.model = model;\n\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Data Received\" });\n}\nif (msg.payload == undefined ||\n    (Object.keys(msg.payload) != undefined\n        && Object.keys(msg.payload).length == 0)) { return };\nnode.send([msg, null]);\n//node.status({});",
-        "outputs": 2,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\nnode.status({ fill: \"red\", shape: \"ring\", text: \"No Data Yet - First Boot\" });\nflow.set(\"online_time\", -1); // if I don't do this on start, it actually continues with last value...",
-        "finalize": "",
-        "libs": [],
-        "x": 260,
-        "y": 340,
-        "wires": [
-            [
-                "4c873d61ff726024"
-            ],
-            [
-                "cc63110a9c0b3341"
-            ]
-        ]
-    },
-    {
-        "id": "69b4c2a7d4558125",
-        "type": "json",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "property": "payload.print",
-        "action": "obj",
-        "pretty": false,
-        "x": 390,
-        "y": 280,
-        "wires": [
-            [
-                "b26670bf1f3f93ff",
-                "dcefe7310cd723d0"
-            ]
-        ]
-    },
-    {
-        "id": "a365818fb4a53f52",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "property": "payload",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "hask",
-                "v": "info",
-                "vt": "str"
-            },
-            {
-                "t": "hask",
-                "v": "mc_print",
-                "vt": "str"
-            },
-            {
-                "t": "hask",
-                "v": "print",
-                "vt": "str"
-            },
-            {
-                "t": "hask",
-                "v": "system",
-                "vt": "str"
-            },
-            {
-                "t": "hask",
-                "v": "upgrade",
-                "vt": "str"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 6,
-        "x": 730,
-        "y": 340,
-        "wires": [
-            [
-                "5fb6dc8d8d5ee7ab"
-            ],
-            [
-                "b21b873582a6bd25"
-            ],
-            [
-                "98a14b986eac3260"
-            ],
-            [
-                "4f076de3fb5b0359"
-            ],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "dce813c208a9da90",
-        "type": "inject",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Inject OFFLINE",
-        "props": [
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "20",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "{}",
-        "payloadType": "json",
-        "x": 190,
-        "y": 480,
-        "wires": [
-            [
-                "ab7f1b7beb3a2f80"
-            ]
-        ]
-    },
-    {
-        "id": "ab7f1b7beb3a2f80",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "property": "is_printer_reachable",
-        "propertyType": "flow",
-        "rules": [
-            {
-                "t": "false"
-            },
-            {
-                "t": "true"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 370,
-        "y": 480,
-        "wires": [
-            [
-                "cc63110a9c0b3341",
-                "eba20ea13f37261c"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "ebe6d4b6979d7c94",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Cull Fail Msg",
-        "func": "if (msg.payload.print != undefined && msg.payload.print.result != undefined\n&& msg.payload.print.result == \"FAIL\" ) {\n//\n}\nelse if(msg.payload != undefined && Object.keys(msg.payload).length > 0){\n    node.send(msg);\n}",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 590,
-        "y": 340,
-        "wires": [
-            [
-                "a365818fb4a53f52"
-            ]
-        ]
-    },
-    {
-        "id": "92a884a3331bfa4b",
-        "type": "inject",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Startup Trigger",
-        "props": [
-            {
-                "p": "start_status",
-                "v": "1",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "5",
-        "topic": "",
-        "x": 180,
-        "y": 120,
-        "wires": [
-            [
-                "123228b4999f2d36",
-                "98dbb6a29829b692"
-            ]
-        ]
-    },
-    {
-        "id": "5cd82175da584146",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "property": "P1P_CLOUD_MODE",
-        "propertyType": "flow",
-        "rules": [
-            {
-                "t": "true"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 490,
-        "y": 160,
-        "wires": [
-            [
-                "b04f934b4958c998"
-            ],
-            [
-                "4c8011bd5cb181a7"
-            ]
-        ]
-    },
-    {
-        "id": "d944c995cf7771e0",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Disconnect",
-        "func": "let config = {\n    \"action\": \"disconnect\"\n}\nnode.send(config);",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 910,
-        "y": 120,
-        "wires": [
-            [
-                "0a5d92c3648ea7af"
-            ]
-        ]
-    },
-    {
-        "id": "6835f39fb902578a",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "1",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 840,
-        "y": 160,
-        "wires": [
-            [
-                "9362a1b7e3670507",
-                "dcf228c59349178a"
-            ]
-        ]
-    },
-    {
-        "id": "9362a1b7e3670507",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Connect",
-        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": global.get(\"BAMBU_ACCESS_TOKEN\"),\n        \"port\": 8883,\n        \"broker\": global.get(\"BAMBU_REGION\"),\n        \"username\": global.get(\"BAMBU_MQTT_USER\")\n    } \n}\n\nnode.send(config);",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 860,
-        "y": 200,
-        "wires": [
-            [
-                "0a5d92c3648ea7af"
-            ]
-        ]
-    },
-    {
-        "id": "92b557ed537a1451",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Subscribe",
-        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"printer_report_topic\"),\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 560,
-        "y": 240,
-        "wires": [
-            [
-                "b1c1923cb89b667b"
-            ]
-        ]
-    },
-    {
-        "id": "dcf228c59349178a",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "2",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 680,
-        "y": 200,
-        "wires": [
-            [
-                "92b557ed537a1451"
-            ]
-        ]
-    },
-    {
-        "id": "b04f934b4958c998",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "property": "BAMBU_ACCESS_TOKEN",
-        "propertyType": "global",
-        "rules": [
-            {
-                "t": "nempty"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 650,
-        "y": 140,
-        "wires": [
-            [
-                "0e9d8e65b9383827"
-            ],
-            [
-                "a6a549b513fe916b"
-            ]
-        ]
-    },
-    {
-        "id": "a6a549b513fe916b",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "8",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 500,
-        "y": 120,
-        "wires": [
-            [
-                "b04f934b4958c998"
-            ]
-        ]
-    },
-    {
-        "id": "4c8011bd5cb181a7",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Connect",
-        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": flow.get(\"access_code\"),\n        \"port\": 8883,\n        \"broker\": flow.get(\"printer_ip\"),\n        \"username\":\"bblp\"\n    } \n}\n\nnode.send(config);",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 220,
-        "y": 220,
-        "wires": [
-            [
-                "b1c1923cb89b667b",
-                "c5cc9910c88c94d9"
-            ]
-        ]
-    },
-    {
-        "id": "c5cc9910c88c94d9",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "2",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 400,
-        "y": 240,
-        "wires": [
-            [
-                "92b557ed537a1451"
-            ]
-        ]
-    },
-    {
-        "id": "cc63110a9c0b3341",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Offline Payload",
-        "func": "msg.payload = { \"print_status\": \"OFFLINE\", \n    \"status\": \"offline\", \n    \"uptime\": 0,\n    \"machine_name\":  flow.get(\"printer_name\"), \n    \"machine_serial\": flow.get(\"printer_serial\"),\n     \"stage\": {\n         \"current\": \"Offline\"\n     },\n     \"print_action\": \"Offline\",\n     \"reset_filter\": \"\",\n      \"force_update\": \"\",\n       \"ams_count\": 0 };\n\nif (flow.get(\"has_adv_flow\")) {\n    msg.payload['plate_type'] = \"\";\n}\n\nif (flow.get(\"basic_is_latest_flow\") != undefined) {\n    if (flow.get(\"basic_is_latest_flow\")) {\n        msg.payload.nodered_flow_status = \"Up to Date\";\n    }\n    else {\n        msg.payload.nodered_flow_status = \"Update Available\";\n    }\n}\nif(flow.get(\"basic_flow_version\") != undefined) {\n    msg.payload.nodered_flow_version = flow.get(\"basic_flow_version\");\n}\n\nif (flow.get(\"has_adv_flow\")) {\n    if(flow.get(\"advanced_flow_version\") != undefined) {\n        msg.payload.nodered_advanced_flow_version = flow.get(\"advanced_flow_version\");\n    }\n\n    if (flow.get(\"advanced_is_latest_flow\") != undefined) {\n        if (flow.get(\"advanced_is_latest_flow\")) {\n            msg.payload.nodered_advanced_flow_status = \"Up to Date\";\n        }\n        else {\n            msg.payload.nodered_advanced_flow_status = \"Update Available\";\n        }\n    }\n}\nif (flow.get(\"x1plus_installed\")) {\n    msg.payload['x1plus'] = \"Inactive\";\n}\nmsg.topic = \"printer\";\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.machine_serial = flow.get(\"printer_serial\");\nnode.send(msg);",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 700,
-        "y": 460,
-        "wires": [
-            [
-                "f0580207cb1f90ff"
-            ]
-        ]
-    },
-    {
-        "id": "b7c12d7bbd8b2bf6",
-        "type": "change",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Not Gcode",
-        "rules": [
-            {
-                "t": "set",
-                "p": "is_gcode_type",
-                "pt": "msg",
-                "to": "false",
-                "tot": "bool"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 890,
-        "y": 240,
-        "wires": [
-            [
-                "4e46edc8200fcf64"
-            ]
-        ]
-    },
-    {
-        "id": "4e46edc8200fcf64",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Request Out",
-        "mode": "link",
-        "links": [
-            "5c030c48f393ada7"
-        ],
-        "x": 935,
-        "y": 280,
-        "wires": []
-    },
-    {
-        "id": "123228b4999f2d36",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "MQTT Init - Out",
-        "mode": "link",
-        "links": [
-            "579d1955de91b7ed",
-            "615fa8b6a8f75f59",
-            "8eea69a76cf784bf",
-            "45e8f0f3a2ca0f52"
-        ],
-        "x": 325,
-        "y": 120,
-        "wires": []
-    },
-    {
-        "id": "c74f41e5232489b6",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Printer-Payloads-Out",
-        "mode": "link",
-        "links": [
-            "270186a0ec06877a"
-        ],
-        "x": 935,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "f0580207cb1f90ff",
-        "type": "split",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "splt": "\\n",
-        "spltType": "str",
-        "arraySplt": 1,
-        "arraySpltType": "len",
-        "stream": false,
-        "addname": "topic",
-        "x": 850,
-        "y": 460,
-        "wires": [
-            [
-                "c74f41e5232489b6"
-            ]
-        ]
-    },
-    {
-        "id": "b21b873582a6bd25",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Printer-MC_Print_Out",
-        "mode": "link",
-        "links": [
-            "03130ce05f9324be"
-        ],
-        "x": 845,
-        "y": 320,
-        "wires": []
-    },
-    {
-        "id": "5fb6dc8d8d5ee7ab",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Printer-Info_Out",
-        "mode": "link",
-        "links": [
-            "32e2a8977a42b521"
-        ],
-        "x": 845,
-        "y": 280,
-        "wires": []
-    },
-    {
-        "id": "4f076de3fb5b0359",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Printer-System_Out",
-        "mode": "link",
-        "links": [
-            "6a38ae324bf53fef"
-        ],
-        "x": 845,
-        "y": 400,
-        "wires": []
-    },
-    {
-        "id": "98a14b986eac3260",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Printer-Print_Out",
-        "mode": "link",
-        "links": [
-            "d1220a3ae60b4c1a"
-        ],
-        "x": 845,
-        "y": 360,
-        "wires": []
-    },
-    {
-        "id": "0c500deed02f9729",
-        "type": "link in",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Try connect In",
-        "links": [
-            "98dbb6a29829b692",
-            "f8a6698d236dc4b0"
-        ],
-        "x": 395,
-        "y": 160,
-        "wires": [
-            [
-                "5cd82175da584146"
-            ]
-        ]
-    },
-    {
-        "id": "98dbb6a29829b692",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Try connect Out",
-        "mode": "link",
-        "links": [
-            "0c500deed02f9729"
-        ],
-        "x": 325,
-        "y": 160,
-        "wires": []
-    },
-    {
-        "id": "8eb8d0318afc5c0b",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "x": 800,
-        "y": 120,
-        "wires": [
-            [
-                "d944c995cf7771e0",
-                "6835f39fb902578a"
-            ]
-        ]
-    },
-    {
-        "id": "0a5d92c3648ea7af",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "x": 960,
-        "y": 200,
-        "wires": [
-            [
-                "b7c12d7bbd8b2bf6"
-            ]
-        ]
-    },
-    {
-        "id": "0e9d8e65b9383827",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "x": 760,
-        "y": 120,
-        "wires": [
-            [
-                "8a0353bb8f4d07e7",
-                "8eb8d0318afc5c0b"
-            ]
-        ]
-    },
-    {
-        "id": "76065a5b0c44ed07",
-        "type": "trigger",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "op1": "1",
-        "op2": "true",
-        "op1type": "str",
-        "op2type": "bool",
-        "duration": "75",
-        "extend": true,
-        "overrideDelay": false,
-        "units": "s",
-        "reset": "",
-        "bytopic": "all",
-        "topic": "topic",
-        "outputs": 1,
-        "x": 230,
-        "y": 400,
-        "wires": [
-            [
-                "96223de14da95f0a"
-            ]
-        ]
-    },
-    {
-        "id": "4c873d61ff726024",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "x": 440,
-        "y": 340,
-        "wires": [
-            [
-                "ebe6d4b6979d7c94",
-                "f4a1da1e7f145ef5"
-            ]
-        ]
-    },
-    {
-        "id": "b47c61fe043f6351",
-        "type": "trigger",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "op1": "1",
-        "op2": "true",
-        "op1type": "str",
-        "op2type": "bool",
-        "duration": "5",
-        "extend": true,
-        "overrideDelay": false,
-        "units": "min",
-        "reset": "",
-        "bytopic": "all",
-        "topic": "topic",
-        "outputs": 1,
-        "x": 230,
-        "y": 440,
-        "wires": [
-            [
-                "eba20ea13f37261c"
-            ]
-        ]
-    },
-    {
-        "id": "f4a1da1e7f145ef5",
-        "type": "junction",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "x": 120,
-        "y": 400,
-        "wires": [
-            [
-                "76065a5b0c44ed07",
-                "b47c61fe043f6351"
-            ]
-        ]
-    },
-    {
-        "id": "4ee144b6fbfc2fb8",
-        "type": "link in",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Inject Data In",
-        "links": [
-            "b26670bf1f3f93ff",
-            "9c6461a60c6a8bd2",
-            "4f9cef2b59791686",
-            "767c55cf070cae64"
-        ],
-        "x": 95,
-        "y": 340,
-        "wires": [
-            [
-                "7c5bb5efa50cfa5b"
-            ]
-        ]
-    },
-    {
-        "id": "b26670bf1f3f93ff",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Inject Data Out",
-        "mode": "link",
-        "links": [
-            "4ee144b6fbfc2fb8",
-            "01bd763b5c349734"
-        ],
-        "x": 505,
-        "y": 300,
-        "wires": []
-    },
-    {
-        "id": "96223de14da95f0a",
-        "type": "change",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Warn",
-        "rules": [
-            {
-                "t": "set",
-                "p": "status_change",
-                "pt": "msg",
-                "to": "warn_no_data",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 370,
-        "y": 400,
-        "wires": [
-            [
-                "81ac7533c0fa0a23"
-            ]
-        ]
-    },
-    {
-        "id": "eba20ea13f37261c",
-        "type": "change",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "No Data",
-        "rules": [
-            {
-                "t": "set",
-                "p": "status_change",
-                "pt": "msg",
-                "to": "no_data",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 380,
-        "y": 440,
-        "wires": [
-            [
-                "9c6461a60c6a8bd2"
-            ]
-        ]
-    },
-    {
-        "id": "9c6461a60c6a8bd2",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Inject Data Out",
-        "mode": "link",
-        "links": [
-            "4ee144b6fbfc2fb8",
-            "01bd763b5c349734"
-        ],
-        "x": 595,
-        "y": 420,
-        "wires": []
-    },
-    {
-        "id": "81ac7533c0fa0a23",
-        "type": "switch",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "",
-        "property": "is_connected",
-        "propertyType": "flow",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "true",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 490,
-        "y": 400,
-        "wires": [
-            [
-                "9c6461a60c6a8bd2"
-            ]
-        ]
-    },
-    {
-        "id": "d2e5a31a0167dbb9",
-        "type": "link out",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Force Update Out",
-        "mode": "link",
-        "links": [
-            "b34684c338d973fb"
-        ],
-        "x": 605,
-        "y": 480,
-        "wires": []
-    },
-    {
-        "id": "7ce5a5d895d667a5",
-        "type": "comment",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "TODO",
-        "info": "This node is left empty on purpose\n\nuntil I find another approach that doesn't cause a force update every 20 seconds",
-        "x": 530,
-        "y": 480,
-        "wires": []
-    },
-    {
-        "id": "dcefe7310cd723d0",
-        "type": "function",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "If Debug",
-        "func": "if (flow.get(\"debug_data\")) {\n    if(msg.payload != undefined \n    && msg.payload.print != undefined\n    && msg.payload.print.command != undefined\n    && (\n        (msg.payload.print.command == \"push_status\"\n        && Object.keys(msg.payload.print).length > 50\n     //  && msg.payload.print.msg != undefined\n    //    && msg.payload.print.msg == 0) //all message, a 1 = partial\n        ||\n        (msg.payload.print.command == \"project_file\")\n        )\n    )) {\n        node.send(msg);\n    }\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"Copy from debug tab\" });\n} else {\nnode.status({ fill: \"blue\", shape: \"ring\", text: \"Disabled\" });\n}",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 580,
-        "y": 280,
-        "wires": [
-            [
-                "f98243db0b2ce567"
-            ]
-        ]
-    },
-    {
-        "id": "f98243db0b2ce567",
-        "type": "debug",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "log",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload.print",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 730,
-        "y": 280,
-        "wires": []
-    },
-    {
-        "id": "8a0353bb8f4d07e7",
-        "type": "delay",
-        "z": "fbda6ab16491b918",
-        "g": "14f23434a23cdae7",
-        "name": "Loop 10m",
-        "pauseType": "delay",
-        "timeout": "10",
-        "timeoutUnits": "minutes",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 660,
-        "y": 100,
-        "wires": [
-            [
-                "0e9d8e65b9383827"
-            ]
-        ]
-    },
-    {
         "id": "7952a4df8f4bb6a4",
         "type": "group",
         "z": "fbda6ab16491b918",
@@ -8020,5 +6935,1091 @@
         "x": 1595,
         "y": 580,
         "wires": []
+    },
+    {
+        "id": "b56f3cd7ce590023",
+        "type": "group",
+        "z": "fbda6ab16491b918",
+        "g": "296274a0d2a6c675",
+        "name": "Initialize",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "b1c1923cb89b667b",
+            "7c5bb5efa50cfa5b",
+            "69b4c2a7d4558125",
+            "a365818fb4a53f52",
+            "dce813c208a9da90",
+            "ab7f1b7beb3a2f80",
+            "ebe6d4b6979d7c94",
+            "92a884a3331bfa4b",
+            "5cd82175da584146",
+            "d944c995cf7771e0",
+            "6835f39fb902578a",
+            "9362a1b7e3670507",
+            "92b557ed537a1451",
+            "dcf228c59349178a",
+            "b04f934b4958c998",
+            "a6a549b513fe916b",
+            "4c8011bd5cb181a7",
+            "c5cc9910c88c94d9",
+            "cc63110a9c0b3341",
+            "b7c12d7bbd8b2bf6",
+            "4e46edc8200fcf64",
+            "123228b4999f2d36",
+            "c74f41e5232489b6",
+            "f0580207cb1f90ff",
+            "b21b873582a6bd25",
+            "5fb6dc8d8d5ee7ab",
+            "4f076de3fb5b0359",
+            "98a14b986eac3260",
+            "0c500deed02f9729",
+            "98dbb6a29829b692",
+            "76065a5b0c44ed07",
+            "b47c61fe043f6351",
+            "4ee144b6fbfc2fb8",
+            "b26670bf1f3f93ff",
+            "96223de14da95f0a",
+            "eba20ea13f37261c",
+            "9c6461a60c6a8bd2",
+            "81ac7533c0fa0a23",
+            "d2e5a31a0167dbb9",
+            "7ce5a5d895d667a5",
+            "dcefe7310cd723d0",
+            "f98243db0b2ce567",
+            "8a0353bb8f4d07e7",
+            "8eb8d0318afc5c0b",
+            "0a5d92c3648ea7af",
+            "0e9d8e65b9383827",
+            "4c873d61ff726024",
+            "f4a1da1e7f145ef5"
+        ],
+        "x": 54,
+        "y": 59,
+        "w": 952,
+        "h": 462
+    },
+    {
+        "id": "b1c1923cb89b667b",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Bambu MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "{GENERATED_PRINTER_MQTT_ID}",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 240,
+        "y": 280,
+        "wires": [
+            [
+                "69b4c2a7d4558125"
+            ]
+        ]
+    },
+    {
+        "id": "7c5bb5efa50cfa5b",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Inject Machine Details",
+        "func": "let can_request = flow.get(\"can_request\");\n\nif (msg.status_change != undefined) {\n    if(msg.status_change == \"no_data\")\n        node.status({ fill: \"red\", shape: \"ring\", text: \"No Data\" });\n    else if (msg.status_change == \"warn_no_data\")\n        node.status({ fill: \"yellow\", shape: \"ring\", text: \"No Recent Data\" });\n    return;\n}\nif (msg.payload == undefined || \n    (Object.keys(msg.payload) != undefined\n     && Object.keys(msg.payload).length == 0)) { return };\nlet machine_name = flow.get(\"printer_name\");\nlet machine_serial = flow.get(\"serial_number\");\nlet manufacturer = \"Bambu Labs\";\nlet model = flow.get(\"model\");\n\nlet camera_stream_url = \"{STREAM_URL}\";\n//let camera_rtsp = \"{RTSP}\"\nlet snapshot_url = \"{SNAPSHOT_URL}\";\n\nif(msg.payload.original_host != undefined){\n    flow.set(\"printer_real_ip\", msg.payload.original_host);\n    delete msg.payload.original_host;\n}\n\nif(msg.payload.status != undefined) {\n    if (msg.payload.status == \"offline\") {\n        msg.payload.print[\"uptime\"] = 0;\n        flow.set(\"online_time\", -1);\n        node.send([null, msg]);\n        return;\n    }\n    delete msg.payload.status;\n}\n\nif(msg.payload.mc_print != undefined) {\n    msg.payload.mc_print.machine_name = machine_name;\n    msg.payload.mc_print.machine_serial = machine_serial;\n    msg.payload.mc_print.manufacturer = manufacturer;\n    let param = msg.payload.mc_print.param;\n    if (typeof param === 'string' || param instanceof String) { \n        if(param.includes(\"[AMS]\")) {\n            msg.payload.mc_print.model = \"AMS\";\n            node.send([msg, null]);\n        }\n        else {\n            msg.payload.mc_print.model = model;\n            node.send([msg, null]);\n        }\n    }        \n    else {\n        msg.payload.mc_print.model = model;\n        node.send([msg, null]);\n    }\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Data Received\" });\n}\n\nif (msg.payload.print != undefined) {\n    if (msg.payload.print.command != undefined && msg.payload.print.command == \"project_file\") {\n        if (flow.get(\"printjob_mapping\") == undefined) {\n            flow.set(\"printjob_mapping\", {});\n        }\n        let mapping = flow.get(\"printjob_mapping\");\n        let d = msg.payload.print;\n        if (d['subtask_id'] != undefined && d['subtask_name'] != undefined && d['url'] != undefined) {\n            if (!d['url'].startsWith(\"file:///data/model/history\")) {\n                let is_update = false;\n                if (mapping[d['subtask_id']] != undefined) {\n                    is_update = true;\n                }\n                mapping[d['subtask_id']] = {\n                    \"subtask_name\": d[\"subtask_name\"],\n                    \"param\": d['param'],\n                    \"url\": d['url'],\n                    \"timestamp\": new Date()\n                };\n                flow.set(\"printjob_mapping\", mapping);\n\n                // delete unique jobs older than 3 days, but only trigger once we get a new one to add\n                if (!is_update) {\n                    let keys = Object.keys(mapping);\n                    let cutoff = new Date();\n                    cutoff.setDate(cutoff.getDate() - 7); //7 days\n                    // https ones expire after 2 hours, should I keep in mapping and let http fail and try ftp after, or delete\n                    // may only be certain http's, makerworld might be longer?\n                    for (var k of keys) {\n                        if (cutoff.getTime() > (new Date(mapping[k]['timestamp'])).getTime()) {\n                            delete mapping[k];\n                        }\n                    }\n                    flow.set(\"printjob_mapping\", mapping);\n                }\n            }\n            \n        }\n    }\n\n    if (msg.payload.print.command != undefined && msg.payload.print.command == \"project_file\" && msg.payload.print.timestamp != undefined) {\n        let start = msg.payload.print.timestamp.toString();\n        msg.payload.print = {\n            \"gcode_start_time\": start,\n            \"command\": \"manual\"\n        }\n    }\n    else if (msg.payload.print.command != undefined && msg.payload.print.command == \"project_file\" && msg.payload.print.timestamp == undefined) {\n       let start = Math.round(Date.now() / 1000).toString();\n        msg.payload.print = {\n            \"gcode_start_time\": start,\n            \"command\": \"manual\"\n        }\n    }\n\n    msg.payload.print.machine_name = machine_name;\n    msg.payload.print.machine_serial = machine_serial;\n    msg.machine_serial = machine_serial;\n    msg.payload.print.manufacturer = manufacturer;\n    msg.payload.print.model = model;\n\n    if (msg.payload.print.ams !== undefined && msg.payload.print.ams.ams != undefined) {\n        for (var ams of msg.payload.print.ams.ams) {\n            ams.printer_name = machine_name\n            ams.printer_serial = machine_serial\n        }\n        if (Object.keys(msg.payload.print).length > 50) {\n        }\n    }\n    msg.payload.print.status = \"online\";\n    if (flow.get(\"online_time\") == -1 || flow.get(\"online_time\") == undefined) {\n        flow.set(\"online_time\", new Date());\n        flow.set(\"last_time\")\n        msg.payload.print[\"uptime\"] = 0;\n    }\n\n    let now = new Date()\n    if (flow.get(\"online_time\") != undefined && flow.get(\"online_time\") != -1){ //&& Math.abs(flow.get(\"online_time\").getTime() - now.getTime())/1000 >= 1*60) {\n        // whenever we get a msg, update uptime\n        msg.payload.print[\"uptime\"] = Math.abs(flow.get(\"online_time\").getTime() - now.getTime()) / 1000;\n    }\n\n    msg.payload.print.reset_filter = \"\";\n\n    if (can_request) {\n        msg.payload.print.pause_print = \"\";\n        msg.payload.print.resume_print = \"\";\n        msg.payload.print.stop_print = \"\";\n    \n        msg.payload.print.force_update = \"\";\n        if (flow.get(\"allow_gcode_control\") == true) {\n            msg.payload.print.gcode_command = \"\";\n            msg.payload.print.send_gcode = \"\";\n        }\n    }\n\n    if (flow.get(\"basic_is_latest_flow\") != undefined) {\n        if (flow.get(\"basic_is_latest_flow\")) {\n            msg.payload.print.nodered_flow_status = \"Up to Date\";\n        }\n        else {\n            msg.payload.print.nodered_flow_status = \"Update Available\";\n        }\n    }\n    if(flow.get(\"basic_flow_version\") != undefined) {\n        msg.payload.print.nodered_flow_version = flow.get(\"basic_flow_version\");\n    }\n\n    if (flow.get(\"has_adv_flow\")) {\n        if (flow.get(\"advanced_flow_version\") != undefined) {\n            msg.payload.print.nodered_advanced_flow_version = flow.get(\"advanced_flow_version\");\n        }\n\n        if (flow.get(\"advanced_is_latest_flow\") != undefined) {\n            if (flow.get(\"advanced_is_latest_flow\")) {\n                msg.payload.print.nodered_advanced_flow_status = \"Up to Date\";\n            }\n            else {\n                msg.payload.print.nodered_advanced_flow_status = \"Update Available\";\n            }\n        }\n    }\n    if (flow.get(\"has_x1p_flow\")) {\n        if (flow.get(\"x1plus_flow_version\") != undefined) {\n            msg.payload.print.nodered_x1p_flow_version = flow.get(\"x1plus_flow_version\");\n        }\n\n        if (flow.get(\"x1p_is_latest_flow\") != undefined) {\n            if (flow.get(\"x1p_is_latest_flow\")) {\n                msg.payload.print.nodered_x1p_flow_status = \"Up to Date\";\n            }\n            else {\n                msg.payload.print.nodered_x1p_flow_status = \"Update Available\";\n            }\n        }\n    }\n    \n    if(!model.startsWith(\"A1\")) {\n        if (can_request) {\n            msg.payload.print.logo_light_on = \"\";\n            msg.payload.print.logo_light_off = \"\";\n            msg.payload.print.nozzle_light_on = \"\";\n            msg.payload.print.nozzle_light_off = \"\";\n        }\n    }\n    if (flow.get(\"has_db_flow\") != undefined && flow.get(\"has_db_flow\") == true) {\n        msg.payload.print.active_print_time = \"\";\n        msg.payload.print.filament_printed = \"\";\n    }\n\n    if (can_request) \n        msg.payload.print.home = \"\";\n    \n    msg.payload.print.mqtt_connection_type = flow.get(\"P1P_CLOUD_MODE\") ? \"Bambu Cloud\" : \"Local\";\n    if (flow.get(\"has_ipcam\") && can_request) {\n        msg.payload.print.toggle_recording = \"\";\n        //msg.payload.print.toggle_timelapse = \"\";////////////////////////\n    }\n    \n    if (can_request) {\n        if(flow.get(\"ams_count\") > 0) {\n            msg.payload.print.toggle_auto_switch = \"\";\n        }\n        if (flow.get(\"model\").startsWith(\"X1\")) {\n            msg.payload.print.toggle_first_layer_inspection = \"\";\n            msg.payload.print.toggle_buildplate_detection = \"\";\n        }\n        msg.payload.print.set_bed_temp = \"\";\n        msg.payload.print.set_nozzle_temp = \"\";\n        msg.payload.print.set_speed_percent = \"\";\n        msg.payload.print.toggle_auto_recovery = \"\";\n        let can_heat_chamber = (flow.get(\"model\") == \"X1E\"); // change if retroactive\n        if(can_heat_chamber) {\n            msg.payload.print.set_chamber_temp = \"\";\n        }\n    }\n\n    //msg.payload.print.print_preview = \"\";\n\n    if (flow.get(\"has_adv_flow\")) {\n        //msg.payload.print.plate_type = \"\";\n        msg.payload.print.print_preview = \"\";\n        msg.payload.print.force_ftp_fetch = \"\";\n    }\n\n    if (can_request){\n        msg.payload.print.clear_external_spool = \"\";\n    }\n    if(model == \"X\"+\"1C\" || model == \"X\"+\"1\") {\n        let versions = flow.get(\"mc_print_versions\");\n        if (versions[model] != undefined) {\n            let valid_versions = versions[model];\n            if (valid_versions.length > 0 && valid_versions.includes(flow.get(\"fw_version\"))) {\n                msg.payload.print.last_calibrated_pa = \"\";\n            }\n        }\n\n      /*  if (msg.payload.printer != undefined && msg.payload.printer.SW_version != undefined && msg.payload.printer.SW_version != \"\"\n        && flow.get(\"x1plus_installed\") != undefined && flow.get(\"x1plus_installed\") == true) {\n            if(msg.payload.printer.SW_version.startsWith(\"99\")) {\n                if(flow.get(\"x1plus_active\") == undefined || flow.get(\"x1plus_active\") == false) {\n                    node.warn(\"[INFO] X1Plus CFW is currently Active\");\n                }\n                flow.set(\"x1plus_active\", true); \n            }\n            else{\n                if(flow.get(\"x1plus_active\") == undefined || flow.get(\"x1plus_active\") == true){\n                    node.warn(\"[INFO] X1Plus CFW is currently Not Active\");\n                }\n                flow.set(\"x1plus_active\", false); \n            }\n        }*/\n        if (flow.get(\"x1plus_installed\") != undefined && flow.get(\"x1plus_installed\") == true) {\n            if (flow.get(\"x1plus_active\") != undefined) {\n                if (flow.get(\"x1plus_active\")) \n                    msg.payload.print.x1plus = \"Active\";\n                else\n                    msg.payload.print.x1plus = \"Inactive\";\n            }\n        }\n    }\n\n    if (can_request)\n        msg.payload.print.unload_filament = \"\";\n\n    if(snapshot_url != undefined && snapshot_url != \"\" && snapshot_url != \"{\" + \"SNAPSHOT_URL\" + \"}\") {\n        msg.payload.print.snapshot_url = snapshot_url;\n    }\n\n    if (camera_stream_url != undefined && camera_stream_url != \"\" && camera_stream_url != \"{\" + \"STREAM_URL\" + \"}\") {\n        msg.payload.print.camera_stream_url = camera_stream_url;\n    }\n\n    if(msg.payload.print.ipcam != undefined && msg.payload.print.ipcam.rtsp_url != undefined) {\n        if(msg.payload.print.ipcam.rtsp_url == \"disable\") {\n            msg.payload.print.camera_rtsp = \"Disabled\";\n        }\n        else if (msg.payload.print.ipcam.rtsp_url.startsWith(\"rtsp\")) {\n            msg.payload.print.camera_rtsp = msg.payload.print.ipcam.rtsp_url;\n            if(msg.payload.print.ipcam.ipcam_dev == undefined) {\n                delete msg.payload.print.ipcam;\n            }\n        }\n        // rtsps://bblp:[access_code]@[lan_ip]:322/streaming/live/1    TCP\n    }\n\n    if(msg.payload.print.cali_version != undefined && msg.payload.print.cali_version >= 0 && model.includes(\"X1\")) {\n        flow.set(\"supports_calibration\", true);\n    }\n\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Data Received\" });\n\n    if (flow.get(\"wws_bambu_\" + flow.get(\"printer_serial\")) != undefined) {\n        let d = flow.get(\"wws_bambu_\" + flow.get(\"printer_serial\"));\n        msg.payload.print[\"IP_Address\"] = d[\"IP Address\"];\n        msg.payload.print[\"Device_Dev_Name\"] = d[\"Name\"];\n        msg.payload.print[\"Connection_Type\"] = d[\"Connection Type\"];\n        msg.payload.print[\"Series\"] = d[\"Series\"];\n        msg.payload.print[\"SSDP_Model\"] = d[\"Model\"];\n    }\n\n}\n\n\nif (msg.payload.info != undefined || msg.payload.security != undefined || msg.payload.system != undefined) {\n    msg.printer_name = machine_name;\n    msg.machine_serial = machine_serial;\n    msg.manufacturer = manufacturer;\n    msg.model = model;\n\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Data Received\" });\n}\nif (msg.payload == undefined ||\n    (Object.keys(msg.payload) != undefined\n        && Object.keys(msg.payload).length == 0)) { return };\nnode.send([msg, null]);\n//node.status({});",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nnode.status({ fill: \"red\", shape: \"ring\", text: \"No Data Yet - First Boot\" });\nflow.set(\"online_time\", -1); // if I don't do this on start, it actually continues with last value...",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 340,
+        "wires": [
+            [
+                "4c873d61ff726024"
+            ],
+            [
+                "cc63110a9c0b3341"
+            ]
+        ]
+    },
+    {
+        "id": "69b4c2a7d4558125",
+        "type": "json",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "property": "payload.print",
+        "action": "obj",
+        "pretty": false,
+        "x": 390,
+        "y": 280,
+        "wires": [
+            [
+                "b26670bf1f3f93ff",
+                "dcefe7310cd723d0"
+            ]
+        ]
+    },
+    {
+        "id": "a365818fb4a53f52",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "info",
+                "vt": "str"
+            },
+            {
+                "t": "hask",
+                "v": "mc_print",
+                "vt": "str"
+            },
+            {
+                "t": "hask",
+                "v": "print",
+                "vt": "str"
+            },
+            {
+                "t": "hask",
+                "v": "system",
+                "vt": "str"
+            },
+            {
+                "t": "hask",
+                "v": "upgrade",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 730,
+        "y": 340,
+        "wires": [
+            [
+                "5fb6dc8d8d5ee7ab"
+            ],
+            [
+                "b21b873582a6bd25"
+            ],
+            [
+                "98a14b986eac3260"
+            ],
+            [
+                "4f076de3fb5b0359"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "dce813c208a9da90",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Inject OFFLINE",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "20",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 480,
+        "wires": [
+            [
+                "ab7f1b7beb3a2f80"
+            ]
+        ]
+    },
+    {
+        "id": "ab7f1b7beb3a2f80",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "property": "is_printer_reachable",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 370,
+        "y": 480,
+        "wires": [
+            [
+                "cc63110a9c0b3341",
+                "eba20ea13f37261c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "ebe6d4b6979d7c94",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Cull Fail Msg",
+        "func": "if (msg.payload.print != undefined && msg.payload.print.result != undefined\n&& msg.payload.print.result == \"FAIL\" ) {\n//\n}\nelse if(msg.payload != undefined && Object.keys(msg.payload).length > 0){\n    node.send(msg);\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 340,
+        "wires": [
+            [
+                "a365818fb4a53f52"
+            ]
+        ]
+    },
+    {
+        "id": "92a884a3331bfa4b",
+        "type": "inject",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Startup Trigger",
+        "props": [
+            {
+                "p": "start_status",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "5",
+        "topic": "",
+        "x": 180,
+        "y": 120,
+        "wires": [
+            [
+                "123228b4999f2d36",
+                "98dbb6a29829b692"
+            ]
+        ]
+    },
+    {
+        "id": "5cd82175da584146",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "property": "P1P_CLOUD_MODE",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 490,
+        "y": 160,
+        "wires": [
+            [
+                "b04f934b4958c998"
+            ],
+            [
+                "4c8011bd5cb181a7"
+            ]
+        ]
+    },
+    {
+        "id": "d944c995cf7771e0",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Disconnect",
+        "func": "let config = {\n    \"action\": \"disconnect\"\n}\nnode.send(config);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 120,
+        "wires": [
+            [
+                "0a5d92c3648ea7af"
+            ]
+        ]
+    },
+    {
+        "id": "6835f39fb902578a",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 840,
+        "y": 160,
+        "wires": [
+            [
+                "9362a1b7e3670507",
+                "dcf228c59349178a"
+            ]
+        ]
+    },
+    {
+        "id": "9362a1b7e3670507",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Connect",
+        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": global.get(\"BAMBU_ACCESS_TOKEN\"),\n        \"port\": 8883,\n        \"broker\": global.get(\"BAMBU_REGION\"),\n        \"username\": global.get(\"BAMBU_MQTT_USER\")\n    } ,\n    \"force\": true\n}\n\nnode.send(config);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 200,
+        "wires": [
+            [
+                "0a5d92c3648ea7af"
+            ]
+        ]
+    },
+    {
+        "id": "92b557ed537a1451",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Subscribe",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": flow.get(\"printer_report_topic\"),\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 240,
+        "wires": [
+            [
+                "b1c1923cb89b667b"
+            ]
+        ]
+    },
+    {
+        "id": "dcf228c59349178a",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 680,
+        "y": 200,
+        "wires": [
+            [
+                "92b557ed537a1451"
+            ]
+        ]
+    },
+    {
+        "id": "b04f934b4958c998",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "property": "BAMBU_ACCESS_TOKEN",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 140,
+        "wires": [
+            [
+                "0e9d8e65b9383827"
+            ],
+            [
+                "a6a549b513fe916b"
+            ]
+        ]
+    },
+    {
+        "id": "a6a549b513fe916b",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "8",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 500,
+        "y": 120,
+        "wires": [
+            [
+                "b04f934b4958c998"
+            ]
+        ]
+    },
+    {
+        "id": "4c8011bd5cb181a7",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Connect",
+        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": flow.get(\"access_code\"),\n        \"port\": 8883,\n        \"broker\": flow.get(\"printer_ip\"),\n        \"username\":\"bblp\"\n    },\n    \"force\": true\n}\n\nnode.send(config);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 220,
+        "wires": [
+            [
+                "b1c1923cb89b667b",
+                "c5cc9910c88c94d9"
+            ]
+        ]
+    },
+    {
+        "id": "c5cc9910c88c94d9",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 400,
+        "y": 240,
+        "wires": [
+            [
+                "92b557ed537a1451"
+            ]
+        ]
+    },
+    {
+        "id": "cc63110a9c0b3341",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Offline Payload",
+        "func": "msg.payload = { \"print_status\": \"OFFLINE\", \n    \"status\": \"offline\", \n    \"uptime\": 0,\n    \"machine_name\":  flow.get(\"printer_name\"), \n    \"machine_serial\": flow.get(\"printer_serial\"),\n     \"stage\": {\n         \"current\": \"Offline\"\n     },\n     \"print_action\": \"Offline\",\n     \"reset_filter\": \"\",\n      \"force_update\": \"\",\n       \"ams_count\": 0 };\n\nif (flow.get(\"has_adv_flow\")) {\n    msg.payload['plate_type'] = \"\";\n}\n\nif (flow.get(\"basic_is_latest_flow\") != undefined) {\n    if (flow.get(\"basic_is_latest_flow\")) {\n        msg.payload.nodered_flow_status = \"Up to Date\";\n    }\n    else {\n        msg.payload.nodered_flow_status = \"Update Available\";\n    }\n}\nif(flow.get(\"basic_flow_version\") != undefined) {\n    msg.payload.nodered_flow_version = flow.get(\"basic_flow_version\");\n}\n\nif (flow.get(\"has_adv_flow\")) {\n    if(flow.get(\"advanced_flow_version\") != undefined) {\n        msg.payload.nodered_advanced_flow_version = flow.get(\"advanced_flow_version\");\n    }\n\n    if (flow.get(\"advanced_is_latest_flow\") != undefined) {\n        if (flow.get(\"advanced_is_latest_flow\")) {\n            msg.payload.nodered_advanced_flow_status = \"Up to Date\";\n        }\n        else {\n            msg.payload.nodered_advanced_flow_status = \"Update Available\";\n        }\n    }\n}\nif (flow.get(\"x1plus_installed\")) {\n    msg.payload['x1plus'] = \"Inactive\";\n}\nmsg.topic = \"printer\";\nmsg.machine_name = flow.get(\"model\") + \"_\" + flow.get(\"printer_name\");\nmsg.machine_serial = flow.get(\"printer_serial\");\nnode.send(msg);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 460,
+        "wires": [
+            [
+                "f0580207cb1f90ff"
+            ]
+        ]
+    },
+    {
+        "id": "b7c12d7bbd8b2bf6",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Not Gcode",
+        "rules": [
+            {
+                "t": "set",
+                "p": "is_gcode_type",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 240,
+        "wires": [
+            [
+                "4e46edc8200fcf64"
+            ]
+        ]
+    },
+    {
+        "id": "4e46edc8200fcf64",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Request Out",
+        "mode": "link",
+        "links": [
+            "5c030c48f393ada7"
+        ],
+        "x": 935,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "123228b4999f2d36",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "MQTT Init - Out",
+        "mode": "link",
+        "links": [
+            "579d1955de91b7ed",
+            "615fa8b6a8f75f59",
+            "8eea69a76cf784bf",
+            "45e8f0f3a2ca0f52"
+        ],
+        "x": 325,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "c74f41e5232489b6",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Printer-Payloads-Out",
+        "mode": "link",
+        "links": [
+            "270186a0ec06877a"
+        ],
+        "x": 935,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "f0580207cb1f90ff",
+        "type": "split",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "x": 850,
+        "y": 460,
+        "wires": [
+            [
+                "c74f41e5232489b6"
+            ]
+        ]
+    },
+    {
+        "id": "b21b873582a6bd25",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Printer-MC_Print_Out",
+        "mode": "link",
+        "links": [
+            "03130ce05f9324be"
+        ],
+        "x": 845,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "5fb6dc8d8d5ee7ab",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Printer-Info_Out",
+        "mode": "link",
+        "links": [
+            "32e2a8977a42b521"
+        ],
+        "x": 845,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "4f076de3fb5b0359",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Printer-System_Out",
+        "mode": "link",
+        "links": [
+            "6a38ae324bf53fef"
+        ],
+        "x": 845,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "98a14b986eac3260",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Printer-Print_Out",
+        "mode": "link",
+        "links": [
+            "d1220a3ae60b4c1a"
+        ],
+        "x": 845,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "0c500deed02f9729",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Try connect In",
+        "links": [
+            "98dbb6a29829b692",
+            "f8a6698d236dc4b0"
+        ],
+        "x": 395,
+        "y": 160,
+        "wires": [
+            [
+                "5cd82175da584146"
+            ]
+        ]
+    },
+    {
+        "id": "98dbb6a29829b692",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Try connect Out",
+        "mode": "link",
+        "links": [
+            "0c500deed02f9729"
+        ],
+        "x": 325,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "76065a5b0c44ed07",
+        "type": "trigger",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "op1": "1",
+        "op2": "true",
+        "op1type": "str",
+        "op2type": "bool",
+        "duration": "75",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 230,
+        "y": 400,
+        "wires": [
+            [
+                "96223de14da95f0a"
+            ]
+        ]
+    },
+    {
+        "id": "b47c61fe043f6351",
+        "type": "trigger",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "op1": "1",
+        "op2": "true",
+        "op1type": "str",
+        "op2type": "bool",
+        "duration": "5",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "min",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 230,
+        "y": 440,
+        "wires": [
+            [
+                "eba20ea13f37261c"
+            ]
+        ]
+    },
+    {
+        "id": "4ee144b6fbfc2fb8",
+        "type": "link in",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Inject Data In",
+        "links": [
+            "b26670bf1f3f93ff",
+            "9c6461a60c6a8bd2",
+            "4f9cef2b59791686",
+            "767c55cf070cae64"
+        ],
+        "x": 95,
+        "y": 340,
+        "wires": [
+            [
+                "7c5bb5efa50cfa5b"
+            ]
+        ]
+    },
+    {
+        "id": "b26670bf1f3f93ff",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Inject Data Out",
+        "mode": "link",
+        "links": [
+            "4ee144b6fbfc2fb8",
+            "01bd763b5c349734"
+        ],
+        "x": 505,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "96223de14da95f0a",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Warn",
+        "rules": [
+            {
+                "t": "set",
+                "p": "status_change",
+                "pt": "msg",
+                "to": "warn_no_data",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 400,
+        "wires": [
+            [
+                "81ac7533c0fa0a23"
+            ]
+        ]
+    },
+    {
+        "id": "eba20ea13f37261c",
+        "type": "change",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "No Data",
+        "rules": [
+            {
+                "t": "set",
+                "p": "status_change",
+                "pt": "msg",
+                "to": "no_data",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 440,
+        "wires": [
+            [
+                "9c6461a60c6a8bd2"
+            ]
+        ]
+    },
+    {
+        "id": "9c6461a60c6a8bd2",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Inject Data Out",
+        "mode": "link",
+        "links": [
+            "4ee144b6fbfc2fb8",
+            "01bd763b5c349734"
+        ],
+        "x": 595,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "81ac7533c0fa0a23",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "",
+        "property": "is_connected",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 490,
+        "y": 400,
+        "wires": [
+            [
+                "9c6461a60c6a8bd2"
+            ]
+        ]
+    },
+    {
+        "id": "d2e5a31a0167dbb9",
+        "type": "link out",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Force Update Out",
+        "mode": "link",
+        "links": [
+            "b34684c338d973fb"
+        ],
+        "x": 605,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "7ce5a5d895d667a5",
+        "type": "comment",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "TODO",
+        "info": "This node is left empty on purpose\n\nuntil I find another approach that doesn't cause a force update every 20 seconds",
+        "x": 530,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "dcefe7310cd723d0",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "If Debug",
+        "func": "if (flow.get(\"debug_data\")) {\n    if(msg.payload != undefined \n    && msg.payload.print != undefined\n    && msg.payload.print.command != undefined\n    && (\n        (msg.payload.print.command == \"push_status\"\n        && Object.keys(msg.payload.print).length > 50\n     //  && msg.payload.print.msg != undefined\n    //    && msg.payload.print.msg == 0) //all message, a 1 = partial\n        ||\n        (msg.payload.print.command == \"project_file\")\n        )\n    )) {\n        node.send(msg);\n    }\n    node.status({ fill: \"blue\", shape: \"ring\", text: \"Copy from debug tab\" });\n} else {\nnode.status({ fill: \"blue\", shape: \"ring\", text: \"Disabled\" });\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 280,
+        "wires": [
+            [
+                "f98243db0b2ce567"
+            ]
+        ]
+    },
+    {
+        "id": "f98243db0b2ce567",
+        "type": "debug",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "log",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.print",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "8a0353bb8f4d07e7",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Loop 10m",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 660,
+        "y": 100,
+        "wires": [
+            [
+                "0e9d8e65b9383827"
+            ]
+        ]
+    },
+    {
+        "id": "8eb8d0318afc5c0b",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "x": 800,
+        "y": 120,
+        "wires": [
+            [
+                "d944c995cf7771e0",
+                "6835f39fb902578a"
+            ]
+        ]
+    },
+    {
+        "id": "0a5d92c3648ea7af",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "x": 960,
+        "y": 200,
+        "wires": [
+            [
+                "b7c12d7bbd8b2bf6"
+            ]
+        ]
+    },
+    {
+        "id": "0e9d8e65b9383827",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "x": 760,
+        "y": 120,
+        "wires": [
+            [
+                "8a0353bb8f4d07e7",
+                "8eb8d0318afc5c0b"
+            ]
+        ]
+    },
+    {
+        "id": "4c873d61ff726024",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "x": 440,
+        "y": 340,
+        "wires": [
+            [
+                "ebe6d4b6979d7c94",
+                "f4a1da1e7f145ef5"
+            ]
+        ]
+    },
+    {
+        "id": "f4a1da1e7f145ef5",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "x": 120,
+        "y": 400,
+        "wires": [
+            [
+                "76065a5b0c44ed07",
+                "b47c61fe043f6351"
+            ]
+        ]
     }
 ]
