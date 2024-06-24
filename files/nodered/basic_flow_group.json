@@ -929,12 +929,13 @@
         "broker": "{PRINTER_IP}",
         "port": "8883",
         "tls": "",
-        "clientid": "",
+        "clientid": "nodered_wws_{PRINTER_SERIAL}",
         "autoConnect": false,
         "usetls": true,
         "protocolVersion": "4",
         "keepalive": "60",
         "cleansession": true,
+        "autoUnsubscribe": true,
         "birthTopic": "",
         "birthQos": "0",
         "birthPayload": "",
@@ -6946,7 +6947,6 @@
             "label": true
         },
         "nodes": [
-            "b1c1923cb89b667b",
             "7c5bb5efa50cfa5b",
             "69b4c2a7d4558125",
             "a365818fb4a53f52",
@@ -6993,34 +6993,13 @@
             "0a5d92c3648ea7af",
             "0e9d8e65b9383827",
             "4c873d61ff726024",
-            "f4a1da1e7f145ef5"
+            "f4a1da1e7f145ef5",
+            "b1c1923cb89b667b"
         ],
         "x": 54,
         "y": 59,
         "w": 952,
         "h": 462
-    },
-    {
-        "id": "b1c1923cb89b667b",
-        "type": "mqtt in",
-        "z": "fbda6ab16491b918",
-        "g": "b56f3cd7ce590023",
-        "name": "Bambu MQTT In",
-        "topic": "",
-        "qos": "2",
-        "datatype": "json",
-        "broker": "{GENERATED_PRINTER_MQTT_ID}",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 1,
-        "x": 240,
-        "y": 280,
-        "wires": [
-            [
-                "69b4c2a7d4558125"
-            ]
-        ]
     },
     {
         "id": "7c5bb5efa50cfa5b",
@@ -7311,7 +7290,7 @@
         "z": "fbda6ab16491b918",
         "g": "b56f3cd7ce590023",
         "name": "Connect",
-        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": global.get(\"BAMBU_ACCESS_TOKEN\"),\n        \"port\": 8883,\n        \"broker\": global.get(\"BAMBU_REGION\"),\n        \"username\": global.get(\"BAMBU_MQTT_USER\")\n    } ,\n    \"force\": true\n}\n\nnode.send(config);",
+        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": global.get(\"BAMBU_ACCESS_TOKEN\"),\n        \"port\": 8883,\n        \"broker\": global.get(\"BAMBU_REGION\"),\n        \"username\": global.get(\"BAMBU_MQTT_USER\"),\n        \"force\": true\n    } ,\n    \"force\": true\n}\n\nnode.send(config);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -7435,7 +7414,7 @@
         "z": "fbda6ab16491b918",
         "g": "b56f3cd7ce590023",
         "name": "Connect",
-        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": flow.get(\"access_code\"),\n        \"port\": 8883,\n        \"broker\": flow.get(\"printer_ip\"),\n        \"username\":\"bblp\"\n    },\n    \"force\": true\n}\n\nnode.send(config);",
+        "func": "let config = {\n    \"action\": \"connect\",\n    \"broker\": {\n        \"password\": flow.get(\"access_code\"),\n        \"port\": 8883,\n        \"broker\": flow.get(\"printer_ip\"),\n        \"username\":\"bblp\",\n        \"force\": true\n    },\n    \"force\": true\n}\n\nnode.send(config);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -7446,8 +7425,8 @@
         "y": 220,
         "wires": [
             [
-                "b1c1923cb89b667b",
-                "c5cc9910c88c94d9"
+                "c5cc9910c88c94d9",
+                "b1c1923cb89b667b"
             ]
         ]
     },
@@ -8019,6 +7998,28 @@
             [
                 "76065a5b0c44ed07",
                 "b47c61fe043f6351"
+            ]
+        ]
+    },
+    {
+        "id": "b1c1923cb89b667b",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "b56f3cd7ce590023",
+        "name": "Bambu MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "{GENERATED_PRINTER_MQTT_ID}",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 240,
+        "y": 280,
+        "wires": [
+            [
+                "69b4c2a7d4558125"
             ]
         ]
     }
