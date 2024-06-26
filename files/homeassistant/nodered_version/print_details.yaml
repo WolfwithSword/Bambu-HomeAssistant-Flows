@@ -70,6 +70,8 @@ cards:
               name: Fatal
             - entity: sensor.{HA_PRINTER_DEVICE_NAME}_hms_unknown
               name: Unknown
+            - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_error
+              name: Misc Errors
         attributes:
           label: HMS
       - card:
