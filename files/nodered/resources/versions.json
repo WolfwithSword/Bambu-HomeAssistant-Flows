@@ -5,7 +5,7 @@
     "bedmesh_adv_flow": "2.1.3",
     "cloud_login": "2.1.5",
     "dashboard_yamls": "2.1.5",
-    "x1plus_flow": "2.1.5.1",
+    "x1plus_flow": "2.1.6",
     "dates" : {
         "basic_flow": "2024-06-24",
         "advanced_flow": "2024-06-02",
@@ -13,6 +13,6 @@
         "bedmesh_adv_flow": "2024-05-15",
         "cloud_login": "2024-06-17",
         "dashboard_yamls": "2024-06-17",
-        "x1plus_flow": "2024-06-23"
+        "x1plus_flow": "2024-06-26"
     }
 }
