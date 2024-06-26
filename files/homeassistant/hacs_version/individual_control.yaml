@@ -143,8 +143,8 @@ cards:
           start_entity: button.{HA_PRINTER_DEVICE_NAME}_resume_printing
         entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         name: |
-          [[[  if (entity.state.upper == 'RUNNING') return "Pause";
-           else if (entity.state.upper == 'PAUSE') return "Resume";
+          [[[  if (entity.state.toUpperCase() == 'RUNNING') return "Pause";
+           else if (entity.state.toUpperCase() == 'PAUSE') return "Resume";
           else return '';  ]]]
         state:
           - value: RUNNING
@@ -191,7 +191,7 @@ cards:
             color: grey
         tap_action:
           action: >
-            [[[ if (entity.state.upper == 'RUNNING' || entity.state.upper == 'PAUSE') return
+            [[[ if (entity.state.toUpperCase() == 'RUNNING' || entity.state.toUpperCase() == 'PAUSE') return
             "call-service"; 
 
             else return "none";
@@ -200,10 +200,10 @@ cards:
           service: button.press
           service_data:
             entity_id: >
-              [[[ if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state.upper ==
+              [[[ if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state.toUpperCase() ==
               'RUNNING') 
                   return variables.pause_entity; 
-                  if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state.upper == 'PAUSE') 
+                  if (states['sensor.{HA_PRINTER_DEVICE_NAME}_print_status'].state.toUpperCase() == 'PAUSE') 
                   return variables.start_entity; 
                 else return "";
                 ]]]
@@ -219,8 +219,8 @@ cards:
       - type: custom:button-card
         entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         name: |
-          [[[  if (entity.state.upper == 'RUNNING') return "Cancel";
-           else if (entity.state.upper =='PAUSE') return "Cancel";
+          [[[  if (entity.state.toUpperCase() == 'RUNNING') return "Cancel";
+           else if (entity.state.toUpperCase() =='PAUSE') return "Cancel";
           else return '';  ]]]
         confirmation:
           text: Cancel Print?
@@ -269,7 +269,7 @@ cards:
             color: grey
         tap_action:
           action: >
-            [[[ if (entity.state.upper == 'RUNNING' || entity.state.upper == 'PAUSE') return
+            [[[ if (entity.state.toUpperCase() == 'RUNNING' || entity.state.toUpperCase() == 'PAUSE') return
             "call-service";  else return "none"; ]]]
           service: button.press
           service_data:
