@@ -207,7 +207,7 @@ blueprint:
                     By default, "12FF8007" and "7FF8007" are ignored. These map to the popup that occurs when manually loading filament to "retry" or hit "done".
                     Note: DELETE any leading 0's in the code. For example, "07FF8007" should be input as "7FF8007". Items should also be UPPERCASE.
                     
-      default: ["12FF8007", "7FF8007"]
+      default: ["12FF8007", "7FF8007", "7FFC003"]
       selector:
         text:
           multiple: true
