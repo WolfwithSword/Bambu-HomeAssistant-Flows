@@ -1,6 +1,7 @@
 variables:
   error_s: !input error_sensor
   image_s: !input image_or_camera
+  codes_li: !input ignored_codes
 
 mode: single
 trigger:
@@ -37,6 +38,9 @@ condition:
     - condition: state
       entity_id: !input error_sensor
       state: Error
+    - condition: template
+      value_template: "{{state_attr(error_s, 'code') | upper not in codes_li}}"
+      
 action:
   - alias: "Run the custom actions"
     choose: []
@@ -100,7 +104,7 @@ blueprint:
   description: |
               Send a notification of a print error to a valid device
 
-              **Version: v1.0.2**
+              **Version: v1.0.3**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_notify_print_error.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
               [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
@@ -193,3 +197,17 @@ blueprint:
       default: []
       selector:
         action: {}
+    ignored_codes:
+      name: Ignored Codes
+      description: |
+                    List of top-level error codes to ignore sending notifications for
+
+                    See [Here](https://e.bambulab.com/query.php?lang=en) for more information. Only look under "device_error", not "device_hms".
+
+                    By default, "12FF8007" and "7FF8007" are ignored. These map to the popup that occurs when manually loading filament to "retry" or hit "done".
+                    Note: DELETE any leading 0's in the code. For example, "07FF8007" should be input as "7FF8007". Items should also be UPPERCASE.
+                    
+      default: ["12FF8007", "7FF8007"]
+      selector:
+        text:
+          multiple: true

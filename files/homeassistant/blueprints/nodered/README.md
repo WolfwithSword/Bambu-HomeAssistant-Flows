@@ -29,6 +29,8 @@ The notifications can be sent to any number of the following:
   - Alexa speaker TTS Announcements via [Alexa Media Player](https://github.com/alandtse/alexa_media_player)
   
 Additionally, you can setup multiple custom actions with your own configuration if desired.
+
+You can also setup a list of error codes to ignore.
   
 ## Notify on Print End
 
