@@ -132,7 +132,7 @@ action:
                       minutes: 0
                       seconds: 0
               - condition: template
-                value_template: "{{state_attr(filament_s 'type') in filament_li}}"
+                value_template: "{{state_attr(filament_s, 'type') in filament_li}}"
         sequence:
           - service: homeassistant.turn_on
             target:
