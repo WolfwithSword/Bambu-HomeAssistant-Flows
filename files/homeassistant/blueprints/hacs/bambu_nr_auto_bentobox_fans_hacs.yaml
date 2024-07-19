@@ -95,6 +95,24 @@ action:
                   hours: 0
                   minutes: 0
                   seconds: 30
+              - condition: state
+                entity_id: !input filament_sensor
+                state: none
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 30
+              - condition: state
+                entity_id: !input filament_sensor
+                state: empty
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 30
+              - condition: template
+                value_template: "{{state_attr(filament_s, 'type') == 'empty'}}"
+              - condition: template
+                value_template: "{{state_attr(filament_s, 'type') == 'none'}}"
         sequence:
           - service: homeassistant.turn_off
             target:
