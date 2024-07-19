@@ -104,6 +104,7 @@ action:
           - condition: and
             conditions:
               - condition: not
+                conditions:
                   - condition: state
                     entity_id: !input filament_sensor
                     state: unavailable
