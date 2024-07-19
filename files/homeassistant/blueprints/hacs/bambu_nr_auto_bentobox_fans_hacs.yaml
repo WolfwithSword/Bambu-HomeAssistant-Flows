@@ -173,8 +173,8 @@ blueprint:
       selector:
         entity:
           filter:
-            - domain: sensor
-               integration: bambu_lab
+            domain: sensor
+            integration: bambu_lab
     print_status:
       name: Print Status Sensor
       description: |
@@ -183,8 +183,8 @@ blueprint:
       selector:
         entity:
           filter:
-            - domain: sensor
-               integration: bambu_lab
+            domain: sensor
+            integration: bambu_lab
     bento_entity:
       name: Bentobox Switch or Fan Entity
       description: "Entity for either a `fan` or a `switch` that can turn on/off your bentobox air filtration"
