@@ -1,0 +1,216 @@
+variables:
+  filament_s: !input filament_sensor
+  filament_li: !input filament_list
+
+mode: single
+trigger:
+  - platform: state
+    entity_id:
+      - !input filament_sensor
+    from: null
+    to: null
+  - platform: state
+    entity_id:
+      - !input print_status
+    from: null
+    to: running
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  - platform: state
+    entity_id:
+      - !input print_status
+    from: null
+    to: finish
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  - platform: state
+    entity_id:
+      - !input print_status
+    from: null
+    to: failed
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  - platform: state
+    entity_id:
+      - !input print_status
+    from: null
+    to: idle
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  - platform: state
+    entity_id:
+      - !input print_status
+    from: null
+    to: offline
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: !input print_status
+                state: finish
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 30
+              - condition: state
+                entity_id: !input print_status
+                state: idle
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 30
+              - condition: state
+                entity_id: !input print_status
+                state: offline
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 5
+              - condition: state
+                entity_id: !input print_status
+                state: failed
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 30
+              - condition: state
+                entity_id: !input filament_sensor
+                state: unavailable
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 30
+        sequence:
+          - service: homeassistant.turn_off
+            target:
+              entity_id: !input bento_entity
+            data: {}
+      - conditions:
+          - condition: and
+            conditions:
+              - condition: not
+                  - condition: state
+                    entity_id: !input filament_sensor
+                    state: unavailable
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: !input print_status
+                    state: running
+                    for:
+                      hours: 0
+                      minutes: 0
+                      seconds: 0
+                  - condition: state
+                    entity_id: !input print_status
+                    state: pause
+                    for:
+                      hours: 0
+                      minutes: 0
+                      seconds: 0
+                  - condition: state
+                    entity_id: !input print_status
+                    state: prepare
+                    for:
+                      hours: 0
+                      minutes: 0
+                      seconds: 0
+              - condition: template
+                value_template: "{{state_attr(filament_s 'type') in filament_li}}"
+        sequence:
+          - service: homeassistant.turn_on
+            target:
+              entity_id: !input bento_entity
+            data: {}
+
+blueprint:
+  name: "[BAMBU] Automate Bentobox Filtration"
+  source_url: "https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/hacs/bambu_nr_auto_bentobox_fans_hacs.yaml"
+  author: "WolfwithSword"
+  description: |
+              Automate turning on or off your bentobox VOC filtration depending on the currently used filament. HACS Version.
+
+              **Version: v1.0.0-HACS**
+              [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/hacs/bambu_nr_auto_bentobox_fans_hacs.yaml)
+              [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
+              [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
+
+              ### Information
+              This automation will automatically turn on your bentobox air filtration while a print is active if the current filament is one of any from the configured list.
+              
+              It will then turn off the bentobox after the current filament is either emptied, if the print has ended for 30 seconds, or the printer goes offline.
+              
+              ## Notes
+              This may only work for English setups, I am unsure how HA handles state values within blueprints for translated instances.
+
+              ## Requirements
+              - [HA-Bambulab HACS Integration](https://github.com/greghesp/ha-bambulab)
+              - Bentobox or similar setup and connected to HomeAssistant as a controllable entity (either Fan or Switch will work, must be able to turn on/off)
+              
+  domain: automation
+  input:
+    filament_sensor:
+      name: Printer Filament
+      description: |
+                    The filament sensor from the integration. 
+                    HACs Integration: `sensor.<model>_<printer_serial>_active_tray`
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+               integration: bambu_lab
+    print_status:
+      name: Print Status Sensor
+      description: |
+                    Print status sensor from the integration.
+                    HACs Integration: `sensor.<model>_<printer_serial>_print_status`
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+               integration: bambu_lab
+    bento_entity:
+      name: Bentobox Switch or Fan Entity
+      description: "Entity for either a `fan` or a `switch` that can turn on/off your bentobox air filtration"
+      selector:
+        entity:
+          filter:
+            domain: 
+              - switch
+              - fan
+    filament_list:
+      name: Enabled Filaments
+      description: |
+                    List of filaments the bentobox will be enabled for
+
+                    Possible Values:
+                    - ABS, ASA, ABS-GF, ASA-Aero
+                    - PLA, PLA-AERO, PLA-CF
+                    - PETG, PETG-CF, PET, PET-CF
+                    - PA, PA-CF, PA-GF, PA6-CF, PA6-GF, PAHT, PAHT-CF
+                    - PPS, PPS-CF, PPA-CF, PPA-GF
+                    - TPU, PC, PVA, HIPS, BVOH, EVA, PHA
+                    - PP, PP-CF, PP-GF
+                    - PE, PE-CF
+                    - Support
+                    
+                    If it's selectable as a "Type" on the printer / filament profile, it can go here
+      default: ["ABS", "ASA", "ABS-GF", "ASA-Aero", "PLA-CF", "PET-CF", "PETG-CF", "PA", "PA6", "PAHT", "PA-CF", "PA-GF", "PA6-CF", "PA6-GF", "PAHT-CF", "PAHT-GF", "PPS", "PPS-CF", "PC", "PPA", "PPA-GF", "PPA-CF", "PP", "PP-CF", "PP-GF", "PE", "PE-CF"]
+      selector:
+        text:
+          multiple: true
