@@ -1,4 +1,4 @@
-# Blueprints for HA-Bambulan HACs Integration 
+# Blueprints for HA-Bambulab HACs Integration 
 [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
 
 ## Auto Bentobox Fans (HACs Version)
@@ -10,3 +10,5 @@ Automate turning on your bentobox or other air filtration system while a print i
 The list of filaments is user-definable for which it will be enabled for, but defaults to ASA, ABS, all CF and GF filaments, all Nylons, etc.
 
 The bentobox or air-filtration system must be available as an entity in home-assistant as either a `switch` or a `fan`.
+
+Note: This may currently only work for English translated versions. I am unable to test currently for state values where it is translated. You may need to convert/take control of the blueprint as an automation in HA and modify the values accordingly.
