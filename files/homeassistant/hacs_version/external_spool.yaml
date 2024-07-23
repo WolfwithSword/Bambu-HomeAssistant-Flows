@@ -7,7 +7,7 @@ elements:
       type: state-icon
       entity: sensor.{HA_PRINTER_DEVICE_NAME}_externalspool_external_spool
       icon: >-
-        ${states['sensor.{HA_PRINTER_DEVICE_NAME}_externalspool_external_spool'].state != 'empty' ?
+        ${states['sensor.{HA_PRINTER_DEVICE_NAME}_externalspool_external_spool'].state.toLowerCase() != 'empty' ?
         'fapro:filament-1' : 'mdi:tray' }
     style:
       top: 50%
