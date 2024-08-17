@@ -2,8 +2,11 @@ name: GitHub Actions Zip Media
 on:
  workflow_dispatch:
  schedule:
-  - cron: "30 1 1,15 * *"
+  - cron: "30 1 15 * *"
  push:
+   paths:
+     - '.github/workflows/**'
+     - 'files/media/**'
    branches:
      - main
 jobs:
