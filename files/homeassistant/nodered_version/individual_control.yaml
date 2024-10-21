@@ -330,6 +330,9 @@ cards:
             - value: None
               icon: mdi:axis-arrow
               color: red
+            - value: Not Homed
+              icon: mdi:axis-arrow
+              color: red
             - value: XYZ
               icon: mdi:axis-arrow
               color: green

@@ -90,6 +90,13 @@ action:
                   seconds: 30
               - condition: state
                 entity_id: !input filament_sensor
+                state: Not Set
+                for:
+                  hours: 0
+                  minutes: 0
+                  seconds: 30
+              - condition: state
+                entity_id: !input filament_sensor
                 state: None
                 for:
                   hours: 0
