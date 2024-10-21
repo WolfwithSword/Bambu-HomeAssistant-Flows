@@ -5,6 +5,66 @@ elements:
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
         state_not: OFFLINE
     elements:
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_network_connection
+            state: Wired
+        elements:
+          - type: custom:config-template-card
+            entities:
+              - sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+            element:
+              type: state-icon
+              entity: sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+              icon: mdi:ethernet-cable
+            style:
+              left: 88%
+              top: 27.7%
+              font-size: 0.8em
+              color: rgba(0,0,0,0)
+              "--paper-item-icon-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_network_connection
+            state: Wireless
+        elements:
+          - type: custom:config-template-card
+            entities:
+              - sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+            element:
+              type: state-icon
+              entity: sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+              icon: >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'mdi:wifi-strength-4' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'mdi:wifi-strength-3' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'mdi:wifi-strength-2' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'mdi:wifi-strength-1-alert' : 'mdi:wifi-strength-outline'}
+            style:
+              left: 88%
+              top: 27.7%
+              font-size: 0.8em
+              color: rgba(0,0,0,0)
+              "--paper-item-icon-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
       - entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
         type: state-icon
         style:
