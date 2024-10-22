@@ -66,12 +66,29 @@
             "4bc3c29a05efab8b",
             "4844dea44c06e38b",
             "447f62955b2e9a06",
-            "3d81077e930e34c7"
+            "3d81077e930e34c7",
+            "b0950afc4922b176",
+            "d404691f79d5f71a",
+            "c0b51b0900c6406f",
+            "31883a3514bdd47d",
+            "058e8bd8fc79a98e",
+            "6ae80a6aa1bea96a",
+            "73fe1544ac386cfd",
+            "5ff7f99dc81deb58",
+            "4a1e011d3c5ffcdd",
+            "84bda493809cc754",
+            "6f6318f71258c16c",
+            "4b6107335eafd4e1",
+            "65819d7b4824dbe7",
+            "818051cdaa12ba1a",
+            "819bc00ead58ca1a",
+            "3f8d74d4e2c04df8",
+            "8ddd029731309e98"
         ],
         "x": 2514,
         "y": 1099,
-        "w": 1142,
-        "h": 442
+        "w": 1192,
+        "h": 602
     },
     {
         "id": "c04f0d9ac33ddee4",
@@ -100,7 +117,7 @@
         "z": "fbda6ab16491b918",
         "g": "258d2ebeb830080f",
         "name": "Check Values Error",
-        "func": "flow.set(\"has_x1p_flow\", true);\nflow.set(\"x1plus_flow_version\", \"2.1.6\");\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"X1Plus Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (!flow.get(\"x1plus_installed\")) {\n    node.error(\"X1Plus Flow requires X1Plus to be installed and set in the settings [x1plus_installed]\");\n    return;\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}",
+        "func": "flow.set(\"has_x1p_flow\", true);\nflow.set(\"x1plus_flow_version\", \"2.1.7\");\nfunction testValue(val) {\n    return (val == undefined || val == \"\" || val.startsWith(\"{\"));\n}\n\nif (!flow.get(\"has_basic_flow\")) {\n    node.error(\"X1Plus Flow cannot be used without the Basic Flow group in the same flow.\");\n    return;\n}\nif (!flow.get(\"x1plus_installed\")) {\n    node.error(\"X1Plus Flow requires X1Plus to be installed and set in the settings [x1plus_installed]\");\n    return;\n}\nif (testValue(flow.get(\"model\"))) {\n    node.error(\"Printer model is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_name\"))) {\n    node.error(\"Printer name is not set in flow properties\");\n}\nif (testValue(flow.get(\"printer_serial\"))) {\n    node.error(\"Printer serialnumber is not set in flow properties\");\n}\nif (testValue(flow.get(\"root_topic\"))) {\n    node.warn(\"Root Topic is not set, defaulting to homeassistant\");\n    flow.set(\"root_topic\", \"homeassistant\");\n}",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -836,7 +853,8 @@
         "y": 1460,
         "wires": [
             [
-                "11a6a2888c1bcfaa"
+                "11a6a2888c1bcfaa",
+                "b0950afc4922b176"
             ]
         ]
     },
@@ -1116,8 +1134,8 @@
         "type": "comment",
         "z": "fbda6ab16491b918",
         "g": "258d2ebeb830080f",
-        "name": "Version 2.1.6",
-        "info": "Version 2.1.5: 2024-06-26\n - Fixed OTA update not downloading\n\n===\nVersion 2.1.5: 2024-06-17\n - Initial Release\n - Requires X1Plus v2.0+\n - Provides a toggle switch for VNC and OTA\n - Provides sensor for current X1P version and OEM version\n - Provides update OTA functionality if a new version of X1Plus is present and detected by X1P\n - Provides a button to force check for firmware OTA updates\n - Currently polls the printer when it turns on and every 5 minutes for settings, 6 hours for Fw",
+        "name": "Version 2.1.7",
+        "info": "Version 2.1.7: 2024-10-23\n - Added starter sensor detection for expansion board (upcoming)\n\n===\nVersion 2.1.5: 2024-06-26\n - Fixed OTA update not downloading\n\n===\nVersion 2.1.5: 2024-06-17\n - Initial Release\n - Requires X1Plus v2.0+\n - Provides a toggle switch for VNC and OTA\n - Provides sensor for current X1P version and OEM version\n - Provides update OTA functionality if a new version of X1Plus is present and detected by X1P\n - Provides a button to force check for firmware OTA updates\n - Currently polls the printer when it turns on and every 5 minutes for settings, 6 hours for Fw",
         "x": 2610,
         "y": 1140,
         "wires": []
@@ -1273,6 +1291,373 @@
         "wires": [
             [
                 "447f62955b2e9a06"
+            ]
+        ]
+    },
+    {
+        "id": "b0950afc4922b176",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Sub",
+        "func": "let config = {\n    \"action\": \"subscribe\",\n    \"topic\": {\n        \"topic\": \"device/\" + flow.get(\"printer_serial\") + \"/report\",\n        \"qos\": 2\n    }\n}\n\nnode.send(config);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2630,
+        "y": 1560,
+        "wires": [
+            [
+                "d404691f79d5f71a"
+            ]
+        ]
+    },
+    {
+        "id": "d404691f79d5f71a",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 2780,
+        "y": 1560,
+        "wires": [
+            [
+                "c0b51b0900c6406f"
+            ]
+        ]
+    },
+    {
+        "id": "c0b51b0900c6406f",
+        "type": "mqtt in",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Bambu MQTT In",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "{GENERATED_PRINTER_MQTT_ID}",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 2660,
+        "y": 1600,
+        "wires": [
+            [
+                "31883a3514bdd47d"
+            ]
+        ]
+    },
+    {
+        "id": "31883a3514bdd47d",
+        "type": "json",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "property": "payload.print",
+        "action": "obj",
+        "pretty": false,
+        "x": 2810,
+        "y": 1600,
+        "wires": [
+            [
+                "058e8bd8fc79a98e"
+            ]
+        ]
+    },
+    {
+        "id": "058e8bd8fc79a98e",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Inject Machine Details",
+        "func": "let machine_name = flow.get(\"printer_name\");\nlet machine_serial = flow.get(\"serial_number\");\nlet manufacturer = \"Bambu Labs\";\nlet model = flow.get(\"model\");\n\n\nif (msg.payload != undefined && msg.payload.x1plus != undefined ) {\n    msg.printer_name = machine_name;\n    msg.machine_serial = machine_serial;\n    msg.manufacturer = manufacturer;\n    msg.model = model;\n\n    node.status({ fill: \"green\", shape: \"ring\", text: \"Data Received\" });\n    if (Object.keys(msg.payload.x1plus).length > 0) {\n        msg.payload = msg.payload.x1plus;\n        node.send(msg);\n    }\n}\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2680,
+        "y": 1640,
+        "wires": [
+            [
+                "6ae80a6aa1bea96a"
+            ]
+        ]
+    },
+    {
+        "id": "6ae80a6aa1bea96a",
+        "type": "split",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "msg_type",
+        "property": "payload",
+        "x": 2850,
+        "y": 1640,
+        "wires": [
+            [
+                "73fe1544ac386cfd"
+            ]
+        ]
+    },
+    {
+        "id": "73fe1544ac386cfd",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "property": "msg_type",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "sensor",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2990,
+        "y": 1580,
+        "wires": [
+            [
+                "5ff7f99dc81deb58"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5ff7f99dc81deb58",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Sensors",
+        "func": "// new device for each sensor ?\nlet sensors = msg.payload;\ndelete msg.parts;\ndelete msg.topic;\ndelete msg.qos;\ndelete msg.retain;\ndelete msg.msg_type;\n\nfor (var sensor in sensors) {\n    if (sensors[sensor].type != undefined) {\n        var s = sensors[sensor];\n        let key = s.type + \"_\" + sensor.replaceAll(\" \", \"_\").toLowerCase();\n        msg.key = key;\n        msg.type = s.type;\n        let pl = sensors[sensor];\n        if (pl.timestamp != undefined) {\n            pl['last_updated'] = pl.timestamp;\n            delete pl.timestamp;\n        }\n        if (pl.inop != undefined) {\n            delete pl.inop;\n        }\n        msg.payload = pl;\n        node.send(msg);\n    }\n}\n\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3120,
+        "y": 1560,
+        "wires": [
+            [
+                "84bda493809cc754"
+            ]
+        ]
+    },
+    {
+        "id": "4a1e011d3c5ffcdd",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT Config",
+        "func": "let data = {};\n\nlet payload = {};\nlet device = {};\nlet root_topic = flow.get(\"root_topic\");\nlet ha_device_name = flow.get(\"HA_DEVICE\");\nlet device_name = \"x1p_\" + ha_device_name + \"_\" + msg.key;\n\nif(msg.payload == undefined) {\n    return;\n}\n\nlet type = \"sensor\";\n\nlet icon_helper = {\n    \"last_updated\": \"mdi:clock\"\n}\n\nif (msg.topic == \"type\") { \n    msg.topic = \"sensor_type\";\n}\nif (msg.topic in icon_helper) {\n    msg.icon = icon_helper[msg.topic];\n}\n\nif (msg.topic.toLowerCase() == \"rh_pct\") {\n    msg.topic = \"humidity\";\n    device_name = \"x1p_\" + ha_device_name + \"_\" + msg.key.replace(\"rh_pct\", \"humidity\");\n}\nelse if (msg.topic.toLowerCase() == \"rh\") {\n    msg.topic = \"humidity\";\n    device_name = \"x1p_\" + ha_device_name + \"_\" + msg.key.replace(\"rh\", \"humidity\");\n}\nelse if (msg.topic.toLowerCase() == \"t_c\") {\n    msg.topic == \"temperature\";\n    device_name = \"x1p_\" + ha_device_name + \"_\" + msg.key.replace(\"t_c\", \"temperature\");\n}\n\nif(msg.topic.includes(\"humidity\")) {\n     msg.device_class = \"humidity\";\n     msg.unit_of_measurement = \"%\";\n}\nelse if (msg.topic.match(/temp/) || msg.topic.match(/temperature/)) {\n    msg.device_class = \"temperature\";\n}\nelse if (msg.topic == \"last_updated\") {\n    msg.device_class = \"timestamp\";\n\n}\nelse if (msg.topic.match(/pm\\d/)) {\n    msg.icon = \"mdi:chemical-weapon\";\n    let name = msg.topic;\n    if (msg.topic.includes(\"ugm3\")) {\n        msg.unit_of_measurement = \"µg/m³\";\n        name = name.replace(\"_ugm3\", \"\");\n        if (msg.topic.endsWith(\"_std\")) {\n            name = name.replace(\"_std\", \" Standard\");\n        }\n\n    }\n    if (msg.topic.endsWith(\"_conc\")) {\n        name = name.replace(\"_conc\", \" Concentration\");\n        msg.unit_of_measurement = \"μm/dL\";\n        name = name.replace(\"pm\", \"PM > \");\n    }\n    name = name.replace(\"pm\", \"PM\");\n    name = name.replace(\"_\", \".\");\n    msg.state_class = \"measurement\";\n    payload.name = name;\n\n}\n\nfunction getFriendlyName(str) {\n    var i, word = str.split('_');\n    for (i = 0; i < word.length; i++) {\n        word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);\n    }\n    let final_word = word.join(' ');\n    final_word = final_word.replace(\"Ams\", \"AMS\");\n    final_word = final_word.replace(\"Rfid\", \"RFID\");\n    final_word = final_word.replace(\"Mqtt\", \"MQTT\");\n    final_word = final_word.replace(\"Mc\", \"MC\");\n    final_word = final_word.replace(\"X1p\", \"X1P\");\n    final_word = final_word.replaceAll(\"_\", \" \");\n    final_word = final_word.replace(\"Pmsa003i\", \"PMSA003I\");\n    final_word = final_word.replace(\"Pmsa\", \"PMSA\");\n    final_word = final_word.replace(\"Pm\", \"PM\");\n    return final_word;\n}\n\n\nlet base_topic = root_topic + \"/\"+ type + \"/\" + device_name + \"/\" + msg.topic;\ndata.topic = base_topic + \"/config\";\nif (payload.name == undefined){\n    payload.name = getFriendlyName(msg.topic);\n}\n\nlet rename_helper = {\n    \"-1\": \"\",\n}\n\nif (msg.topic in rename_helper) {\n    payload.name = rename_helper[msg.topic];\n}\n\ndevice.identifiers = [];\n\ndevice.identifiers[0] = { \"bambu_lab\": ha_device_name, \"type\": \"X1Plus Sensor\", \"model\": msg.type};\ndevice.identifiers[1] = {\"x1plus_printer\": ha_device_name, \"x1plus_printer_serial\": flow.get(\"printer_serial\"), \"device\": msg.key};\ndevice.identifiers[2] = msg.key;\ndevice.identifiers[0] = JSON.stringify(device.identifiers[0]);\ndevice.identifiers[1] = JSON.stringify(device.identifiers[2]);\n\ndevice.manufacturer = \"X1Plus\";\ndevice.model = msg.type.toUpperCase();\ndevice.name = getFriendlyName(msg.key);\ndevice.via_device = ha_device_name;\n\nif( msg.icon != undefined) {\n    payload.icon = msg.icon\n}\nif(msg.entity_category != undefined) {\n    payload.entity_category = msg.entity_category;\n}\n\npayload.device = device;\npayload.unique_id = device_name + \"_\" + msg.topic;\npayload.object_id = payload.unique_id;\npayload.has_entity_name = false;\n\nif (msg.device_class != undefined)\n    payload.device_class = msg.device_class;\n\nif (msg.unit_of_measurement != undefined)\n    payload.unit_of_measurement = msg.unit_of_measurement;\n\nif (payload.device_class == \"temperature\") {\n    payload.unit_of_measurement = \"°C\";\n    payload.temperature_unit = \"°C\";\n}\n\npayload.state_topic = base_topic + \"/state\";\n//payload.json_attributes_topic = base_topic + \"/attr\";\n\nif (msg.topic != \"last_updated\" && msg.topic != \"sensor_type\") {\n    payload.availability_topic = root_topic + \"/\" + \"sensor\" + \"/\" + ha_device_name + \"/\" + \"status\" + \"/state\";\n}\n\ndata.payload = payload;\n\ndata.qos = 1;\ndata.retain = true;\n\nif (data.topic.startsWith(root_topic)) {\n    if (!flow.get(\"can_request\")) {\n        if ((type == \"select\" || type == \"switch\" || type == \"fan\")) {\n            if (data.payload.command_topic) {\n                delete data.payload.command_topic;////?\n            }\n            if (data.payload.percentage_command_topic) {\n                delete data.payload.percentage_command_topic;\n            }\n        }\n        if (type != \"select\") {\n            node.send(data);\n        }\n    }\n    else {\n        node.send(data);\n    }\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3460,
+        "y": 1580,
+        "wires": [
+            [
+                "819bc00ead58ca1a"
+            ]
+        ]
+    },
+    {
+        "id": "84bda493809cc754",
+        "type": "split",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "Data Split",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "property": "payload",
+        "x": 3280,
+        "y": 1560,
+        "wires": [
+            [
+                "4b6107335eafd4e1"
+            ]
+        ]
+    },
+    {
+        "id": "6f6318f71258c16c",
+        "type": "function",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT State",
+        "func": "function sendNonEmpty(message) {\n    if (message.topic.includes(\"/uptime\")) {\n        node.send(message);\n        return;\n    }\n    if(message.payload == 0 || (message.payload != undefined && (message.payload != \"\" || \n        (Object.keys(message.payload) != undefined && Object.keys(message.payload).length != 0)))) {\n        node.send(message);\n    }\n}\n\nlet retained = flow.get(\"retained_mqtt\");\nfor (var r of retained) {\n    if (msg.topic.endsWith(r)) {\n        msg.retain = true;\n        msg.qos = 2;\n        break;\n    }\n}\n\n\nif (msg.topic.toLowerCase() == \"rh_pct\") {\n    msg.topic = \"humidity\";\n}\nelse if (msg.topic.toLowerCase() == \"rh\") {\n    msg.topic = \"humidity\";\n}\nelse if (msg.topic.toLowerCase() == \"t_c\") {\n    msg.topic == \"temperature\";\n}\nelse if (msg.topic == \"type\") { \n    msg.topic = \"sensor_type\";\n}\nelse if (msg.topic ==\"last_updated\") {\n    if (typeof msg.payload != typeof \"\" && !isNaN(msg.payload)){\n        msg.payload = msg.payload * 1000;\n        let d = new Date(msg.payload);\n        msg.payload = d.toISOString();\n    }\n    else if (isNaN(msg.payload)) {\n        msg.payload = \"N/A\";\n    }\n}\n\nlet hasAttr = false;\nlet entity_type = \"sensor\";\n\nlet root_topic = flow.get(\"root_topic\");\nlet ha_device_name = flow.get(\"HA_DEVICE\");\nlet device_name = \"x1p_\"+ha_device_name+\"_\"+msg.key;\nlet type_ = msg.type;\n\n\nmsg.topic = root_topic + \"/\" + entity_type + \"/\" + device_name + \"/\" + msg.topic + \"/state\";\n\nif(hasAttr || msg.topic.includes(\"/uptime\")) {\n    sendNonEmpty(msg);\n}\nelse {\n    node.send(msg);\n}\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3450,
+        "y": 1540,
+        "wires": [
+            [
+                "65819d7b4824dbe7"
+            ]
+        ]
+    },
+    {
+        "id": "4b6107335eafd4e1",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 3360,
+        "y": 1560,
+        "wires": [
+            [
+                "4a1e011d3c5ffcdd",
+                "6f6318f71258c16c"
+            ]
+        ]
+    },
+    {
+        "id": "65819d7b4824dbe7",
+        "type": "delay",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "delay",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 3630,
+        "y": 1580,
+        "wires": [
+            [
+                "819bc00ead58ca1a"
+            ]
+        ]
+    },
+    {
+        "id": "818051cdaa12ba1a",
+        "type": "mqtt out",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "MQTT Out",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "489094618c340eef",
+        "x": 3610,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "819bc00ead58ca1a",
+        "type": "junction",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "x": 3380,
+        "y": 1620,
+        "wires": [
+            [
+                "8ddd029731309e98"
+            ]
+        ]
+    },
+    {
+        "id": "3f8d74d4e2c04df8",
+        "type": "switch",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "undefined",
+                "vt": "str"
+            },
+            {
+                "t": "neq",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 3570,
+        "y": 1620,
+        "wires": [
+            [],
+            [
+                "818051cdaa12ba1a"
+            ]
+        ]
+    },
+    {
+        "id": "8ddd029731309e98",
+        "type": "rbe",
+        "z": "fbda6ab16491b918",
+        "g": "258d2ebeb830080f",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 3450,
+        "y": 1620,
+        "wires": [
+            [
+                "3f8d74d4e2c04df8"
             ]
         ]
     }

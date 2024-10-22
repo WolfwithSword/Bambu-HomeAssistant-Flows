@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.3.3"
+      "version": "11.2.0"
     },
     {
       "type": "datasource",
@@ -98,14 +98,13 @@
               }
             ]
           },
-          "unit": "massg",
-          "unitScale": true
+          "unit": "massg"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 5,
-        "w": 3.4285714285714284,
+        "w": 3,
         "x": 0,
         "y": 1
       },
@@ -116,6 +115,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -127,7 +127,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -197,14 +197,13 @@
               }
             ]
           },
-          "unit": "dthms",
-          "unitScale": true
+          "unit": "dthms"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 5,
-        "w": 3.4285714285714284,
+        "w": 3,
         "x": 0,
         "y": 7
       },
@@ -215,6 +214,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -226,7 +226,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -296,14 +296,13 @@
               }
             ]
           },
-          "unit": "kwatth",
-          "unitScale": true
+          "unit": "kwatth"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 5,
-        "w": 3.4285714285714284,
+        "w": 3,
         "x": 0,
         "y": 13
       },
@@ -314,6 +313,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -325,7 +325,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -395,14 +395,13 @@
               }
             ]
           },
-          "unit": "currencyUSD",
-          "unitScale": true
+          "unit": "currencyUSD"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 5,
-        "w": 3.4285714285714284,
+        "w": 3,
         "x": 0,
         "y": 19
       },
@@ -413,6 +412,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -424,7 +424,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "repeat": "materials",
       "repeatDirection": "h",
       "targets": [
@@ -487,25 +487,27 @@
           "custom": {
             "align": "center",
             "cellOptions": {
-              "type": "auto"
+              "type": "auto",
+              "wrapText": false
             },
-            "inspect": false
+            "filterable": true,
+            "inspect": false,
+            "minWidth": 50
           },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#42e42d",
                 "value": null
               },
               {
-                "color": "red",
+                "color": "dark-red",
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": [
           {
@@ -520,7 +522,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 141
+                "value": 83
               }
             ]
           },
@@ -536,7 +538,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 248
+                "value": 230
               }
             ]
           },
@@ -556,7 +558,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 163
+                "value": 103
               }
             ]
           },
@@ -572,22 +574,22 @@
                   {
                     "options": {
                       "FAILED": {
-                        "color": "super-light-red",
+                        "color": "#ff001e",
                         "index": 1,
                         "text": "Failure"
                       },
                       "FINISH": {
-                        "color": "light-green",
+                        "color": "#1eff00",
                         "index": 0,
                         "text": "Success"
                       },
                       "PAUSE": {
-                        "color": "light-purple",
+                        "color": "#CA95E5",
                         "index": 3,
                         "text": "Paused"
                       },
                       "RUNNING": {
-                        "color": "light-blue",
+                        "color": "#0066ff",
                         "index": 2,
                         "text": "In Progress"
                       }
@@ -604,7 +606,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 156
+                "value": 86
               }
             ]
           },
@@ -652,7 +654,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 242
+                "value": 132
               }
             ]
           },
@@ -671,6 +673,10 @@
                         "index": 1,
                         "text": "Cool Plate"
                       },
+                      "eng_plate": {
+                        "index": 3,
+                        "text": "Engineering Plate"
+                      },
                       "hot_plate": {
                         "index": 0,
                         "text": "Hot Plate"
@@ -678,10 +684,6 @@
                       "textured_plate": {
                         "index": 2,
                         "text": "Textured Plate"
-                      },
-                      "eng_plate": {
-                        "index": 3,
-                        "text": "Engineering Plate"
                       }
                     },
                     "type": "value"
@@ -690,7 +692,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 154
+                "value": 220
               }
             ]
           },
@@ -709,36 +711,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Material Used"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 172
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Material"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 164
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "Name"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 288
+                "value": 243
               }
             ]
           },
@@ -750,7 +728,11 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 166
+                "value": 126
+              },
+              {
+                "id": "decimals",
+                "value": 2
               }
             ]
           },
@@ -762,7 +744,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 140
+                "value": 106
               }
             ]
           },
@@ -774,31 +756,11 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 128
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Majority Mat."
-            },
-            "properties": [
+                "value": 91
+              },
               {
-                "id": "custom.width",
-                "value": 128
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Material Data"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 186
+                "id": "decimals",
+                "value": 2
               }
             ]
           },
@@ -809,34 +771,203 @@
             },
             "properties": [
               {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "lcd",
+                  "type": "gauge",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
                 "id": "unit",
                 "value": "percent"
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#3ec62c",
+                  "mode": "shades"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "material_used_1"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 42
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "material_type_4"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 10
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "material_used_4"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 43
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Print Cost"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 149
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "color_1"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 94
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/row*/"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": null
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/vendor*/"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 97
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/material_*/"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 97
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/color_*/"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 77
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 12,
+        "h": 18,
         "w": 24,
         "x": 0,
         "y": 25
       },
-      "id": 2,
+      "id": 167,
       "options": {
         "cellHeight": "sm",
         "footer": {
           "countRows": false,
-          "fields": "",
+          "enablePagination": false,
+          "fields": [
+            "material_used",
+            "material_used_cost",
+            "electric_cost",
+            "kwh"
+          ],
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -846,17 +977,12 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT prints.printer, prints.start_time,\r\n      prints.name, prints.status,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) as kwh,\r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN ((total.kwh - prints.initial_kwh) * (prints.electric_rate / 100)) ELSE prints.electric_cost END) as \"electric_cost\",\r\n      (case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - prints.start_time)) else EXTRACT(EPOCH FROM (prints.end_time - prints.start_time))end) as duration,\r\n      prints.material_used, prints.material_used_cost, (CASE when prints.material_type = 'resin' then 'ml' else 'g' end) as \"material_unit\", material, plate_type, filament_data, progress_done\r\nFROM prints,\r\n  ( SELECT kwh, printer FROM energy_reading\r\n        WHERE printer = '${printers}'\r\n        LIMIT 1\r\n    )\r\n total\r\nWHERE $__timeFilter(start_time) AND prints.printer = total.printer and prints.printer = '${printers}' and prints.name not in (${ignored}) and \r\n      (CASE when prints.status = 'RUNNING' or prints.status = 'PAUSED' THEN (total.kwh - prints.initial_kwh) ELSE prints.kwh END) > ${minkwh}\r\nORDER BY prints.start_time DESC",
+          "rawSql": "WITH numbered_filaments AS (\r\n  -- Calculates relevant print job data\r\n  SELECT\r\n    p.printer,\r\n    p.start_time,\r\n    p.name,\r\n    p.status,\r\n    p.material_used,\r\n    p.material_used_cost,\r\n    p.filament_data,\r\n    p.plate_type,\r\n    CASE\r\n      WHEN p.material_type = 'resin' THEN 'ml'\r\n      ELSE 'g'\r\n    END AS material_unit,\r\n    CASE\r\n      WHEN p.status IN ('RUNNING', 'PAUSED') THEN (t.kwh - p.initial_kwh)\r\n      ELSE p.kwh\r\n    END AS kwh,\r\n    CASE\r\n      WHEN p.status IN ('RUNNING', 'PAUSED') THEN ((t.kwh - p.initial_kwh) * (p.electric_rate / 100))\r\n      ELSE p.electric_cost\r\n    END AS electric_cost,\r\n    CASE\r\n      WHEN p.status IN ('RUNNING', 'PAUSED') THEN EXTRACT(EPOCH FROM ((now() AT TIME ZONE 'utc') - p.start_time))\r\n      ELSE EXTRACT(EPOCH FROM (p.end_time - p.start_time))\r\n    END AS duration,\r\n    p.progress_done  -- Include progress_done directly from the prints table\r\n  FROM prints p\r\n  JOIN (\r\n    SELECT kwh, printer\r\n    FROM energy_reading\r\n    WHERE printer = '${printers}'\r\n    LIMIT 1\r\n  ) t ON p.printer = t.printer\r\n  WHERE $__timeFilter(p.start_time)\r\n    AND p.printer = '${printers}'\r\n    AND p.name NOT IN (${ignored})\r\n    AND (\r\n      CASE\r\n        WHEN p.status IN ('RUNNING', 'PAUSED') THEN (t.kwh - p.initial_kwh)\r\n        ELSE p.kwh\r\n      END\r\n    ) > ${minkwh}\r\n),\r\nfilament_data_expanded AS (\r\n  -- Expands filament data from JSON format\r\n  SELECT\r\n    nf.printer,\r\n    nf.start_time,\r\n    nf.name,\r\n    nf.status,\r\n    nf.material_used,\r\n    nf.material_used_cost,\r\n    nf.filament_data,\r\n    nf.plate_type,\r\n    nf.material_unit,\r\n    nf.kwh,\r\n    nf.electric_cost,\r\n    nf.duration,\r\n    nf.progress_done,  -- Include progress_done in the CTE\r\n    jsonb_data->>'vendor' AS vendor,\r\n    CASE\r\n      WHEN jsonb_data ? 'colour' AND jsonb_data->>'colour' IS NOT NULL AND jsonb_data->>'colour' <> '' THEN jsonb_data->>'colour'\r\n      ELSE '#FFFFFF' -- Default to white when no color is present\r\n    END AS color,\r\n    COALESCE(jsonb_data->>'type', ' ') AS material_type,  -- Ensure material_type is always a string\r\n    (jsonb_data->>'used_g')::numeric AS used_grams,\r\n    jsonb_data->>'kg_cost' AS kg_cost,\r\n    jsonb_data->>'used_cost' AS used_cost\r\n  FROM numbered_filaments nf\r\n  JOIN jsonb_array_elements(nf.filament_data::jsonb) AS jsonb_data ON true\r\n),\r\nmaterial_summary AS (\r\n  -- Summarizes material usage by type, vendor, and color\r\n  SELECT\r\n    printer,\r\n    start_time,\r\n    name,\r\n    COALESCE(MIN(vendor), '') AS vendor,\r\n    material_type,\r\n    color,\r\n    SUM(used_grams) AS total_used_g,\r\n    ROW_NUMBER() OVER (PARTITION BY printer, start_time, name, material_type, vendor, md5(concat(material_type, vendor, color))) AS rn,\r\n    ROW_NUMBER() OVER (ORDER BY printer, start_time, name) AS row_number\r\n  FROM filament_data_expanded\r\n  GROUP BY printer, start_time, name, material_type, vendor, color, md5(concat(material_type, vendor, color))\r\n),\r\nfinal_materials AS (\r\n  -- Assigns material details and row numbers per print job\r\n  SELECT\r\n    ms.printer,\r\n    ms.start_time,\r\n    ms.name,\r\n    ms.vendor,\r\n    ms.material_type,\r\n    ms.color,\r\n    ms.total_used_g,\r\n    ms.row_number,\r\n    ROW_NUMBER() OVER (PARTITION BY ms.start_time, ms.name ORDER BY ms.material_type, ms.color) AS rn\r\n  FROM material_summary ms\r\n)\r\nSELECT\r\n  nf.printer,\r\n  nf.start_time,\r\n  nf.name,\r\n  nf.status,\r\n  nf.kwh,\r\n  nf.electric_cost,\r\n  nf.duration,\r\n  nf.material_used,\r\n  nf.material_used_cost,\r\n  nf.material_unit,\r\n  nf.filament_data,\r\n  nf.plate_type,\r\n  nf.progress_done,  -- Include progress_done in the final output\r\n  COALESCE(MAX(CASE WHEN fm.rn = 1 THEN fm.material_type END), ' ') AS material_type_1,\r\n  MAX(CASE WHEN fm.rn = 1 THEN fm.vendor END) AS vendor_1,\r\n  MAX(CASE WHEN fm.rn = 1 THEN fm.total_used_g END) AS material_used_1,\r\n  COALESCE(MAX(CASE WHEN fm.rn = 2 THEN fm.material_type END), ' ') AS material_type_2,\r\n  MAX(CASE WHEN fm.rn = 2 THEN fm.vendor END) AS vendor_2,\r\n  MAX(CASE WHEN fm.rn = 2 THEN fm.total_used_g END) AS material_used_2,\r\n  COALESCE(MAX(CASE WHEN fm.rn = 3 THEN fm.material_type END), ' ') AS material_type_3,\r\n  MAX(CASE WHEN fm.rn = 3 THEN fm.vendor END) AS vendor_3,\r\n  MAX(CASE WHEN fm.rn = 3 THEN fm.total_used_g END) AS material_used_3,\r\n  COALESCE(MAX(CASE WHEN fm.rn = 4 THEN fm.material_type END), ' ') AS material_type_4,\r\n  MAX(CASE WHEN fm.rn = 4 THEN fm.vendor END) AS vendor_4,\r\n  MAX(CASE WHEN fm.rn = 4 THEN fm.total_used_g END) AS material_used_4,\r\n  MAX(CASE WHEN fm.rn = 1 THEN fm.color END) AS color_1,\r\n  MAX(CASE WHEN fm.rn = 2 THEN fm.color END) AS color_2,\r\n  MAX(CASE WHEN fm.rn = 3 THEN fm.color END) AS color_3,\r\n  MAX(CASE WHEN fm.rn = 4 THEN fm.color END) AS color_4,\r\n  MAX(CASE WHEN fm.rn = 1 THEN fm.row_number END) AS row_1,\r\n  MAX(CASE WHEN fm.rn = 1 THEN fm.row_number END) AS row_2,\r\n  MAX(CASE WHEN fm.rn = 1 THEN fm.row_number END) AS row_3,\r\n  MAX(CASE WHEN fm.rn = 1 THEN fm.row_number END) AS row_4\r\nFROM numbered_filaments nf\r\nJOIN final_materials fm ON nf.printer = fm.printer\r\n                          AND nf.start_time = fm.start_time\r\n                          AND nf.name = fm.name\r\nGROUP BY\r\n  nf.printer, nf.start_time, nf.name, nf.status, nf.kwh, nf.electric_cost, nf.duration, nf.material_used, nf.material_used_cost, nf.material_unit, nf.filament_data, nf.plate_type, nf.progress_done\r\nORDER BY nf.start_time DESC;",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "parameters": [
-                  {
-                    "name": "*",
-                    "type": "functionParameter"
-                  }
-                ],
+                "parameters": [],
                 "type": "function"
               }
             ],
@@ -869,8 +995,7 @@
               }
             ],
             "limit": 50
-          },
-          "table": "prints"
+          }
         }
       ],
       "title": "List of Prints",
@@ -879,6 +1004,7 @@
           "id": "organize",
           "options": {
             "excludeByName": {
+              "color_1": false,
               "electric_rate": true,
               "end_time": true,
               "final_kwh": true,
@@ -887,21 +1013,40 @@
               "printer_serial": true,
               "start_epoch": true
             },
+            "includeByName": {},
             "indexByName": {
-              "duration": 6,
-              "electric_cost": 13,
-              "electric_rate": 12,
-              "end_time": 7,
-              "final_kwh": 9,
-              "id": 0,
-              "initial_kwh": 8,
-              "kwh": 11,
-              "name": 5,
-              "printer": 2,
-              "printer_serial": 4,
-              "start_epoch": 1,
-              "start_time": 3,
-              "status": 10
+              "color_1": 28,
+              "color_2": 29,
+              "color_3": 30,
+              "color_4": 31,
+              "duration": 3,
+              "electric_cost": 14,
+              "filament_data": 18,
+              "kwh": 13,
+              "material_type_1": 5,
+              "material_type_2": 7,
+              "material_type_3": 9,
+              "material_type_4": 11,
+              "material_unit": 17,
+              "material_used": 15,
+              "material_used_1": 6,
+              "material_used_2": 8,
+              "material_used_3": 10,
+              "material_used_4": 12,
+              "material_used_cost": 16,
+              "name": 2,
+              "plate_type": 19,
+              "printer": 0,
+              "row_1": 24,
+              "row_2": 25,
+              "row_3": 26,
+              "row_4": 27,
+              "start_time": 1,
+              "status": 4,
+              "vendor_1": 20,
+              "vendor_2": 21,
+              "vendor_3": 22,
+              "vendor_4": 23
             },
             "renameByName": {
               "duration": "Duration",
@@ -955,27 +1100,269 @@
           }
         },
         {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "destinationType": "other",
+                "targetField": "filament_data"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "row_4"
+            },
+            "configRefId": "A",
+            "mappings": [
+              {
+                "fieldName": "row_4",
+                "handlerKey": "mappings.value"
+              },
+              {
+                "fieldName": "material_type_4",
+                "handlerKey": "mappings.text"
+              },
+              {
+                "fieldName": "color_4",
+                "handlerKey": "mappings.color"
+              }
+            ]
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "material_type_1"
+            },
+            "configRefId": "A",
+            "mappings": [
+              {
+                "fieldName": "material_type_1",
+                "handlerKey": "mappings.value"
+              },
+              {
+                "fieldName": "color_1",
+                "handlerKey": "mappings.color"
+              }
+            ]
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "row_1"
+            },
+            "configRefId": "A",
+            "mappings": [
+              {
+                "fieldName": "row_1",
+                "handlerKey": "mappings.value"
+              },
+              {
+                "fieldName": "color_1",
+                "handlerKey": "mappings.color"
+              },
+              {
+                "fieldName": "material_type_1",
+                "handlerKey": "mappings.text",
+                "reducerId": "allValues"
+              }
+            ]
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "row_2"
+            },
+            "configRefId": "A",
+            "mappings": [
+              {
+                "fieldName": "color_2",
+                "handlerKey": "mappings.color"
+              },
+              {
+                "fieldName": "row_2",
+                "handlerKey": "mappings.value"
+              },
+              {
+                "fieldName": "material_type_2",
+                "handlerKey": "mappings.text",
+                "reducerId": "allValues"
+              }
+            ]
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "row_3"
+            },
+            "configRefId": "A",
+            "mappings": [
+              {
+                "fieldName": "color_3",
+                "handlerKey": "mappings.color"
+              },
+              {
+                "fieldName": "material_type_3",
+                "handlerKey": "mappings.text"
+              },
+              {
+                "fieldName": "row_3",
+                "handlerKey": "mappings.value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "groupToNestedTable",
+          "options": {
+            "fields": {
+              "Duration": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Electric Cost": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "File": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Mat. Amt": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Mat. Cost": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Material Cost": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Material Used": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Name": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Plate": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Printer": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Start Time": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Status": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Total Print Cost": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "kWh": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "progress_done": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "row_1": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "row_2": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "row_3": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "row_4": {
+                "aggregations": [],
+                "operation": "groupby"
+              }
+            },
+            "showSubframeHeaders": true
+          }
+        },
+        {
           "id": "organize",
           "options": {
             "excludeByName": {
-              "material_unit": true
+              "color_1": false,
+              "material_type_1": true,
+              "material_type_2": true,
+              "material_type_3": true,
+              "material_type_4": true,
+              "material_unit": true,
+              "material_used_1": true,
+              "material_used_2": true,
+              "material_used_3": true,
+              "material_used_4": true
             },
+            "includeByName": {},
             "indexByName": {
               "Duration": 3,
-              "Electric Cost": 9,
+              "Electric Cost": 19,
               "File": 2,
-              "Material": 6,
-              "Material Cost": 8,
-              "Material Used": 7,
-              "Plate": 12,
+              "Material Cost": 18,
+              "Material Used": 17,
+              "Plate": 23,
               "Printer": 0,
               "Start Time": 1,
               "Status": 4,
-              "Total Print Cost": 14,
-              "filament_data": 5,
-              "kWh": 10,
-              "material_unit": 11,
-              "progress_done": 13
+              "Total Print Cost": 22,
+              "color_1": 24,
+              "color_2": 25,
+              "color_3": 26,
+              "color_4": 27,
+              "filament_data": 28,
+              "kWh": 20,
+              "material_type_1": 5,
+              "material_type_2": 11,
+              "material_type_3": 13,
+              "material_type_4": 15,
+              "material_unit": 21,
+              "material_used_1": 10,
+              "material_used_2": 12,
+              "material_used_3": 14,
+              "material_used_4": 16,
+              "row_1": 6,
+              "row_2": 7,
+              "row_3": 8,
+              "row_4": 9,
+              "vendor_1": 29,
+              "vendor_2": 30,
+              "vendor_3": 31,
+              "vendor_4": 32
             },
             "renameByName": {
               "Electric Cost": "",
@@ -986,18 +1373,6 @@
               "filament_data": "Material Data",
               "progress_done": "% Complete"
             }
-          }
-        },
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "destinationType": "other",
-                "targetField": "filament_data"
-              }
-            ],
-            "fields": {}
           }
         }
       ],
@@ -1028,8 +1403,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": [
           {
@@ -1062,7 +1436,7 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 37
+        "y": 43
       },
       "id": 6,
       "options": {
@@ -1070,6 +1444,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [],
           "fields": "",
@@ -1079,7 +1454,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1112,7 +1487,6 @@
         }
       ],
       "title": "Total Costs (Energy)",
-      "transformations": [],
       "transparent": true,
       "type": "stat"
     },
@@ -1140,8 +1514,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": [
           {
@@ -1177,7 +1550,7 @@
         "h": 6,
         "w": 6,
         "x": 6,
-        "y": 37
+        "y": 43
       },
       "id": 112,
       "options": {
@@ -1185,6 +1558,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1196,7 +1570,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1228,7 +1602,6 @@
         }
       ],
       "title": "Printing Costs (Energy)",
-      "transformations": [],
       "transparent": true,
       "type": "stat"
     },
@@ -1256,8 +1629,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": [
           {
@@ -1290,7 +1662,7 @@
         "h": 6,
         "w": 6,
         "x": 12,
-        "y": 37
+        "y": 43
       },
       "id": 8,
       "options": {
@@ -1298,6 +1670,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [],
           "fields": "",
@@ -1307,7 +1680,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1340,7 +1713,6 @@
         }
       ],
       "title": "Idle Costs (Energy)",
-      "transformations": [],
       "transparent": true,
       "type": "stat"
     },
@@ -1364,8 +1736,7 @@
                 "value": null
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": [
           {
@@ -1401,7 +1772,7 @@
         "h": 6,
         "w": 6,
         "x": 18,
-        "y": 37
+        "y": 43
       },
       "id": 5,
       "options": {
@@ -1409,6 +1780,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1420,7 +1792,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1452,7 +1824,6 @@
         }
       ],
       "title": "Printing Costs (Material)",
-      "transformations": [],
       "transparent": true,
       "type": "stat"
     }
@@ -1582,8 +1953,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Printer Stats",
-  "uid": "XPQuII2Vk",
-  "version": 60,
+  "title": "Printer Stats v2",
+  "uid": "o9RuII2jk",
+  "version": 4,
   "weekStart": ""
 }

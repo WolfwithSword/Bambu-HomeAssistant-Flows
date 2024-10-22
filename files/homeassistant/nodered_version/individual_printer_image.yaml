@@ -15,15 +15,75 @@ elements:
             style:
               top: 50.5%
               left: 83.5%
-              '--mdc-icon-size': 3em
-              '--paper-item-icon-color': '#E7A332'
+              "--mdc-icon-size": 3em
+              "--paper-item-icon-color": "#E7A332"
             icon: mdi:alert
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_network_connection
+            state: Wired
+        elements:
+          - type: custom:config-template-card
+            entities:
+              - sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+            element:
+              type: state-icon
+              entity: sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+              icon: mdi:ethernet-cable
+            style:
+              left: 82%
+              top: 13.2%
+              font-size: 0.8em
+              color: rgba(0,0,0,0)
+              "--paper-item-icon-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
+      - type: conditional
+        conditions:
+          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_network_connection
+            state: Wireless
+        elements:
+          - type: custom:config-template-card
+            entities:
+              - sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+            element:
+              type: state-icon
+              entity: sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
+              icon: >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'mdi:wifi-strength-4' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'mdi:wifi-strength-3' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'mdi:wifi-strength-2' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'mdi:wifi-strength-1-alert' : 'mdi:wifi-strength-outline'}
+            style:
+              left: 82%
+              top: 13.2%
+              font-size: 0.8em
+              color: rgba(0,0,0,0)
+              "--paper-item-icon-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
       - entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
         type: state-icon
         style:
           top: 46%
           left: 18%
-          '--mdc-icon-size': 2.6em
+          "--mdc-icon-size": 2.6em
         tap_action:
           action: toggle
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
@@ -32,7 +92,7 @@ elements:
           top: 8.6%
           left: 32.8%
           font-size: 1.2em
-          color: '#FFFFFF'
+          color: "#FFFFFF"
       - type: conditional
         conditions:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_status
@@ -54,8 +114,8 @@ elements:
                   top: 50%
                   left: 50%
                   transform: translate(-45%, -40%) scale(75%, 75%)
-                  '--ha-card-border-width': 0px
-                  '--ha-card-background': none
+                  "--ha-card-border-width": 0px
+                  "--ha-card-background": none
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_print_progress
             type: state-badge
             tap_action:
@@ -65,7 +125,7 @@ elements:
               left: 81%
               font-size: 1em
               color: rgba(0,0,0,0)
-              '--label-badge-red': '#11739D'
+              "--label-badge-red": "#11739D"
       - entity: sensor.{HA_PRINTER_DEVICE_NAME}_nozzle_temperature
         type: state-badge
         style:
@@ -103,5 +163,5 @@ image: /local/media/bambuprinter/on_lighton_2.png
 entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
 state_image:
   unavailable: /local/media/bambuprinter/off.png
-  'on': /local/media/bambuprinter/on_lighton_2.png
-  'off': /local/media/bambuprinter/off.png
+  "on": /local/media/bambuprinter/on_lighton_2.png
+  "off": /local/media/bambuprinter/off.png
