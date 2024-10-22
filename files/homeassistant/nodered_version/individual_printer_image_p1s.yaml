@@ -7,19 +7,6 @@ elements:
     elements:
       - type: conditional
         conditions:
-          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_door
-            state: open
-        elements:
-          - entity: sensor.{HA_PRINTER_DEVICE_NAME}_door
-            type: state-icon
-            style:
-              top: 50.5%
-              left: 83.5%
-              "--mdc-icon-size": 3em
-              "--paper-item-icon-color": "#E7A332"
-            icon: mdi:alert
-      - type: conditional
-        conditions:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_network_connection
             state: Wired
         elements:
