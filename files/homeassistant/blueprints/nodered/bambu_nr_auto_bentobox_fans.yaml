@@ -148,7 +148,7 @@ blueprint:
   description: |
               Automate turning on or off your bentobox VOC filtration depending on the currently used filament.
 
-              **Version: v1.0.0**
+              **Version: v1.0.1**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_auto_bentobox_fans.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
               [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
