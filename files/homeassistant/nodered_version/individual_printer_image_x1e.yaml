@@ -31,7 +31,7 @@ elements:
               entity: sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal
               icon: mdi:ethernet-cable
             style:
-              left: 82%
+              left: 67%
               top: 13.2%
               font-size: 0.8em
               color: rgba(0,0,0,0)
@@ -65,7 +65,7 @@ elements:
                   states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
                 'mdi:wifi-strength-1-alert' : 'mdi:wifi-strength-outline'}
             style:
-              left: 82%
+              left: 67%
               top: 13.2%
               font-size: 0.8em
               color: rgba(0,0,0,0)
