@@ -24,12 +24,20 @@
             "d85c73e5dbb9cf5b",
             "a6fdcf9dea19d6e8",
             "74b588f633523219",
-            "96c348b1bb273ffc"
+            "96c348b1bb273ffc",
+            "057429fab4edf82b",
+            "93e032f57a0948d2",
+            "d779153e65028f44",
+            "801effddad42d6b3",
+            "054e84ecfc466c90",
+            "c5f80279218f9797",
+            "cb4379eb0702a9a1",
+            "11321e67d9548108"
         ],
         "x": 14,
         "y": 19,
-        "w": 892,
-        "h": 322
+        "w": 1032,
+        "h": 422
     },
     {
         "id": "513f7a6c71b056d2",
@@ -62,7 +70,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Build header and payload",
-        "func": "msg.headers = {\n  'Content-Type' : 'application/json'\n};\n\n\nmsg.payload = {\n  \"account\": flow.get(\"BAMBU_EMAIL\"),\n  \"password\": flow.get(\"BAMBU_PASSWORD\")\n};\n\nreturn msg;",
+        "func": "let send_code = true;\nif (msg['send_code'] != undefined && msg['send_code'] == false) {\n  send_code = false;\n}\nmsg = {};\nmsg.headers = {\n  'Content-Type' : 'application/json'\n};\n\nmsg.payload = {\n  \"account\": flow.get(\"BAMBU_EMAIL\"),\n  //\"password\": flow.get(\"BAMBU_PASSWORD\"),\n  \"code\": flow.get(\"ONETIME_EMAIL_CODE\")\n};\n\nif (!send_code) {\n  delete msg.payload['code'];\n  msg.payload['password'] = flow.get(\"BAMBU_PASSWORD\");\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -90,8 +98,7 @@
         "y": 160,
         "wires": [
             [
-                "3470ef99be2e6022",
-                "d85c73e5dbb9cf5b"
+                "d779153e65028f44"
             ]
         ]
     },
@@ -148,6 +155,13 @@
                 "pt": "global",
                 "to": "us.mqtt.bambulab.com",
                 "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ONETIME_EMAIL_CODE",
+                "pt": "flow",
+                "to": "111111",
+                "tot": "str"
             }
         ],
         "action": "",
@@ -159,7 +173,7 @@
         "y": 180,
         "wires": [
             [
-                "e2d0cff94bf02e27"
+                "057429fab4edf82b"
             ]
         ]
     },
@@ -169,7 +183,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "NOTES - READ ME",
-        "info": "# YOU ONLY NEED THIS FLOW ONCE NO MATTER HOW MANY PRINTERS YOU HAVE\n# AND HAVE IT IN ITS OWN TAB\n\nChange the following in *Bambu Account Config*\n\nBAMBU_EMAIL: Your bambu account email\nBAMBU_PASSWORD: Your bambu account password\nBAMBU_REGION: \n    If in China or region locked printer, use:     cn.mqtt.bambulab.com\n    Anywhere else, use:                            us.mqtt.bambulab.com\n\nIf you signed up with a third party such as google, do the following:\n\n1) Go to bambulab website and log out if you are signed in\n2) In sign in page, click on Forgot (Forgot password)\n3) Complete the reset password flow\n\nYou now will have a password for your bambu account \nusing the same email from the third party.\n\nBonus: The third party login STILL WORKS!\n\n",
+        "info": "# YOU ONLY NEED THIS FLOW ONCE NO MATTER HOW MANY PRINTERS YOU HAVE\n# AND HAVE IT IN ITS OWN TAB\n\nChange the following in *Bambu Account Config*\n\nBAMBU_EMAIL: Your bambu account email\nBAMBU_PASSWORD: Your bambu account password\nBAMBU_REGION: \n    If in China or region locked printer, use:     cn.mqtt.bambulab.com\n    Anywhere else, use:                            us.mqtt.bambulab.com\n\nIf you signed up with a third party such as google, do the following:\n\n1) Go to bambulab website and log out if you are signed in\n2) In sign in page, click on Forgot (Forgot password)\n3) Complete the reset password flow\n\nYou now will have a password for your bambu account \nusing the same email from the third party.\n\nBonus: The third party login STILL WORKS!\n\nIF THIS DOES NOT LOG YOU IN, you will need to input an email verification code into the \n'Bambu Account Config' node. If you did not get an email, hit the request button below \nto request an email code. Once configured with a fresh code, deploy and it should log you in\nfor about a year unless details change.",
         "x": 150,
         "y": 100,
         "wires": []
@@ -180,15 +194,15 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Set Access Token Global",
-        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);\n",
+        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);\nglobal.set(\"BAMBU_REFRESH_TOKEN\", msg.payload.refreshToken);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 590,
-        "y": 160,
+        "x": 730,
+        "y": 220,
         "wires": [
             []
         ]
@@ -245,8 +259,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 550,
-        "y": 200,
+        "x": 690,
+        "y": 260,
         "wires": [
             [
                 "a6fdcf9dea19d6e8"
@@ -262,8 +276,8 @@
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 690,
-        "y": 200,
+        "x": 830,
+        "y": 260,
         "wires": [
             [
                 "74b588f633523219"
@@ -283,8 +297,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 730,
-        "y": 240,
+        "x": 870,
+        "y": 300,
         "wires": [
             []
         ]
@@ -294,10 +308,181 @@
         "type": "comment",
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
-        "name": "Version 2.1.5",
-        "info": "Version 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.1.8",
+        "info": "Version 2.1.8: 2024-11-05\n- Add in logic to check if we do not need to reset access token\n- Add in logic for email code verification\n  - If required, you will need to update the flow with the new value\n\n===\nVersion 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 60,
+        "wires": []
+    },
+    {
+        "id": "057429fab4edf82b",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Login Choice",
+        "func": "if (global.get(\"BAMBU_ACCESS_TOKEN\") != undefined && global.get(\"BAMBU_MQTT_USER\") != undefined \n    && global.get(\"BAMBU_TOKEN_EXPIRY\") != undefined && global.get(\"BAMBU_TOKEN_EXPIRY\")*1000 >= Date.now()) {\n        // We are good, unless we are unable to login elsewhere\n}\nelse {\n    node.send([msg, null]);\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 220,
+        "wires": [
+            [
+                "e2d0cff94bf02e27"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "93e032f57a0948d2",
+        "type": "catch",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 740,
+        "y": 340,
+        "wires": [
+            [
+                "11321e67d9548108"
+            ]
+        ]
+    },
+    {
+        "id": "d779153e65028f44",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "If Error",
+        "func": "\nif (msg.payload.code != undefined && msg.payload.code == 1 && msg.payload.error != undefined && msg.payload.error.includes(\"request a new verification code\")) {\n    msg[\"send_code\"] = false;\n    node.send([null, msg]);\n    return;\n}\n\nelse if (msg.payload.loginType != undefined && msg.payload.accessToken != undefined && msg.payload.accessToken != \"\") {\n    node.send([msg, null]);\n}\nelse if (msg.payload.accessToken != undefined && msg.payload.accessToken == \"\") {\n    node.warn(\"Cloud Login Error: Could not login or token expired. Please request an Email Verification Code and configure Account Config Node to log in again\");\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 160,
+        "wires": [
+            [
+                "3470ef99be2e6022",
+                "d85c73e5dbb9cf5b"
+            ],
+            [
+                "801effddad42d6b3"
+            ]
+        ]
+    },
+    {
+        "id": "801effddad42d6b3",
+        "type": "delay",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 680,
+        "y": 160,
+        "wires": [
+            [
+                "e2d0cff94bf02e27"
+            ]
+        ]
+    },
+    {
+        "id": "054e84ecfc466c90",
+        "type": "inject",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Request",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 120,
+        "y": 400,
+        "wires": [
+            [
+                "c5f80279218f9797"
+            ]
+        ]
+    },
+    {
+        "id": "c5f80279218f9797",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Request Email Code",
+        "func": "msg = {};\nmsg.headers = {\n  'Content-Type' : 'application/json'\n};\n\nmsg.payload = {\n  \"email\": flow.get(\"BAMBU_EMAIL\"),\n  \"type\": \"codeLogin\",\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 400,
+        "wires": [
+            [
+                "cb4379eb0702a9a1"
+            ]
+        ]
+    },
+    {
+        "id": "cb4379eb0702a9a1",
+        "type": "http request",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "req code email",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://bambulab.com/api/v1/user-service/user/sendemail/code",
+        "tls": "fc2996321cee14d8",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": true,
+        "headers": [],
+        "x": 500,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "11321e67d9548108",
+        "type": "debug",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Cloud Login Errors ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 340,
         "wires": []
     },
     {
