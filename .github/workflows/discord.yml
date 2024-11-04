@@ -1,22 +1,24 @@
+name: Discord Release
+
 on:
   workflow_dispatch:
   release:
     types: [published]
 
 jobs:
-  github-releases-to-discord:
+  sending:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Github Releases To Discord
-        uses: SethCohen/github-releases-to-discord@v1.16.2
-        with:
-          webhook_url: ${{ secrets.WEBHOOK_URL_BAMBU }}
-          color: "2105893"
-          username: "Release Changelog"
-          content: "New Release for Bambu HomeAssistant Flows!"
-          footer_title: "Changelog"
-          footer_timestamp: true
-          max_description: '4096'
-          reduce_headings: true
+    - name: Discord notification
+      uses: LeGitHubDeTai/github-to-discord@main
+      env:
+        DISCORD_WEBHOOK:  ${{ secrets.WEBHOOK_URL_BAMBU }}
+        DISCORD_USERNAME: Release Announcement
+        MESSAGE_TITLE: New Release!
+        MESSAGE_DESCRIPTION: Bambu HomeAssistant Flows
+        MESSAGE_URL: https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/releases/latest
+        CONTENT: null;
+        SECTION_NAME: "Changelog"
+        AUTHOR_NAME: "Wolfwithsword"
+        FOOTER_TEXT: "- WwS"
+        IMAGE: null;
