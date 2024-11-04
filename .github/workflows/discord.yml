@@ -22,7 +22,7 @@ jobs:
         "embeds": [
           {
             "type": "rich",
-            "title": "New Release: ${LATEST_TAG}",
+            "title": "New Release: ${{github.ref_name}}",
             "description": "New Release! Click to view changelog",
             "color": 2123412,
             "author": {
