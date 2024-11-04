@@ -32,7 +32,8 @@
             "054e84ecfc466c90",
             "c5f80279218f9797",
             "cb4379eb0702a9a1",
-            "11321e67d9548108"
+            "11321e67d9548108",
+            "ffd2bcdad450c945"
         ],
         "x": 14,
         "y": 19,
@@ -320,7 +321,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Login Choice",
-        "func": "if (global.get(\"BAMBU_ACCESS_TOKEN\") != undefined && global.get(\"BAMBU_MQTT_USER\") != undefined \n    && global.get(\"BAMBU_TOKEN_EXPIRY\") != undefined && global.get(\"BAMBU_TOKEN_EXPIRY\")*1000 >= Date.now()) {\n        // We are good, unless we are unable to login elsewhere\n}\nelse {\n    node.send([msg, null]);\n}",
+        "func": "if (global.get(\"BAMBU_ACCESS_TOKEN\") != undefined && global.get(\"BAMBU_MQTT_USER\") != undefined \n    && global.get(\"BAMBU_TOKEN_EXPIRY\") != undefined && global.get(\"BAMBU_TOKEN_EXPIRY\")*1000 >= Date.now()) {\n        // We are good, unless we are unable to login elsewhere\n        if (global.get(\"BAMBU_REFRESH_TOKEN\") != undefined){\n            msg.payload = {\n                \"refreshToken\": global.get(\"BAMBU_REFRESH_TOKEN\")\n            }\n            node.send([null, msg]);\n        }\n\n}\nelse {\n    node.send([msg, null]);\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -333,7 +334,9 @@
             [
                 "e2d0cff94bf02e27"
             ],
-            []
+            [
+                "ffd2bcdad450c945"
+            ]
         ]
     },
     {
@@ -484,6 +487,31 @@
         "x": 910,
         "y": 340,
         "wires": []
+    },
+    {
+        "id": "ffd2bcdad450c945",
+        "type": "http request",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Refresh token",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.bambulab.com//v1/user-service/user/refreshtoken",
+        "tls": "fc2996321cee14d8",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": true,
+        "headers": [],
+        "x": 240,
+        "y": 260,
+        "wires": [
+            [
+                "2926dee3ddcfdc55"
+            ]
+        ]
     },
     {
         "id": "fc2996321cee14d8",
