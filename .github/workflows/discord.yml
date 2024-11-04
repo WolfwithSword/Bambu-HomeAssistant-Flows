@@ -30,7 +30,7 @@ jobs:
               "url": "https://github.com/${{ github.actor_id }}",
               "icon_url": "https://avatars.githubusercontent.com/u/${{ github.actor_id }}?v=4"
             },
-            "url": "https://github.com/${{ github.repository }}"
+            "url": "https://github.com/${{ github.repository }}/releases/latest"
           }
         ]
         }' ${{ secrets.WEBHOOK_URL_BAMBU }})
