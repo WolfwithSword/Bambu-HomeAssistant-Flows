@@ -9,15 +9,20 @@ jobs:
   webhook-request:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        fetch-depth: 0
     - name: Send a request to webhook
       run: |
+        LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
         RESPONSE=$(curl -H "Content-Type: application/json" -X POST -d '{
         "username": "GitHub",
         "content": "New Release!",
         "embeds": [
           {
             "type": "rich",
-            "title": "New Release: ${{github.ref_name}}",
+            "title": "New Release: ${LATEST_TAG}",
             "description": "New Release! Click to view changelog",
             "color": 2123412,
             "author": {
