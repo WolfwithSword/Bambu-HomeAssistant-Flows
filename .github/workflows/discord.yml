@@ -6,19 +6,27 @@ on:
     types: [published]
 
 jobs:
-  sending:
+  webhook-request:
     runs-on: ubuntu-latest
     steps:
-    - name: Discord notification
-      uses: LeGitHubDeTai/github-to-discord@main
-      env:
-        DISCORD_WEBHOOK:  ${{ secrets.WEBHOOK_URL_BAMBU }}
-        DISCORD_USERNAME: Release Announcement
-        MESSAGE_TITLE: New Release!
-        MESSAGE_DESCRIPTION: Bambu HomeAssistant Flows
-        MESSAGE_URL: https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/releases/latest
-        CONTENT: null;
-        SECTION_NAME: "Changelog"
-        AUTHOR_NAME: "Wolfwithsword"
-        FOOTER_TEXT: "- WwS"
-        IMAGE: null;
+    - name: Send a request to webhook
+      run: |
+        RESPONSE=$(curl -H "Content-Type: application/json" -X POST -d '{
+        "username": "GitHub",
+        "content": "New Release!",
+        "embeds": [
+          {
+            "type": "rich",
+            "title": "New Release: ${{github.ref_name}}",
+            "description": "New Release! Click to view changelog",
+            "color": 2123412,
+            "author": {
+              "name": "${{ github.actor }}",
+              "url": "https://github.com/${{ github.actor_id }}",
+              "icon_url": "https://avatars.githubusercontent.com/u/${{ github.actor_id }}?v=4"
+            },
+            "url": "https://github.com/$GITHUB_REPOSITORY"
+          }
+        ]
+        }' ${{ secrets.WEBHOOK_URL_BAMBU }})
+        echo "Webhook server response: $RESPONSE"
