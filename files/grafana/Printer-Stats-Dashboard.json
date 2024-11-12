@@ -139,7 +139,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\r\n       (b->>'type')::text as material\r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, progress_done, material as most_mat, material_used\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material",
+          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_g')::float = 0.0 and material_used > 0 and most_mat = '$materials' and most_mat = (b->>'type')::text THEN material_used  ELSE ( (b->>'used_g')::float * (progress_done / 100) ) END),\r\n       (b->>'type')::text as material\r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b, progress_done, material as most_mat, material_used\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = '$materials' group by material",
           "refId": "A",
           "sql": {
             "columns": [
@@ -238,7 +238,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) else EXTRACT(EPOCH FROM (end_time - start_time))end),\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material",
+          "rawSql": "select \r\n      sum(case when prints.status = 'RUNNING' or prints.status = 'PAUSED' then EXTRACT(EPOCH FROM ((now() at time zone 'utc') - start_time)) else EXTRACT(EPOCH FROM (end_time - start_time))end),\r\n       material from prints where $__timeFilter(start_time) and material = '$materials' and printer = '${printers}' group by material",
           "refId": "A",
           "sql": {
             "columns": [
@@ -337,7 +337,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum(kwh) as \"KwH\",\r\n       material from prints where $__timeFilter(start_time) and material = $materials and printer = '${printers}' group by material",
+          "rawSql": "select \r\n      sum(kwh) as \"KwH\",\r\n       material from prints where $__timeFilter(start_time) and material = '$materials' and printer = '${printers}' group by material",
           "refId": "A",
           "sql": {
             "columns": [
@@ -436,7 +436,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_cost')::float = 0.0 and material_used_cost > 0 and most_mat = $materials and most_mat = (b->>'type')::text THEN material_used_cost  ELSE ( (b->>'used_cost')::float * (progress_done / 100) ) END),\r\n      (b->>'type')::text as material \r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b , progress_done, material_used_cost, material as most_mat\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = $materials group by material",
+          "rawSql": "select \r\n      sum( CASE WHEN (b->>'used_cost')::float = 0.0 and material_used_cost > 0 and most_mat = '$materials' and most_mat = (b->>'type')::text THEN material_used_cost  ELSE ( (b->>'used_cost')::float * (progress_done / 100) ) END),\r\n      (b->>'type')::text as material \r\n      from (\r\n            SELECT JSONB_ARRAY_ELEMENTS(filament_data) as b , progress_done, material_used_cost, material as most_mat\r\n            from prints \r\n            where jsonb_array_length(filament_data) != 0 \r\n            and printer = '${printers}' \r\n            and $__timeFilter(start_time)\r\n      ) as foo \r\n      where (b->>'type')::text = '$materials' group by material",
           "refId": "A",
           "sql": {
             "columns": [
