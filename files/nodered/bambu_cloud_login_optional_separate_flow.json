@@ -33,7 +33,12 @@
             "c5f80279218f9797",
             "cb4379eb0702a9a1",
             "11321e67d9548108",
-            "ffd2bcdad450c945"
+            "ffd2bcdad450c945",
+            "ce04a5cccd414ce9",
+            "63843cea32aaddae",
+            "d9b5a771ac892f0d",
+            "a18d4e2d60721d7b",
+            "9189edba0d449c76"
         ],
         "x": 14,
         "y": 19,
@@ -163,6 +168,13 @@
                 "pt": "flow",
                 "to": "111111",
                 "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "MAKERWORLD_HANDLE",
+                "pt": "flow",
+                "to": "",
+                "tot": "str"
             }
         ],
         "action": "",
@@ -184,7 +196,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "NOTES - READ ME",
-        "info": "# YOU ONLY NEED THIS FLOW ONCE NO MATTER HOW MANY PRINTERS YOU HAVE\n# AND HAVE IT IN ITS OWN TAB\n\nChange the following in *Bambu Account Config*\n\nBAMBU_EMAIL: Your bambu account email\nBAMBU_PASSWORD: Your bambu account password\nBAMBU_REGION: \n    If in China or region locked printer, use:     cn.mqtt.bambulab.com\n    Anywhere else, use:                            us.mqtt.bambulab.com\n\nIf you signed up with a third party such as google, do the following:\n\n1) Go to bambulab website and log out if you are signed in\n2) In sign in page, click on Forgot (Forgot password)\n3) Complete the reset password flow\n\nYou now will have a password for your bambu account \nusing the same email from the third party.\n\nBonus: The third party login STILL WORKS!\n\nIF THIS DOES NOT LOG YOU IN, you will need to input an email verification code into the \n'Bambu Account Config' node. If you did not get an email, hit the request button below \nto request an email code. Once configured with a fresh code, deploy and it should log you in\nfor about a year unless details change.",
+        "info": "# YOU ONLY NEED THIS FLOW ONCE NO MATTER HOW MANY PRINTERS YOU HAVE\n# AND HAVE IT IN ITS OWN TAB\n\nChange the following in *Bambu Account Config*\n\nBAMBU_EMAIL: Your bambu account email\nBAMBU_PASSWORD: Your bambu account password\nBAMBU_REGION: \n    If in China or region locked printer, use:     cn.mqtt.bambulab.com\n    Anywhere else, use:                            us.mqtt.bambulab.com\nMAKERWORLD_HANDLE: Your @name for your makerworld account. Should be same as your username (not email)\n\nIf you signed up with a third party such as google, do the following:\n\n1) Go to bambulab website and log out if you are signed in\n2) In sign in page, click on Forgot (Forgot password)\n3) Complete the reset password flow\n\nYou now will have a password for your bambu account \nusing the same email from the third party.\n\nBonus: The third party login STILL WORKS!\n\nIF THIS DOES NOT LOG YOU IN, you will need to input an email verification code into the \n'Bambu Account Config' node. If you did not get an email, hit the request button below \nto request an email code. Once configured with a fresh code, deploy and it should log you in\nfor about a year unless details change.",
         "x": 150,
         "y": 100,
         "wires": []
@@ -195,15 +207,15 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Set Access Token Global",
-        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);\nglobal.set(\"BAMBU_REFRESH_TOKEN\", msg.payload.refreshToken);",
+        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);\nglobal.set(\"BAMBU_REFRESH_TOKEN\", msg.payload.refreshToken);\n\nlet now = Date.now();\nlet expiresIn = msg.payload.expiresIn;\nlet expirey = (expiresIn*1000) + now;\nglobal.set(\"BAMBU_TOKEN_EXPIRY\", expirey);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 730,
-        "y": 220,
+        "x": 830,
+        "y": 200,
         "wires": [
             []
         ]
@@ -221,7 +233,7 @@
         "onceDelay": 0.1,
         "topic": "",
         "x": 150,
-        "y": 300,
+        "y": 340,
         "wires": [
             [
                 "ca527d3979a0003e"
@@ -241,8 +253,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 300,
+        "x": 360,
+        "y": 360,
         "wires": [
             []
         ]
@@ -260,7 +272,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 690,
+        "x": 790,
         "y": 260,
         "wires": [
             [
@@ -277,7 +289,7 @@
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 830,
+        "x": 950,
         "y": 260,
         "wires": [
             [
@@ -291,7 +303,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Set Bambu MQTT Username Global",
-        "func": "global.set(\"BAMBU_MQTT_USER\", msg.payload.username);\nglobal.set(\"BAMBU_TOKEN_EXPIRY\", msg.payload.exp);",
+        "func": "global.set(\"BAMBU_MQTT_USER\", msg.payload.username);\nif (msg.payload.exp != undefined) {\n    global.set(\"BAMBU_TOKEN_EXPIRY\", msg.payload.exp);\n}",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -309,8 +321,8 @@
         "type": "comment",
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
-        "name": "Version 2.1.8",
-        "info": "Version 2.1.8: 2024-11-05\n- Add in logic to check if we do not need to reset access token\n- Add in logic for email code verification\n  - If required, you will need to update the flow with the new value\n\n===\nVersion 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "name": "Version 2.1.9",
+        "info": "Version 2.1.9: 2024-11-21\n- Removed refresh token logic, as it no longer works on bambu's end\n- Added in workaround for new access token format\n  - Required input for makerworld user handle in order to fetch uid\n  - Expiry time is now calculated as no jwt splitting exists now\n\n===\nVersion 2.1.8: 2024-11-05\n- Add in logic to check if we do not need to reset access token\n- Add in logic for email code verification\n  - If required, you will need to update the flow with the new value\n\n===\nVersion 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 60,
         "wires": []
@@ -321,7 +333,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Login Choice",
-        "func": "if (global.get(\"BAMBU_ACCESS_TOKEN\") != undefined && global.get(\"BAMBU_MQTT_USER\") != undefined \n    && global.get(\"BAMBU_TOKEN_EXPIRY\") != undefined && global.get(\"BAMBU_TOKEN_EXPIRY\")*1000 >= Date.now()) {\n        // We are good, unless we are unable to login elsewhere\n        if (global.get(\"BAMBU_REFRESH_TOKEN\") != undefined){\n            msg.payload = {\n                \"refreshToken\": global.get(\"BAMBU_REFRESH_TOKEN\")\n            }\n            node.send([null, msg]);\n        }\n\n}\nelse {\n    node.send([msg, null]);\n}",
+        "func": "if (global.get(\"BAMBU_ACCESS_TOKEN\") != undefined && global.get(\"BAMBU_MQTT_USER\") != undefined \n    && global.get(\"BAMBU_TOKEN_EXPIRY\") != undefined && global.get(\"BAMBU_TOKEN_EXPIRY\")*1000 >= Date.now()) {\n        // We are good, unless we are unable to login elsewhere\n        \n        /*if (global.get(\"BAMBU_REFRESH_TOKEN\") != undefined){\n            msg.payload = {\n                \"refreshToken\": global.get(\"BAMBU_REFRESH_TOKEN\")\n            }\n            node.send([null, msg]);\n        }*/\n\n}\nelse {\n    node.send([msg, null]);\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -373,7 +385,7 @@
         "wires": [
             [
                 "3470ef99be2e6022",
-                "d85c73e5dbb9cf5b"
+                "63843cea32aaddae"
             ],
             [
                 "801effddad42d6b3"
@@ -398,7 +410,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 680,
+        "x": 780,
         "y": 160,
         "wires": [
             [
@@ -492,6 +504,7 @@
         "id": "ffd2bcdad450c945",
         "type": "http request",
         "z": "a8bb36f4c96539fb",
+        "d": true,
         "g": "ceb9c7af8ac85208",
         "name": "Refresh token",
         "method": "POST",
@@ -509,7 +522,139 @@
         "y": 260,
         "wires": [
             [
+                "ce04a5cccd414ce9"
+            ]
+        ]
+    },
+    {
+        "id": "ce04a5cccd414ce9",
+        "type": "switch",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 390,
+        "y": 200,
+        "wires": [
+            [
                 "2926dee3ddcfdc55"
+            ]
+        ]
+    },
+    {
+        "id": "63843cea32aaddae",
+        "type": "switch",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Has JWT Half",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": ".",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 560,
+        "y": 200,
+        "wires": [
+            [
+                "d85c73e5dbb9cf5b"
+            ],
+            [
+                "d9b5a771ac892f0d"
+            ]
+        ]
+    },
+    {
+        "id": "d9b5a771ac892f0d",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Users",
+        "func": "let handle = flow.get(\"MAKERWORLD_HANDLE\");\nif (handle == undefined || handle == \"\") {\n    node.warn(\"Cannot process cloud authentication. No makerworld handle specified\");\n    return\n}\n\nhandle = handle.toLowerCase();\nif (handle.startsWith(\"@\")) {\n    handle = handle.replace(\"@\", \"\");\n}\nlet url = `https://makerworld.com/api/v1/search-service/suggest2?keyword=${handle}`;\nmsg.url = url;\nnode.send(msg);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 240,
+        "wires": [
+            [
+                "9189edba0d449c76"
+            ]
+        ]
+    },
+    {
+        "id": "a18d4e2d60721d7b",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Scan Users",
+        "func": "let handle = flow.get(\"MAKERWORLD_HANDLE\");\nif (handle == undefined || handle == \"\") {\n    node.warn(\"Cannot process cloud authentication. No makerworld handle specified\");\n    return\n}\n\nhandle = handle.toLowerCase();\nif (handle.startsWith(\"@\")) {\n    handle = handle.replace(\"@\", \"\");\n}\n\nif (msg.payload == undefined || msg.payload.user == undefined || msg.payload.user.length == undefined || msg.payload.user.length == 0) {\n    node.warn(`No user with handle \"${handle}\" found. Cannot log into cloud mqtt`);\n    return;\n}\n\nlet data = {};\nfor (var user of msg.payload.user) {\n    if (user.handle != undefined && user.handle.toLowerCase() == handle) {\n        data.username = `u_${user.uid}`;\n        break;\n    }\n}\n\nif (data.username == undefined) {\n    node.warn(`No user with handle \"${handle}\" found. Cannot log into cloud mqtt`);\n    return;\n}\n\nmsg.payload = data;\nnode.send(msg);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 280,
+        "wires": [
+            [
+                "74b588f633523219"
+            ]
+        ]
+    },
+    {
+        "id": "9189edba0d449c76",
+        "type": "http request",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "search users",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "fc2996321cee14d8",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": true,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "User-Agent",
+                "valueType": "other",
+                "valueValue": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 OPR/102.0.0.0"
+            }
+        ],
+        "x": 550,
+        "y": 240,
+        "wires": [
+            [
+                "a18d4e2d60721d7b"
             ]
         ]
     },
