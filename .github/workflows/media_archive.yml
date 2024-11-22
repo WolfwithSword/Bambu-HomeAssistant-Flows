@@ -23,7 +23,7 @@ jobs:
           retention-days: 20
       - name: Zip for Nightly
         run: | 
-          zip -r bambu-ha-media-files.zip  /home/runner/work/Bambu-HomeAssistant-Flows/Bambu-HomeAssistant-Flows/files/media/
+          zip -r bambu-ha-media-files.zip  /home/runner/work/Bambu-HomeAssistant-Flows/Bambu-HomeAssistant-Flows/files/media/*
       - name: Release nightly
         uses: softprops/action-gh-release@v2
         with:
