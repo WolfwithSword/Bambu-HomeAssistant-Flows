@@ -584,7 +584,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Users",
-        "func": "/*let handle = flow.get(\"MAKERWORLD_HANDLE\");\nif (handle == undefined || handle == \"\") {\n    node.warn(\"Cannot process cloud authentication. No makerworld handle specified\");\n    return\n}\n\nhandle = handle.toLowerCase();\nif (handle.startsWith(\"@\")) {\n    handle = handle.replace(\"@\", \"\");\n}*/\n//let url = `https://makerworld.com/api/v1/search-service/suggest2?keyword=${handle}`;\n//url = `https://makerworld.com/_next/data/rpFAeec08RQXsjO3ICsgv/en/search/users.json?keyword=${handle}`\nlet url = \"https://makerworld.com/api/v1/design-user-service/my/preference\"\nmsg.url = url;\nmsg.access_token = \"Bearer \" + global.get(\"BAMBU_ACCESS_TOKEN\");\nnode.send(msg);",
+        "func": "let url = \"https://makerworld.com/api/v1/design-user-service/my/preference\"; // requires user-agent spoofing, but good backup\nurl = \"https://api.bambulab.com/v1/design-user-service/my/preference\";\nmsg.url = url;\nmsg.access_token = \"Bearer \" + global.get(\"BAMBU_ACCESS_TOKEN\");\nnode.send(msg);",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -637,12 +637,6 @@
         "authType": "",
         "senderr": true,
         "headers": [
-            {
-                "keyType": "User-Agent",
-                "keyValue": "",
-                "valueType": "other",
-                "valueValue": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 OPR/102.0.0.0"
-            },
             {
                 "keyType": "Authorization",
                 "keyValue": "",
