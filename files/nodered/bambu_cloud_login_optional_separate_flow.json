@@ -38,7 +38,8 @@
             "63843cea32aaddae",
             "d9b5a771ac892f0d",
             "a18d4e2d60721d7b",
-            "9189edba0d449c76"
+            "9189edba0d449c76",
+            "2aeb943e5e96ef41"
         ],
         "x": 14,
         "y": 19,
@@ -167,13 +168,6 @@
                 "p": "ONETIME_EMAIL_CODE",
                 "pt": "flow",
                 "to": "111111",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "MAKERWORLD_HANDLE",
-                "pt": "flow",
-                "to": "",
                 "tot": "str"
             }
         ],
@@ -322,7 +316,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Version 2.1.9",
-        "info": "Version 2.1.9: 2024-11-21\n- Removed refresh token logic, as it no longer works on bambu's end\n- Added in workaround for new access token format\n  - Required input for makerworld user handle in order to fetch uid\n  - Expiry time is now calculated as no jwt splitting exists now\n\n===\nVersion 2.1.8: 2024-11-05\n- Add in logic to check if we do not need to reset access token\n- Add in logic for email code verification\n  - If required, you will need to update the flow with the new value\n\n===\nVersion 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "info": "Version 2.1.9: 2024-11-22\n- Removed need for handle, found new way to get uid\n\n===\nVersion 2.1.8.1: 2024-11-21\n- Removed refresh token logic, as it no longer works on bambu's end\n- Added in workaround for new access token format\n  - Required input for makerworld user handle in order to fetch uid\n  - Expiry time is now calculated as no jwt splitting exists now\n\n===\nVersion 2.1.8: 2024-11-05\n- Add in logic to check if we do not need to reset access token\n- Add in logic for email code verification\n  - If required, you will need to update the flow with the new value\n\n===\nVersion 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 60,
         "wires": []
@@ -580,7 +574,7 @@
                 "d85c73e5dbb9cf5b"
             ],
             [
-                "d9b5a771ac892f0d"
+                "2aeb943e5e96ef41"
             ]
         ]
     },
@@ -590,14 +584,14 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Users",
-        "func": "let handle = flow.get(\"MAKERWORLD_HANDLE\");\nif (handle == undefined || handle == \"\") {\n    node.warn(\"Cannot process cloud authentication. No makerworld handle specified\");\n    return\n}\n\nhandle = handle.toLowerCase();\nif (handle.startsWith(\"@\")) {\n    handle = handle.replace(\"@\", \"\");\n}\nlet url = `https://makerworld.com/api/v1/search-service/suggest2?keyword=${handle}`;\nurl = `https://makerworld.com/_next/data/rpFAeec08RQXsjO3ICsgv/en/search/users.json?keyword=${handle}`\nmsg.url = url;\nnode.send(msg);",
+        "func": "/*let handle = flow.get(\"MAKERWORLD_HANDLE\");\nif (handle == undefined || handle == \"\") {\n    node.warn(\"Cannot process cloud authentication. No makerworld handle specified\");\n    return\n}\n\nhandle = handle.toLowerCase();\nif (handle.startsWith(\"@\")) {\n    handle = handle.replace(\"@\", \"\");\n}*/\n//let url = `https://makerworld.com/api/v1/search-service/suggest2?keyword=${handle}`;\n//url = `https://makerworld.com/_next/data/rpFAeec08RQXsjO3ICsgv/en/search/users.json?keyword=${handle}`\nlet url = \"https://makerworld.com/api/v1/design-user-service/my/preference\"\nmsg.url = url;\nmsg.access_token = \"Bearer \" + global.get(\"BAMBU_ACCESS_TOKEN\");\nnode.send(msg);",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 410,
+        "x": 570,
         "y": 240,
         "wires": [
             [
@@ -610,15 +604,15 @@
         "type": "function",
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
-        "name": "Scan Users",
-        "func": "let handle = flow.get(\"MAKERWORLD_HANDLE\");\nif (handle == undefined || handle == \"\") {\n    node.warn(\"Cannot process cloud authentication. No makerworld handle specified\");\n    return\n}\n\nif (msg.payload.pageProps != undefined && msg.payload.pageProps.users != undefined) {\n    msg.payload = {\"user\": msg.payload.pageProps.users};\n}\n\nhandle = handle.toLowerCase();\nif (handle.startsWith(\"@\")) {\n    handle = handle.replace(\"@\", \"\");\n}\n\nif (msg.payload == undefined || msg.payload.user == undefined || msg.payload.user.length == undefined || msg.payload.user.length == 0) {\n    node.warn(`No user with handle \"${handle}\" found. Cannot log into cloud mqtt`);\n    return;\n}\n\nlet data = {};\nfor (var user of msg.payload.user) {\n    if (user.handle != undefined && user.handle.toLowerCase() == handle) {\n        data.username = `u_${user.uid}`;\n        break;\n    }\n}\n\nif (data.username == undefined) {\n    node.warn(`No user with handle \"${handle}\" found. Cannot log into cloud mqtt`);\n    return;\n}\n\nmsg.payload = data;\nnode.send(msg);",
+        "name": "Get UID",
+        "func": "\nif (msg.payload == undefined || msg.payload.uid == undefined) {\n    node.warn(`No user id found. Cannot log into cloud mqtt`);\n    return;\n}\n\nlet data = {};\ndata.username = `u_${msg.payload.uid}`;\n\nif (data.username == undefined) {\n    node.warn(`No user id was found. Cannot log into cloud mqtt`);\n    return;\n}\n\nmsg.payload = data;\nnode.send(msg);",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 550,
+        "x": 580,
         "y": 280,
         "wires": [
             [
@@ -644,17 +638,49 @@
         "senderr": true,
         "headers": [
             {
-                "keyType": "other",
-                "keyValue": "User-Agent",
+                "keyType": "User-Agent",
+                "keyValue": "",
                 "valueType": "other",
                 "valueValue": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 OPR/102.0.0.0"
+            },
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "msg",
+                "valueValue": "access_token"
             }
         ],
-        "x": 550,
-        "y": 240,
+        "x": 430,
+        "y": 280,
         "wires": [
             [
                 "a18d4e2d60721d7b"
+            ]
+        ]
+    },
+    {
+        "id": "2aeb943e5e96ef41",
+        "type": "delay",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "",
+        "pauseType": "random",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "2",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 420,
+        "y": 240,
+        "wires": [
+            [
+                "d9b5a771ac892f0d"
             ]
         ]
     },
