@@ -39,7 +39,16 @@
             "d9b5a771ac892f0d",
             "a18d4e2d60721d7b",
             "9189edba0d449c76",
-            "2aeb943e5e96ef41"
+            "2aeb943e5e96ef41",
+            "022f1d71c43f8484",
+            "3918169018d4ead1",
+            "f45a729668ea0af7",
+            "e88f49fa0c75e302",
+            "43a4d787939f4afb",
+            "c4758eceed1e1fd8",
+            "d6d43ed7f3ad5bbc",
+            "f561caebbe15d8b3",
+            "4b2c02b519df1f9a"
         ],
         "x": 14,
         "y": 19,
@@ -127,8 +136,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 120,
-        "y": 140,
+        "x": 330,
+        "y": 60,
         "wires": [
             [
                 "955f493ad09c081d"
@@ -169,6 +178,13 @@
                 "pt": "flow",
                 "to": "111111",
                 "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "auth_file_path",
+                "pt": "flow",
+                "to": "/data/fetched/bbl_mqtt_auth.json",
+                "tot": "str"
             }
         ],
         "action": "",
@@ -176,11 +192,11 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 160,
-        "y": 180,
+        "x": 500,
+        "y": 60,
         "wires": [
             [
-                "057429fab4edf82b"
+                "4b2c02b519df1f9a"
             ]
         ]
     },
@@ -297,7 +313,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Set Bambu MQTT Username Global",
-        "func": "global.set(\"BAMBU_MQTT_USER\", msg.payload.username);\nif (msg.payload.exp != undefined) {\n    global.set(\"BAMBU_TOKEN_EXPIRY\", msg.payload.exp);\n}",
+        "func": "global.set(\"BAMBU_MQTT_USER\", msg.payload.username);\nif (msg.payload.exp != undefined) {\n    global.set(\"BAMBU_TOKEN_EXPIRY\", msg.payload.exp);\n}\n\nmsg.payload = {\n    \"user\": global.get(\"BAMBU_MQTT_USER\"),\n    \"token\": global.get(\"BAMBU_ACCESS_TOKEN\"),\n    \"expires\": global.get(\"BAMBU_TOKEN_EXPIRY\")\n}\nmsg.auth_file_path = flow.get(\"auth_file_path\");\nnode.send(msg);",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -307,7 +323,9 @@
         "x": 870,
         "y": 300,
         "wires": [
-            []
+            [
+                "3918169018d4ead1"
+            ]
         ]
     },
     {
@@ -316,7 +334,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Version 2.1.9",
-        "info": "Version 2.1.9: 2024-11-22\n- Removed need for handle, found new way to get uid\n\n===\nVersion 2.1.8.1: 2024-11-21\n- Removed refresh token logic, as it no longer works on bambu's end\n- Added in workaround for new access token format\n  - Required input for makerworld user handle in order to fetch uid\n  - Expiry time is now calculated as no jwt splitting exists now\n\n===\nVersion 2.1.8: 2024-11-05\n- Add in logic to check if we do not need to reset access token\n- Add in logic for email code verification\n  - If required, you will need to update the flow with the new value\n\n===\nVersion 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
+        "info": "Version 2.1.9: 2024-11-22\n- Removed need for handle, found new way to get uid\n- Added file writing for auth for those that can setup persistent files to avoid restart issues\n\n===\nVersion 2.1.8.1: 2024-11-21\n- Removed refresh token logic, as it no longer works on bambu's end\n- Added in workaround for new access token format\n  - Required input for makerworld user handle in order to fetch uid\n  - Expiry time is now calculated as no jwt splitting exists now\n\n===\nVersion 2.1.8: 2024-11-05\n- Add in logic to check if we do not need to reset access token\n- Add in logic for email code verification\n  - If required, you will need to update the flow with the new value\n\n===\nVersion 2.1.5: 2024-06-17\n- Reset version as new codebase is in a repository now\n- Some cleanup\n- Re-releasing as a global option\n\n===\nRev 46: 2023-05-01\n- Change according to main flow for making the mqtt connections easier when importing/generating\n\n===\nRev 39: 2023-04-26\n- Added extracting of plate_type for each print in ftp+postgres flow\n- Set plate_type sensor on x1c printer based on print details\n\n====\nRev 38: 2023-04-20\n- Increased delay when P1P Cloud in fetch\n\n====\nRev 36: 2023-04-07\n- Modified FTP flow to handle P1P in cloud Mode \nIf p1p cloud is toggled on, instead of FTPS, it will wait for the project file message to printer from mqtt server.\nIt will then do a GET download of the url from bambu's amazon webserver instead.\n- Modified Postgres Table schema, will be automatic upgrade.\n- Added a failsafe for start epoch as p1p cloud mode won't have it, this sets it ONLY for the print for DB purposes\n\n====\nRev 33: 2023-03-11\n- Changed FTP Image fetch logic. No longer do you need to rely on caching of a digital file or exposing nodered to the internet. Now, an image will be sent through MQTT (dashboard has associated update)\n\n====\nRev 31: 2023-03-05\n- General update for syncing\n\n====\nRev 30: 2023-02-25\n- Changed image and weight fetching to be fetch for the currently printed plate instead of default plate 1\n- Added \"Filament Type Setter\" to set filament type of printer based on 3mf file via FTPS, instead of relying on AMS in normal flow\n\n",
         "x": 130,
         "y": 60,
         "wires": []
@@ -334,8 +352,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 230,
-        "y": 220,
+        "x": 210,
+        "y": 180,
         "wires": [
             [
                 "e2d0cff94bf02e27"
@@ -354,7 +372,7 @@
         "scope": null,
         "uncaught": false,
         "x": 740,
-        "y": 340,
+        "y": 400,
         "wires": [
             [
                 "11321e67d9548108"
@@ -491,7 +509,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 910,
-        "y": 340,
+        "y": 400,
         "wires": []
     },
     {
@@ -512,8 +530,8 @@
         "authType": "",
         "senderr": true,
         "headers": [],
-        "x": 240,
-        "y": 260,
+        "x": 440,
+        "y": 320,
         "wires": [
             [
                 "ce04a5cccd414ce9"
@@ -675,6 +693,183 @@
         "wires": [
             [
                 "d9b5a771ac892f0d"
+            ]
+        ]
+    },
+    {
+        "id": "022f1d71c43f8484",
+        "type": "file",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Write Auth",
+        "filename": "auth_file_path",
+        "filenameType": "msg",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 950,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3918169018d4ead1",
+        "type": "delay",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 780,
+        "y": 340,
+        "wires": [
+            [
+                "022f1d71c43f8484"
+            ]
+        ]
+    },
+    {
+        "id": "f45a729668ea0af7",
+        "type": "file in",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Read Auth",
+        "filename": "auth_file_path",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 810,
+        "y": 60,
+        "wires": [
+            [
+                "c4758eceed1e1fd8"
+            ]
+        ]
+    },
+    {
+        "id": "e88f49fa0c75e302",
+        "type": "catch",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "",
+        "scope": [
+            "f45a729668ea0af7",
+            "c4758eceed1e1fd8"
+        ],
+        "uncaught": false,
+        "x": 90,
+        "y": 300,
+        "wires": [
+            [
+                "43a4d787939f4afb"
+            ]
+        ]
+    },
+    {
+        "id": "43a4d787939f4afb",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "No file?",
+        "func": "if (msg.error != undefined && msg.error.message != undefined && msg.error.message.includes(\"no such file\")) {\n    node.send({});\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 300,
+        "wires": [
+            [
+                "057429fab4edf82b"
+            ]
+        ]
+    },
+    {
+        "id": "c4758eceed1e1fd8",
+        "type": "json",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 950,
+        "y": 60,
+        "wires": [
+            [
+                "d6d43ed7f3ad5bbc"
+            ]
+        ]
+    },
+    {
+        "id": "d6d43ed7f3ad5bbc",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Set From Auth file",
+        "func": "if (msg.payload.user) {\n    global.set(\"BAMBU_MQTT_USER\", msg.payload.user);\n}\nif (msg.payload.token){\n    global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.token);\n}\nif(msg.payload.expires) {\n    global.set(\"BAMBU_TOKEN_EXPIRY\", msg.payload.expires);\n}\nnode.send({});",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 100,
+        "wires": [
+            [
+                "f561caebbe15d8b3"
+            ]
+        ]
+    },
+    {
+        "id": "f561caebbe15d8b3",
+        "type": "junction",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "x": 280,
+        "y": 80,
+        "wires": [
+            [
+                "057429fab4edf82b"
+            ]
+        ]
+    },
+    {
+        "id": "4b2c02b519df1f9a",
+        "type": "function",
+        "z": "a8bb36f4c96539fb",
+        "g": "ceb9c7af8ac85208",
+        "name": "Set",
+        "func": "msg.auth_file_path = flow.get(\"auth_file_path\");\nnode.send(msg);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 60,
+        "wires": [
+            [
+                "f45a729668ea0af7"
             ]
         ]
     },
