@@ -201,7 +201,7 @@
         "z": "a8bb36f4c96539fb",
         "g": "ceb9c7af8ac85208",
         "name": "Set Access Token Global",
-        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);\nglobal.set(\"BAMBU_REFRESH_TOKEN\", msg.payload.refreshToken);\n\nlet now = Date.now();\nlet expiresIn = msg.payload.expiresIn;\nlet expirey = (expiresIn*1000) + now;\nglobal.set(\"BAMBU_TOKEN_EXPIRY\", expirey);",
+        "func": "global.set(\"BAMBU_ACCESS_TOKEN\", msg.payload.accessToken);\nglobal.set(\"BAMBU_REFRESH_TOKEN\", msg.payload.refreshToken);\n\nlet now = Date.now();\nlet expiresIn = msg.payload.expiresIn;\nlet expirey = (expiresIn*1000) + now;\nglobal.set(\"BAMBU_TOKEN_EXPIRY\", Math.round(expirey/1000));",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
