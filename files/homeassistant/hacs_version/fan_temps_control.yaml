@@ -51,33 +51,33 @@ cards:
   - type: conditional
     card:
       type: custom:mushroom-number-card
-      entity: number.{HA_PRINTER_DEVICE_NAME}_set_nozzle_temp
+      entity: number.{HA_PRINTER_DEVICE_NAME}_nozzle_target_temperature
       name: Set Nozzle Temp
       layout: horizontal
       display_mode: buttons
     conditions:
       - condition: state
-        entity: number.{HA_PRINTER_DEVICE_NAME}_set_nozzle_temp
+        entity: number.{HA_PRINTER_DEVICE_NAME}_nozzle_target_temperature
         state_not: unavailable
   - type: conditional
     card:
       type: custom:mushroom-number-card
-      entity: number.{HA_PRINTER_DEVICE_NAME}_set_bed_temp
+      entity: number.{HA_PRINTER_DEVICE_NAME}_bed_target_temperature
       name: Set Bed Temp
       display_mode: buttons
       layout: horizontal
     conditions:
       - condition: state
-        entity: number.{HA_PRINTER_DEVICE_NAME}_set_bed_temp
+        entity: number.{HA_PRINTER_DEVICE_NAME}_bed_target_temperature
         state_not: unavailable
   - type: conditional
     card:
       type: custom:mushroom-number-card
-      entity: number.{HA_PRINTER_DEVICE_NAME}_set_chamber_temp
+      entity: number.{HA_PRINTER_DEVICE_NAME}_chamber_target_temperature
       name: Set Chamber Temp
       display_mode: buttons
       layout: horizontal
     conditions:
       - condition: state
-        entity: number.{HA_PRINTER_DEVICE_NAME}_set_chamber_temp
+        entity: number.{HA_PRINTER_DEVICE_NAME}_chamber_target_temperature
         state_not: unavailable
