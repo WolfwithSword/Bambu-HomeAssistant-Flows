@@ -23,28 +23,19 @@ trigger:
       - !input print_status
     from: null
     to: FINISH
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 30
+    for: !input delay_bento_off
   - platform: state
     entity_id:
       - !input print_status
     from: null
     to: FAILED
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 30
+    for: !input delay_bento_off
   - platform: state
     entity_id:
       - !input print_status
     from: null
     to: IDLE
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 30
+    for: !input delay_bento_off
   - platform: state
     entity_id:
       - !input print_status
@@ -63,17 +54,11 @@ action:
               - condition: state
                 entity_id: !input print_status
                 state: FINISH
-                for:
-                  hours: 0
-                  minutes: 0
-                  seconds: 30
+                for: !input delay_bento_off
               - condition: state
                 entity_id: !input print_status
                 state: IDLE
-                for:
-                  hours: 0
-                  minutes: 0
-                  seconds: 30
+                for: !input delay_bento_off
               - condition: state
                 entity_id: !input print_status
                 state: OFFLINE
@@ -84,24 +69,15 @@ action:
               - condition: state
                 entity_id: !input print_status
                 state: FAILED
-                for:
-                  hours: 0
-                  minutes: 0
-                  seconds: 30
+                for: !input delay_bento_off
               - condition: state
                 entity_id: !input filament_sensor
                 state: Not Set
-                for:
-                  hours: 0
-                  minutes: 0
-                  seconds: 30
+                for: !input delay_bento_off
               - condition: state
                 entity_id: !input filament_sensor
                 state: None
-                for:
-                  hours: 0
-                  minutes: 0
-                  seconds: 30
+                for: !input delay_bento_off
         sequence:
           - service: homeassistant.turn_off
             target:
@@ -136,10 +112,23 @@ action:
               - condition: template
                 value_template: "{{states(filament_s) in filament_li}}"
         sequence:
-          - service: homeassistant.turn_on
-            target:
-              entity_id: !input bento_entity
-            data: {}
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: >
+                      {{ bento_entity.startswith('fan.') and
+                        (state_attr(bento_entity, 'supported_features') | int(0) | bitwise_and(1) > 0) }}
+                sequence:
+                  - service: fan.set_percentage
+                    target:
+                      entity_id: !input bento_entity
+                    data:
+                      percentage: !input fan_speed
+            default:
+              - service: homeassistant.turn_on
+                target:
+                  entity_id: !input bento_entity
+                data: {}
 
 blueprint:
   name: "[BAMBU] Automate Bentobox Filtration"
@@ -193,6 +182,27 @@ blueprint:
             domain: 
               - switch
               - fan
+          multiple: true
+    fan_speed:
+      name: Fan Speed
+      description: Fan speed (%) to use if the selected entity is a `fan` & supports speed control.
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: slider
+    delay_bento_off:
+      name: Delay Turning Bentobox Off
+      description: "Time to wait after Print Status is `FINISH`, `IDLE`, `FALILED` \nor Printer Filament is `None` or `Not Set`\n to turn off bentobox"
+      default: 
+        hours: 0
+        minutes: 0
+        seconds: 30
+      selector:
+        duration: {}
     filament_list:
       name: Enabled Filaments
       description: |
