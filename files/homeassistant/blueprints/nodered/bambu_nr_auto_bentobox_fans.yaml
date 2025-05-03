@@ -112,23 +112,26 @@ action:
               - condition: template
                 value_template: "{{states(filament_s) in filament_li}}"
         sequence:
-          - choose:
-              - conditions:
-                  - condition: template
-                    value_template: >
-                      {{ bento_entity.startswith('fan.') and
-                        (state_attr(bento_entity, 'supported_features') | int(0) | bitwise_and(1) > 0) }}
-                sequence:
-                  - service: fan.set_percentage
-                    target:
-                      entity_id: !input bento_entity
-                    data:
-                      percentage: !input fan_speed
-            default:
-              - service: homeassistant.turn_on
-                target:
-                  entity_id: !input bento_entity
-                data: {}
+          - repeat:
+              for_each: !input bento_entity
+              sequence:
+                - choose:
+                    - conditions:
+                        - condition: template
+                          value_template: >
+                            {{ repeat.item.startswith('fan.') and
+                              (state_attr(repeat.item, 'supported_features') | int(0) | bitwise_and(1) > 0) }}
+                      sequence:
+                        - service: fan.set_percentage
+                          target:
+                            entity_id: "{{ repeat.item }}"
+                          data:
+                            percentage: !input fan_speed
+                  default:
+                    - service: homeassistant.turn_on
+                      target:
+                        entity_id: "{{ repeat.item }}"
+                      data: {}
 
 blueprint:
   name: "[BAMBU] Automate Bentobox Filtration"
