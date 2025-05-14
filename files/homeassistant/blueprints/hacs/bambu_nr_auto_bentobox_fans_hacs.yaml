@@ -153,7 +153,7 @@ blueprint:
   description: |
               Automate turning on or off your bentobox VOC filtration depending on the currently used filament. HACS Version.
 
-              **Version: v1.0.0-HACS**
+              **Version: v1.0.1-HACS**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/hacs/bambu_nr_auto_bentobox_fans_hacs.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
               [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
@@ -216,7 +216,7 @@ blueprint:
     delay_bento_off:
       name: Delay Turning Bentobox Off
       description: |
-                    Time to wait after Print Status is `FINISH`, `IDLE`, `FALILED`
+                    Time to wait after Print Status is `FINISH`, `IDLE`, `FAILED`
                     or Printer Filament is `None` or `Not Set` to turn off bentobox
       default: 
         hours: 0
