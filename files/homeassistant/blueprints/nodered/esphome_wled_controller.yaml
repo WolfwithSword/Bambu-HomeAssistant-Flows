@@ -1,0 +1,1457 @@
+variables:
+  chamberlight: !input chamber_light
+  print_action: !input printer_action
+  print_stage: !input printer_stage
+  print_status: !input printer_status
+  door_sensor: !input printer_door
+  pr_layer: !input print_layer
+  printer_error: !input printer_errors
+  hms_common: !input hms_common_errors
+  hms_serious: !input hms_serious_errors
+  hms_fatal: !input hms_fatal_errors
+  first_layer_inspect_on: !input is_first_layer_inspect_on
+  exit_finish_after_duration: !input exit_finish_after
+  idle_timeout_duration: !input printer_idle_timeout_duration
+  bright_pct: !input brightness_pct
+  replicate_state_use_rgb: !input replicate_led_state_use_rgb
+  replicate_state_rgb_color: !input replicate_led_state_rgb_color
+  replicate_state_color_temp: !input replicate_led_state_color_temp
+  replicate_state_light_effect: !input replicate_led_state_light_effect
+  finish_use_rgb: !input print_finish_use_rgb
+  finish_rgb_color: !input print_finish_rgb_color
+  finish_color_temp: !input print_finish_color_temp
+  finish_light_effect: !input print_finish_light_effect
+  paused_use_rgb: !input print_paused_use_rgb
+  paused_rgb_color: !input print_paused_rgb_color
+  paused_color_temp: !input print_paused_color_temp
+  paused_light_effect: !input print_paused_light_effect
+  heatbed_heating_use_rgb: !input heatbed_preheating_use_rgb
+  heatbed_heating_rgb_color: !input heatbed_preheating_rgb_color
+  heatbed_heating_color_temp: !input heatbed_preheating_color_temp
+  heatbed_heating_light_effect: !input heatbed_preheating_light_effect
+  bed_leveling_use_rgb: !input auto_bed_leveling_use_rgb
+  bed_leveling_rgb_color: !input auto_bed_leveling_rgb_color
+  bed_leveling_color_temp: !input auto_bed_leveling_color_temp
+  bed_leveling_preheating_light_effect: !input auto_bed_leveling_preheating_light_effect
+  cleaning_nozzle_use_rgb: !input cleaning_nozzle_tip_use_rgb
+  cleaning_nozzle_rgb_color: !input cleaning_nozzle_tip_rgb_color
+  cleaning_nozzle_color_temp: !input cleaning_nozzle_tip_color_temp
+  cleaning_nozzle_light_effect: !input cleaning_nozzle_tip_light_effect
+  chamber_light_door_open: !input chamber_light_off_door_open
+  chamber_light_off_print_start: !input chamber_lights_on_print_start
+  front_cover_falling_use_rgb: !input pause_of_front_cover_falling_use_rgb
+  front_cover_falling_rgb_color: !input pause_of_front_cover_falling_rgb_color
+  front_cover_falling_color_temp: !input pause_of_front_cover_falling_color_temp
+  front_cover_falling_light_effect: !input pause_of_front_cover_falling_light_effect
+  serious_use_rgb: !input hms_serious_use_rgb
+  serious_rgb_color: !input hms_serious_rgb_color
+  serious_color_temp: !input hms_serious_color_temp
+  serious_light_effect: !input hms_serious_light_effect
+  fatal_use_rgb: !input hms_fatal_use_rgb
+  fatal_rgb_color: !input hms_fatal_rgb_color
+  fatal_color_temp: !input hms_fatal_color_temp
+  fatal_light_effect: !input hms_fatal_light_effect
+  tool_head_logo_light_off: !input toolhead_logo_light_off
+  toolhead_logo_light_off_failed_finish: !input logo_light_off_failed_finish
+  filament_runout_use_rgb: !input paused_filament_runout_use_rgb
+  filament_runout_rgb_color: !input paused_filament_runout_rgb_color
+  filament_runout_color_temp: !input paused_filament_runout_color_temp
+  filament_runout_light_effect: !input paused_filament_runout_light_effect
+  filament_runout_codes: ['700700000020007', '701700000020007', '703700000020007', '702700000020007', '7FF8011', '3008004', '7008006', '7008011', '7018011', '7028011', '7038011', '12008011']
+  nozzle_temp_fail_use_rgb: !input paused_nozzle_temp_fail_use_rgb
+  nozzle_temp_fail_rgb_color: !input paused_nozzle_temp_fail_rgb_color
+  nozzle_temp_fail_color_temp: !input paused_nozzle_temp_fail_color_temp
+  nozzle_temp_fail_light_effect: !input paused_nozzle_temp_fail_light_effect
+  bed_temp_fail_use_rgb: !input paused_bed_temp_fail_use_rgb
+  bed_temp_fail_rgb_color: !input paused_bed_temp_fail_rgb_color
+  bed_temp_fail_color_temp: !input paused_bed_temp_fail_color_temp
+  bed_temp_fail_light_effect: !input paused_bed_temp_fail_light_effect
+  toggle_exit_finish_after: !input toggle_exit_finish_after_duration
+  toggle_light_idle_timeout_duration: !input toggle_printer_timeout_duration
+  toggle_hms_error_notification: !input toggle_hms_error_notifications
+  notify_device_mobile: !input notify_devices_mobile
+  ignore_hms_codes: !input ignored_hms_codes
+
+
+blueprint:
+  name: '[Bambu Lab] ESPhome & WLED Controller'
+  description: 'Control one or more ESPhome lights with Bambu 3D printer.
+  
+  
+    **Version: v1.0.0**
+    
+    [Source](https://github.com/SevenZero0ne/ha-nodered-bambulab/blob/main/esphome_controller.yaml)
+
+    ### Information
+
+    This automation will automatically turn on your esphome or wled controller while
+    chamber light is on.
+
+
+    It will then change colors depending on that status of the printer.
+    
+    Some selectable printer sensors are multiple choice, as that makes its optional for the printers that dont have the sensors.
+
+    ## Requirements
+
+    - [WolfwithSword -> HomeAssistant Integration via NodeRed](https://github.com/greghesp/ha-bambulab)
+
+    - ESPhome or WLED controller setup and connected to HomeAssistant as a controllable entity
+    '
+  domain: automation
+  input:
+
+    brightness_pct:
+      name: Brightness Percentage
+      description: "Brightness level for the ESPhome light, ranging from 0 to 100%."
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 5
+          unit_of_measurement: '%'
+          mode: slider
+    replicate_led_state_use_rgb:
+      name: Use RGB Color for Replicate Led State
+      description: "Select whether to use RGB color or color temperature for replicate led state.
+        Disabled=Color Temp Enabled= RGB"
+      default: false
+      selector:
+        boolean: {}
+    replicate_led_state_rgb_color:
+      name: Replicate Led State RGB Color
+      description: "Set the RGB color to be used for replicate led state."
+      default: [0, 0, 0] 
+      selector:
+        color_rgb: {}
+    replicate_led_state_color_temp:
+      name: Replicate Led State Color Temperature
+      description: "Set the color temperature to be used for replicate led state."
+      default: 4000
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    replicate_led_state_light_effect:
+      name: Replicate Led State Light Effect
+      description: "Select the light effect to used for Replicate Led State."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    print_finish_use_rgb:
+      name: Use RGB Color for Print Finish
+      description: "Select whether to use RGB color or color temperature for print finish.
+        <br>Disabled=Color Temp Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    print_finish_rgb_color:
+      name: Print Finish RGB Color
+      description: "Set the RGB color to be used for print finish."
+      default: [0, 255, 0] 
+      selector:
+        color_rgb: {}
+    print_finish_color_temp:
+      name: Print Finish Color Temperature
+      description: "Set the color temperature to be used for print finish."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    print_finish_light_effect:
+      name: Print Finish Light Effect
+      description: "Select the light effect to be used for print finish."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+    toggle_exit_finish_after_duration:
+      name: Turn on Exit Finish After timer
+      description: "Enable this to turn on Exit Finish After timer ."
+      default: true
+      selector:
+        boolean: {}
+    exit_finish_after:
+      name: Exit Finish After
+      description: "Time to wait after print finishes to turn back to replicate state"
+      default: 
+        minutes: 15
+      selector:
+        duration: {}
+
+    print_paused_use_rgb:
+      name: Use RGB Color for Paused State
+      description: "Select whether to use RGB color or color temperature for the paused state.
+        <br>Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    print_paused_rgb_color:
+      name: Paused State RGB Color
+      description: "Set the RGB color to be used for the paused state."
+      default: [0, 0, 255]  # Example default for red
+      selector:
+        color_rgb: {}
+    print_paused_color_temp:
+      name: Paused State Color Temperature
+      description: "Set the color temperature to be used for the paused state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    print_paused_light_effect:
+      name: Paused State Light Effect
+      description: "Select the light effect to be used for the paused state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    heatbed_preheating_use_rgb:
+      name: Use RGB Color for Heatbed Preheating State
+      description: "Select whether to use RGB color or color temperature for the heatbed preheating state.
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    heatbed_preheating_rgb_color:
+      name: Heatbed Preheating State RGB Color
+      description: "Set the RGB color to be used for the heatbed preheating state."
+      default: [255, 169, 0] 
+      selector:
+        color_rgb: {}
+    heatbed_preheating_color_temp:
+      name: Heatbed Preheating State Color Temperature
+      description: "Set the color temperature to be used for the heatbed preheating state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    heatbed_preheating_light_effect:
+      name: Heatbed Preheating State Light Effect
+      description: "Select the light effect to be used for the heatbed preheating state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    auto_bed_leveling_use_rgb:
+      name: Use RGB Color for Auto Bed Leveling State
+      description: "Select whether to use RGB color or color temperature for the auto bed leveling state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    auto_bed_leveling_rgb_color:
+      name: Auto Bed Leveling State RGB Color
+      description: "Set the RGB color to be used for the auto bed leveling state."
+      default: [0, 255, 255] 
+      selector:
+        color_rgb: {}
+    auto_bed_leveling_color_temp:
+      name: Auto Bed Leveling State Color Temperature
+      description: "Set the color temperature to be used for the auto bed leveling state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    auto_bed_leveling_preheating_light_effect:
+      name: Auto Bed Leveling State Light Effect
+      description: "Select the light effect to be used for the auto bed leveling state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    cleaning_nozzle_tip_use_rgb:
+      name: Use RGB Color for Cleaning Nozzle Tip State
+      description: "Select whether to use RGB color or color temperature for the cleaning nozzle tip state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    cleaning_nozzle_tip_rgb_color:
+      name: Cleaning Nozzle Tip State RGB Color
+      description: "Set the RGB color to be used for the cleaning nozzle tip state."
+      default: [0, 0, 0] 
+      selector:
+        color_rgb: {}
+    cleaning_nozzle_tip_color_temp:
+      name: Cleaning Nozzle Tip State Color Temperature
+      description: "Set the color temperature to be used for the cleaning nozzle tip state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    cleaning_nozzle_tip_light_effect:
+      name: Cleaning Nozzle Tip State Light Effect
+      description: "Select the light effect to be used for the cleaning nozzle tip state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    pause_of_front_cover_falling_use_rgb:
+      name: Use RGB Color for Pause of Front Cover Falling State
+      description: "Select whether to use RGB color or color temperature for the pause of front cover falling state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    pause_of_front_cover_falling_rgb_color:
+      name: Pause of Front Cover Falling State RGB Color
+      description: "Set the RGB color to be used for the pause of front cover falling state."
+      default: [255, 0, 0] 
+      selector:
+        color_rgb: {}
+    pause_of_front_cover_falling_color_temp:
+      name: Pause of Front Cover Falling State Color Temperature
+      description: "Set the color temperature to be used for the pause of front cover falling state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    pause_of_front_cover_falling_light_effect:
+      name: Pause of Front Cover Falling State Light Effect
+      description: "Select the light effect to be used for the pause of front cover falling state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    hms_serious_use_rgb:
+      name: Use RGB Color for HMS Serious Error State
+      description: "Select whether to use RGB color or color temperature for the hms serious error state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    hms_serious_rgb_color:
+      name: HMS Serious Error State RGB Color
+      description: "Set the RGB color to be used for the hms serious error state."
+      default: [255, 0, 0] 
+      selector:
+        color_rgb: {}
+    hms_serious_color_temp:
+      name: HMS Serious Error State Color Temperature
+      description: "Set the color temperature to be used for the hms serious error state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    hms_serious_light_effect:
+      name: HMS Serious Error State Light Effect
+      description: "Select the light effect to be used for the hms serious error state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    hms_fatal_use_rgb:
+      name: Use RGB Color for HMS Fatal Error State
+      description: "Select whether to use RGB color or color temperature for the hms fatal error state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    hms_fatal_rgb_color:
+      name: HMS Fatal Error State RGB Color
+      description: "Set the RGB color to be used for the hms fatal error state."
+      default: [255, 0, 0] 
+      selector:
+        color_rgb: {}
+    hms_fatal_color_temp:
+      name: HMS Fatal Error State Color Temperature
+      description: "Set the color temperature to be used for the hms fatal error state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    hms_fatal_light_effect:
+      name: HMS Fatal Error State Light Effect
+      description: "Select the light effect to be used for the hms fatal error state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    ignored_hms_codes:
+      name: 'Ignored HMS Error Codes'
+      description: 'List of HMS error codes to ignore changing color to that hms error color
+
+
+        See [Here](https://e.bambulab.com/query.php?lang=en) for more information.
+        Only look under "device_hms", not "device_error".
+
+
+        By default, `HMS_0c00_0300_0002_0001` `HMS_0c00_0300_0002_000c` `HMS_0c00_0300_0002_0004` `HMS_0c00_0100_0001_0004` `HMS_0C00_0300_0003_0007` are ignored.
+
+        '
+      default:
+      - HMS_0c00_0300_0002_0001 #Filament exposure metering failed because laser relection is too weak on this material. First layer inspection may be inaccurate
+      - HMS_0c00_0300_0002_000c #The build plate localization marker is not detected. Please check if the build plate is aligned correctly.
+      - HMS_0c00_0300_0002_0004 #First layer inspection is not supported for the current print job.
+      - HMS_0C00_0300_0003_0007 #Possible first layer defects have been detected. Please check the first layer quality and decide if the job should be stopped.
+      - HMS_0c00_0100_0001_0004 #The Micro Lidar camera lens seems to be dirty. Please clean the lens.
+      selector:
+        text:
+          multiple: true
+          multiline: false
+
+    paused_filament_runout_use_rgb:
+      name: Use RGB Color for Paused due to filament runout State
+      description: "Select whether to use RGB color or color temperature for the paused due to filament runout state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    paused_filament_runout_rgb_color:
+      name: Paused due to filament runout State RGB Color
+      description: "Set the RGB color to be used for the paused due to filament runout  state."
+      default: [255, 0, 0] 
+      selector:
+        color_rgb: {}
+    paused_filament_runout_color_temp:
+      name: Paused due to filament runout State Color Temperature
+      description: "Set the color temperature to be used for the paused due to filament runout state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    paused_filament_runout_light_effect:
+      name: Paused due to filament runout State Light Effect
+      description: "Select the light effect to be used for the paused due to filament runout state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    paused_nozzle_temp_fail_use_rgb:
+      name: Use RGB Color for Paused due to nozzle temperature malfunction State
+      description: "Select whether to use RGB color or color temperature for the nozzle temperature malfunction state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    paused_nozzle_temp_fail_rgb_color:
+      name: Paused due to nozzle temperature malfunction State RGB Color
+      description: "Set the RGB color to be used for the nozzle temperature malfunction  state."
+      default: [255, 0, 0] 
+      selector:
+        color_rgb: {}
+    paused_nozzle_temp_fail_color_temp:
+      name: Paused due to nozzle temperature malfunction State Color Temperature
+      description: "Set the color temperature to be used for the nozzle temperature malfunction state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    paused_nozzle_temp_fail_light_effect:
+      name: Paused due to nozzle temperature malfunction State Light Effect
+      description: "Select the light effect to be used for the nozzle temperature malfunction state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    paused_bed_temp_fail_use_rgb:
+      name: Use RGB Color for Paused due to heat bed temperature malfunction State
+      description: "Select whether to use RGB color or color temperature for the heat bed temperature malfunction state. 
+        Disabled=Color Temp, Enabled=RGB"
+      default: true
+      selector:
+        boolean: {}
+    paused_bed_temp_fail_rgb_color:
+      name: Paused due to heat bed temperature malfunction malfunction State RGB Color
+      description: "Set the RGB color to be used for the heat bed temperature malfunction state."
+      default: [255, 0, 0] 
+      selector:
+        color_rgb: {}
+    paused_bed_temp_fail_color_temp:
+      name: Paused due to heat bed temperature malfunction State Color Temperature
+      description: "Set the color temperature to be used for the heat bed temperature malfunction state."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 6000
+          unit_of_measurement: "K"
+          mode: slider
+    paused_bed_temp_fail_light_effect:
+      name: Paused due to heat bed temperature malfunction State Light Effect
+      description: "Select the light effect to be used for the heat bed temperature malfunction state."
+      default: Solid
+      selector:
+        select:
+          options:
+            - Solid
+            - None
+            - Flicker (Simulates a flickering effect)
+            - Strobe (Quick flashing light)
+            - Color Cycle (Cycles through colors)
+          mode: dropdown
+
+    chamber_light_off_door_open:
+      name: Turn ESPhome light on when Door is open
+      description: "Enable this to turn on ESPhome light on when Door is open & chamber light is off."
+      default: true
+      selector:
+        boolean: {}
+    chamber_lights_on_print_start:
+      name: Turn Chamber light on when print is started
+      description: "Enable this to turn on Chamber light on when a print is started."
+      default: true
+      selector:
+        boolean: {}
+    logo_light_off_failed_finish:
+      name: Turn Tool Head Logo Light off when print is Finished or Failed
+      description: "Enable this to turn off tool head logo light when a print is finished or failed."
+      default: true
+      selector:
+        boolean: {}
+    toggle_printer_timeout_duration:
+      name: Turn on Chamber light timeout after timer
+      description: "Enable this to turn on Chamber light timeout timer ."
+      default: true
+      selector:
+        boolean: {}
+    printer_idle_timeout_duration:
+      name: Chamber light timeout after timer
+      description: "Time to wait when printer is idle to turn off chamber light."
+      default: 
+        minutes: 45
+      selector:
+        duration: {}
+
+    printer_action:
+      name: Current Action of your Bambu Lab Printer
+      description: "The printer action sensor from the integration.
+        \nNodeRed Integration: `sensor.<model>_<printer_name>print_action`.\n"
+      selector:
+        entity:
+          filter:
+          - domain:
+            - sensor
+            integration: mqtt
+          multiple: false
+    printer_stage:
+      name: Current Stage of your Bambu Lab Printer
+      description: "The printer current stage sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_stage`."
+      selector:
+        entity:
+          filter:
+          - integration: mqtt
+          multiple: false
+    printer_status:
+      name: Current Status of your Bambu Lab Printer'
+      description: "The printer current stage sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_print_status`."
+      selector:
+        entity:
+          filter:
+          - integration: mqtt
+          multiple: false
+    chamber_light:
+      name: Chamber Light of your Bambu Lab Printer
+      description: "The printer chamber light sensor from the integration.
+        <br>NodeRed Integration: `light.<model>_<printer_name>_chamber_light`."
+      selector:
+        entity:
+          filter:
+          - domain:
+            - light
+            integration: mqtt
+          multiple: false
+    printer_door:
+      name: Printer Door of your Bambu Lab Printer
+      description: "The printer door sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_door`."
+      default: []  # Optional field
+      selector:
+        entity:
+          filter:
+          - integration: mqtt
+          multiple: true
+    print_layer:
+      name: Print Layer of your Bambu Lab Printer
+      description: "The print layer number sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_layer_num`."
+      selector:
+        entity:
+          filter:
+          - integration: mqtt
+          multiple: false
+    is_first_layer_inspect_on:
+      name: Is First Layer Inspection enabled sensor of your Bambu Lab Printer
+      description: "First Layer Inspection status sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_first_layer_inspection`."
+      default: []  # Optional field
+      selector:
+        entity:
+          filter:
+          - domain:
+            - sensor
+            integration: mqtt
+          multiple: true
+    printer_errors:
+      name: Print Error Sensor
+      description: "The print error sensor from the integration. Not any of the HMS sensors!
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_print_error`."
+      selector:
+        entity:
+          filter:
+            domain: sensor
+            integration: mqtt
+    hms_common_errors:
+      name: HMS Common Error Sensor
+      description: "The hms common error sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_hms_common`."
+      selector:
+        entity:
+          filter:
+            domain: sensor
+            integration: mqtt
+    hms_serious_errors:
+      name: HMS Serious Error Sensor
+      description: "The hms serious error sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_hms_serious`."
+      selector:
+        entity:
+          filter:
+            domain: sensor
+            integration: mqtt
+    hms_fatal_errors:
+      name: HMS Fatal Error Sensor
+      description: "The hms fatal error sensor from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_hms_fatal`."
+      selector:
+        entity:
+          filter:
+            domain: sensor
+            integration: mqtt
+    toolhead_logo_light_off:
+      name: Logo Light Off Button
+      description: "The logo light off from the integration.
+        <br>NodeRed Integration: `sensor.<model>_<printer_name>_logo_light_off`."
+      default: []  # Optional field
+      selector:
+        entity:
+          filter:
+            domain: button
+            integration: mqtt
+          multiple: true
+    esphome_lights:
+      name: ESPhome or WLED Light devices
+      description: "Select the ESPhome or WLED light devices you wish to control."
+      selector:
+        device:
+          filter:
+          - integration: esphome
+          - integration: wled
+          multiple: true
+
+    notify_devices_mobile:
+      name: Mobile Notify Devices
+      description: Mobile Devices that can work with the notify service. Sends push
+        notifications.
+      default: []  # Optional field
+      selector:
+        device:
+          multiple: true
+          filter:
+          - integration: mobile_app
+
+    toggle_hms_error_notifications:
+      name: '[DEBUG] Enable all HMS Error Notifications'
+      description: "Enable this to send debug all HMS Error Notifications."
+      default: false
+      selector:
+        boolean: {}
+
+
+alias: Bambu Lab ESPhome Controller
+description: ''
+trigger:
+- platform: state
+  entity_id:
+  - !input chamber_light
+  - !input printer_action
+  - !input printer_stage
+  - !input printer_status
+  - !input printer_door
+  - !input print_layer
+  - !input printer_errors
+  - !input hms_common_errors
+  - !input hms_serious_errors
+  - !input hms_fatal_errors
+  alias: When printer stage, action or chamber light state changes
+condition: []
+action:
+- if:
+  - condition: template
+    value_template: "{{ states(chamberlight) == 'on' }}"
+  - condition: not
+    conditions:
+    - condition: template
+      value_template: "{{ states(print_stage) == 'Scanning bed surface' }}"
+    - condition: template
+      value_template: "{{ states(print_stage) == 'Calibrating extrusion' }}"
+    - condition: template
+      value_template: "{{ states(print_stage) == 'Calibrating extrusion flow' }}"
+    - condition: template
+      value_template: "{{ states(print_status) == 'OFFLINE' }}"
+    - condition: template
+      value_template: >
+        {{ is_state(first_layer_inspect_on, 'ON') and
+            state_attr(hms_common, 'HMS_0c00_0300_0003_000b Description') == "Inspecting the first layer: please wait a moment." and
+            (states(hms_common) | int) >= 1 and
+            (states(pr_layer) | int) == 2 }}
+      alias: Inspecting the first layer and state >= 1
+    alias: And Lidar is NOT on
+  then:
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ replicate_state_use_rgb }}"
+      sequence:
+        - service: light.turn_on
+          data:
+            rgb_color: "{{ replicate_state_rgb_color }}"
+            brightness_pct: "{{ bright_pct }}"
+            effect: "{{ replicate_state_light_effect }}"
+          target:
+            device_id: !input esphome_lights
+          alias: Turn ESPhome light to RGB
+    default:
+      - service: light.turn_on
+        data:
+          kelvin: "{{ replicate_state_color_temp }}"
+          brightness_pct: "{{ bright_pct }}"
+          effect: "{{ replicate_state_light_effect }}"
+        target:
+          device_id: !input esphome_lights
+        alias: Turn ESPhome light to Color Temp
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: >
+            {{ state_attr(printer_error, 'code') in filament_runout_codes }}
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ filament_runout_use_rgb }}"
+              sequence:
+              - service: light.turn_on
+                data:
+                  rgb_color: "{{ filament_runout_rgb_color }}"
+                  brightness_pct: "{{ bright_pct }}"
+                  effect: "{{ filament_runout_light_effect }}"
+                target:
+                  device_id: !input esphome_lights
+                alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not filament_runout_use_rgb }}"
+              sequence:
+              - service: light.turn_on
+                data:
+                  kelvin: "{{ filament_runout_color_temp }}"
+                  brightness_pct: "{{ bright_pct }}"
+                  effect: "{{ filament_runout_light_effect }}"
+                target:
+                  device_id: !input esphome_lights
+                alias: Turn ESPhome light to Color Temp
+    alias: Handle Pause due to filament runout
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(print_action) == 'Pause of front cover falling' }}"
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ front_cover_falling_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ front_cover_falling_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ front_cover_falling_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not front_cover_falling_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ front_cover_falling_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ front_cover_falling_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Color Temp
+    alias: Handle Pause of front cover falling Stage
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(hms_serious) | int >= 1 }}"
+        - condition: template
+          value_template: >
+            {% set attr = states[hms_serious].attributes %}
+            {% set ns = namespace(has_unignored=false, found_hms=false) %}
+            {% for key in attr %}
+              {% if key.startswith('HMS_') and 'Description' not in key and 'Module' not in key %}
+                {% set ns.found_hms = true %}
+                {% if key not in ignore_hms_codes %}
+                  {% set ns.has_unignored = true %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.has_unignored or not ns.found_hms }}
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ serious_use_rgb }}"
+              sequence:
+              - service: light.turn_on
+                data:
+                  rgb_color: "{{ serious_rgb_color }}"
+                  brightness_pct: "{{ bright_pct }}"
+                  effect: "{{ serious_light_effect }}"
+                target:
+                  device_id: !input esphome_lights
+                alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not serious_use_rgb }}"
+              sequence:
+              - service: light.turn_on
+                data:
+                  kelvin: "{{ serious_color_temp }}"
+                  brightness_pct: "{{ bright_pct }}"
+                  effect: "{{ serious_light_effect }}"
+                target:
+                  device_id: !input esphome_lights
+                alias: Turn ESPhome light to Color Temp
+    alias: Handle HMS Serious Error Stage
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(hms_fatal) | int >= 1 }}"
+        - condition: template
+          value_template: >
+            {% set attr = states[hms_fatal].attributes %}
+            {% set ns = namespace(has_unignored=false, found_hms=false) %}
+            {% for key in attr %}
+              {% if key.startswith('HMS_') and 'Description' not in key and 'Module' not in key %}
+                {% set ns.found_hms = true %}
+                {% if key not in ignore_hms_codes %}
+                  {% set ns.has_unignored = true %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.has_unignored or not ns.found_hms }}
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ fatal_use_rgb }}"
+              sequence:
+              - service: light.turn_on
+                data:
+                  rgb_color: "{{ fatal_rgb_color }}"
+                  brightness_pct: "{{ bright_pct }}"
+                  effect: "{{ fatal_light_effect }}"
+                target:
+                  device_id: !input esphome_lights
+                alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not fatals_use_rgb }}"
+              sequence:
+              - service: light.turn_on
+                data:
+                  kelvin: "{{ fatal_color_temp }}"
+                  brightness_pct: "{{ bright_pct }}"
+                  effect: "{{ fatal_light_effect }}"
+                target:
+                  device_id: !input esphome_lights
+                alias: Turn ESPhome light to Color Temp
+    alias: Handle HMS Serious Error Stage
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(print_action) == 'Paused due to nozzle temperature malfunction' }}"
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ nozzle_temp_fail_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ nozzle_temp_fail_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ nozzle_temp_fail_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not nozzle_temp_fail_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ nozzle_temp_fail_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ nozzle_temp_fail_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Color Temp
+    alias: Handle Pause due to nozzle temperature malfunction stage
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(print_action) == 'Paused due to heat bed temperature malfunction' }}"
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ bed_temp_fail_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ bed_temp_fail_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ bed_temp_fail_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not bed_temp_fail_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ bed_temp_fail_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ bed_temp_fail_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Color Temp
+    alias: Handle Pause due to bed temperature malfunction stage
+
+    #alias: Do we need to set color to red?
+
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.from_state.state == 'RUNNING' and trigger.to_state.state == 'FINISH' }}"
+        alias: Status changed from RUNNING to FINISH
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ finish_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ finish_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ finish_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to RGB
+
+            - conditions:
+                - condition: template
+                  value_template: "{{ not finish_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ finish_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ finish_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Color Temp
+    alias: Handle RUNNING to FINISH status
+
+    #alias: Do we need to set color to green?
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(print_stage) == 'Auto bed leveling' }}"
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ bed_leveling_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ bed_leveling_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ bed_leveling_preheating_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not bed_leveling_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ bed_leveling_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ bed_leveling_preheating_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Color Temp
+    #alias: Do we need to set color to blue?
+
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: >
+          {% if is_state(print_status, 'PAUSE') %}
+            {{ is_state(printer_error, 'Error') and
+              state_attr(printer_error, 'code') == '3008013' }}
+          {% else %}
+            false
+          {% endif %}
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ paused_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ paused_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ paused_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to PAUSED RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not paused_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ paused_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ paused_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to PAUSED Color Temp
+    alias: Handle PAUSED Stage
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(print_stage) == 'Cleaning nozzle tip' }}"
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ cleaning_nozzle_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ cleaning_nozzle_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ cleaning_nozzle_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not cleaning_nozzle_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ cleaning_nozzle_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ cleaning_nozzle_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Color Temp
+    alias: Handle Cleaning Nozzle Tip Stage
+
+  - choose:
+    - conditions:
+        - condition: or
+          conditions:
+            - condition: template
+              value_template: "{{ states(print_stage) == 'Heating hotend' }}"
+            - condition: template
+              value_template: "{{ states(print_stage) == 'Heatbed preheating' }}"
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ heatbed_heating_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ heatbed_heating_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ heatbed_heating_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not heatbed_heating_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ finish_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ heatbed_heating_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Color Temp
+    alias: Handle Heatbed Preheating or Heating hotend
+
+    #alias: Do we need to set color to yellow?
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ states(door_sensor) == 'open' }}"
+      sequence:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ replicate_state_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    rgb_color: "{{ replicate_state_rgb_color }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ replicate_state_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Replicate State RGB
+            - conditions:
+                - condition: template
+                  value_template: "{{ not replicate_state_use_rgb }}"
+              sequence:
+                - service: light.turn_on
+                  data:
+                    kelvin: "{{ replicate_state_color_temp }}"
+                    brightness_pct: "{{ bright_pct }}"
+                    effect: "{{ replicate_state_light_effect }}"
+                  target:
+                    device_id: !input esphome_lights
+                  alias: Turn ESPhome light to Replicate State Color Temp
+    alias: Handle Door Open to Replicate Color
+
+  - choose:
+    - conditions:
+        - condition: template
+          value_template: "{{ toggle_hms_error_notification }}"
+        - condition: template
+          value_template: >
+            {{ states(hms_common) | int > 0 or states(hms_serious) | int > 0 or states(hms_fatal) | int > 0 }}
+      sequence:
+        - repeat:
+            for_each: !input notify_devices_mobile
+            sequence:
+              - service: notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}
+                data:
+                  title: >
+                    {% set hms_common = states[hms_common] %}
+                    {% set hms_serious = states[hms_serious] %}
+                    {% set hms_fatal = states[hms_fatal] %}
+                    {% set label = 'HMS Common Error' if hms_common.state | int > 0 else
+                                    'HMS Serious Error' if hms_serious.state | int > 0 else
+                                    'HMS Fatal Error' if hms_fatal.state | int > 0 else 'No current error' %}
+                    {{ label }}
+                  message: >
+                    {% set hms_common = states[hms_common] %}
+                    {% set hms_serious = states[hms_serious] %}
+                    {% set hms_fatal = states[hms_fatal] %}
+                    {% set sensor = hms_common if hms_common.state | int > 0 else
+                                    hms_serious if hms_serious.state | int > 0 else
+                                    hms_fatal if hms_fatal.state | int > 0 else None %}
+                    {% set label = 'HMS Common Error' if hms_common.state | int > 0 else
+                                    'HMS Serious Error' if hms_serious.state | int > 0 else
+                                    'HMS Fatal Error' if hms_fatal.state | int > 0 else '' %}
+                    {% if sensor is not none and sensor.state | int > 0 %}
+                      {% set attributes = sensor.attributes %}
+                      {% if attributes %}
+                        {% for key, value in attributes.items() %}
+                          {% if key not in ['icon', 'friendly_name', 'name'] %}
+                          - {{ key }}: {{ value }}
+                          {% endif %}
+                        {% endfor %}
+                      {% else %}
+                        No attributes available.
+                      {% endif %}
+                    {% else %}
+                      No current error.
+                    {% endif %}
+
+
+  else:
+  - service: light.turn_off
+    data: {}
+    target:
+      device_id: !input esphome_lights
+    alias: Turn ESPhome light off
+
+- if:
+    - condition: template
+      value_template: "{{ chamber_light_door_open }}"
+    - condition: template
+      value_template: "{{ states(chamberlight) == 'off' }}"
+    - condition: template
+      value_template: "{{ states(door_sensor) == 'open' }}"
+  then:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ replicate_state_use_rgb }}"
+          sequence:
+            - service: light.turn_on
+              data:
+                rgb_color: "{{ replicate_state_rgb_color }}"
+                brightness_pct: "{{ bright_pct }}"
+                effect: "{{ replicate_state_light_effect }}"
+              target:
+                device_id: !input esphome_lights
+              alias: Turn ESPhome light to RGB
+        - conditions:
+            - condition: template
+              value_template: "{{ not replicate_state_use_rgb }}"
+          sequence:
+            - service: light.turn_on
+              data:
+                kelvin: "{{ replicate_state_color_temp }}"
+                brightness_pct: "{{ bright_pct }}"
+                effect: "{{ replicate_state_light_effect }}"
+              target:
+                device_id: !input esphome_lights
+              alias: Turn ESPhome light to Color Temp
+  alias: Turn ESPhome light on when chamber door open and chamber light off
+
+- if:
+    - condition: template
+      value_template: "{{ chamber_light_off_print_start }}"
+    - condition: template
+      value_template: "{{ states(chamberlight) == 'off' }}"
+    - condition: template
+      value_template: "{{ trigger.from_state.state != 'RUNNING' and trigger.to_state.state == 'RUNNING' }}"
+  then:
+    - service: light.turn_on
+      target:
+        entity_id: "{{ chamberlight }}"
+  alias: Turn Chamber Light on print start
+
+- if:
+    - condition: template
+      value_template: "{{ toolhead_logo_light_off_failed_finish }}"
+    - condition: template
+      value_template: "{{ trigger.from_state.state != '' and (trigger.to_state.state == 'FAILED' or trigger.to_state.state == 'FINISH') }}"
+  then:
+    - service: button.press
+      target:
+        entity_id: "{{ tool_head_logo_light_off }}"
+  alias: Turn Tool Head logo light off on Print Finish or Failed
+
+- if:
+  - condition: template
+    value_template: "{{ toggle_exit_finish_after }}"
+  - condition: template
+    value_template: "{{ states(chamberlight) == 'on' }}"
+  - condition: template
+    value_template: "{{ trigger.from_state.state == 'RUNNING' and trigger.to_state.state == 'FINISH' }}"
+  then:
+  - delay: "{{ exit_finish_after_duration }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ states(chamberlight) == 'on' }}"
+          - condition: template
+            value_template: "{{ is_state(print_status, 'FINISH') }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ replicate_state_use_rgb }}"
+                sequence:
+                  - service: light.turn_on
+                    data:
+                      rgb_color: "{{ replicate_state_rgb_color }}"
+                      brightness_pct: "{{ bright_pct }}"
+                      effect: "{{ replicate_state_light_effect }}"
+                    target:
+                      device_id: !input esphome_lights
+                    alias: Turn ESPhome light to RGB
+              - conditions:
+                  - condition: template
+                    value_template: "{{ not replicate_state_use_rgb }}"
+                sequence:
+                  - service: light.turn_on
+                    data:
+                      kelvin: "{{ replicate_state_color_temp }}"
+                      brightness_pct: "{{ bright_pct }}"
+                      effect: "{{ replicate_state_light_effect }}"
+                    target:
+                      device_id: !input esphome_lights
+                    alias: Turn ESPhome light to Color Temp
+  alias: Turn ESPhome light back to replicate color after timeout
+
+- if:
+    - condition: template
+      value_template: "{{ toggle_light_idle_timeout_duration }}"
+    - condition: template
+      value_template: "{{ is_state(chamberlight, 'on') }}"
+    - condition: and
+      conditions:
+        - condition: template
+          value_template: "{{ states(print_status) not in ['PREPARE', 'RUNNING', 'PAUSE'] }}"
+        - condition: template
+          value_template: "{{ is_state(print_stage, 'Idle') }}"
+        - condition: template
+          value_template: "{{ is_state(print_action, 'Idle') }}"
+  then:
+    - delay: "{{ idle_timeout_duration }}"
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ states(print_status) not in ['PREPARE', 'RUNNING', 'PAUSE'] }}"
+            - condition: template
+              value_template: "{{ is_state(print_stage, 'Idle') }}"
+            - condition: template
+              value_template: "{{ is_state(print_action, 'Idle') }}"
+            - condition: template
+              value_template: "{{ is_state(chamberlight, 'on') }}"
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id: !input chamber_light
+  alias: Turn Chamber light off after print idle for timeout
+
+
+mode: parallel
+#max: 3  # (Optional, specifies the maximum number of parallel runs)
+#mode: single
