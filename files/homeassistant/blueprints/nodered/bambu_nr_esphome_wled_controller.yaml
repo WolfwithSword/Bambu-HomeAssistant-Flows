@@ -74,7 +74,9 @@ variables:
 
 
 blueprint:
-  name: '[Bambu Lab] ESPhome & WLED Controller'
+  name: "[Bambu Lab] ESPhome & WLED Controller"
+  source_url: "https://github.com/SevenZero0ne/ha-nodered-bambulab/blob/main/esphome_controller.yaml"
+  author: "SevenZero0ne"
   description: 'Control one or more ESPhome lights with Bambu 3D printer.
   
   
@@ -94,7 +96,7 @@ blueprint:
 
     ## Requirements
 
-    - [WolfwithSword -> HomeAssistant Integration via NodeRed](https://github.com/greghesp/ha-bambulab)
+    - [WolfwithSword -> HomeAssistant Integration via NodeRed](https://www.wolfwithsword.com/bambulab-to-home-assistant-nodered-configurator/)
 
     - ESPhome or WLED controller setup and connected to HomeAssistant as a controllable entity
     '
