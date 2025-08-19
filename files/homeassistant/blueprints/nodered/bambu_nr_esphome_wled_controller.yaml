@@ -748,10 +748,14 @@ blueprint:
       name: ESPhome or WLED Light devices
       description: "Select the ESPhome or WLED light devices you wish to control."
       selector:
-        device:
+        entity:
           filter:
-          - integration: esphome
-          - integration: wled
+            - domain:
+              - light
+              integration: esphome
+            - domain:
+              - light
+              integration: wled
           multiple: true
 
     notify_devices_mobile:
@@ -825,7 +829,7 @@ action:
             brightness_pct: "{{ bright_pct }}"
             effect: "{{ replicate_state_light_effect }}"
           target:
-            device_id: !input esphome_lights
+            entity_id: !input esphome_lights
           alias: Turn ESPhome light to RGB
     default:
       - service: light.turn_on
@@ -834,7 +838,7 @@ action:
           brightness_pct: "{{ bright_pct }}"
           effect: "{{ replicate_state_light_effect }}"
         target:
-          device_id: !input esphome_lights
+          entity_id: !input esphome_lights
         alias: Turn ESPhome light to Color Temp
 
   - choose:
@@ -854,7 +858,7 @@ action:
                   brightness_pct: "{{ bright_pct }}"
                   effect: "{{ filament_runout_light_effect }}"
                 target:
-                  device_id: !input esphome_lights
+                  entity_id: !input esphome_lights
                 alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -866,7 +870,7 @@ action:
                   brightness_pct: "{{ bright_pct }}"
                   effect: "{{ filament_runout_light_effect }}"
                 target:
-                  device_id: !input esphome_lights
+                  entity_id: !input esphome_lights
                 alias: Turn ESPhome light to Color Temp
     alias: Handle Pause due to filament runout
 
@@ -886,7 +890,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ front_cover_falling_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -898,7 +902,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ front_cover_falling_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Color Temp
     alias: Handle Pause of front cover falling Stage
 
@@ -931,7 +935,7 @@ action:
                   brightness_pct: "{{ bright_pct }}"
                   effect: "{{ serious_light_effect }}"
                 target:
-                  device_id: !input esphome_lights
+                  entity_id: !input esphome_lights
                 alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -943,7 +947,7 @@ action:
                   brightness_pct: "{{ bright_pct }}"
                   effect: "{{ serious_light_effect }}"
                 target:
-                  device_id: !input esphome_lights
+                  entity_id: !input esphome_lights
                 alias: Turn ESPhome light to Color Temp
     alias: Handle HMS Serious Error Stage
 
@@ -976,7 +980,7 @@ action:
                   brightness_pct: "{{ bright_pct }}"
                   effect: "{{ fatal_light_effect }}"
                 target:
-                  device_id: !input esphome_lights
+                  entity_id: !input esphome_lights
                 alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -988,7 +992,7 @@ action:
                   brightness_pct: "{{ bright_pct }}"
                   effect: "{{ fatal_light_effect }}"
                 target:
-                  device_id: !input esphome_lights
+                  entity_id: !input esphome_lights
                 alias: Turn ESPhome light to Color Temp
     alias: Handle HMS Serious Error Stage
 
@@ -1008,7 +1012,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ nozzle_temp_fail_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -1020,7 +1024,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ nozzle_temp_fail_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Color Temp
     alias: Handle Pause due to nozzle temperature malfunction stage
 
@@ -1040,7 +1044,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ bed_temp_fail_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -1052,7 +1056,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ bed_temp_fail_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Color Temp
     alias: Handle Pause due to bed temperature malfunction stage
 
@@ -1075,7 +1079,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ finish_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to RGB
 
             - conditions:
@@ -1088,7 +1092,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ finish_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Color Temp
     alias: Handle RUNNING to FINISH status
 
@@ -1110,7 +1114,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ bed_leveling_preheating_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -1122,7 +1126,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ bed_leveling_preheating_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Color Temp
     #alias: Do we need to set color to blue?
 
@@ -1148,7 +1152,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ paused_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to PAUSED RGB
             - conditions:
                 - condition: template
@@ -1160,7 +1164,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ paused_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to PAUSED Color Temp
     alias: Handle PAUSED Stage
 
@@ -1180,7 +1184,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ cleaning_nozzle_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -1192,7 +1196,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ cleaning_nozzle_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Color Temp
     alias: Handle Cleaning Nozzle Tip Stage
 
@@ -1216,7 +1220,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ heatbed_heating_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to RGB
             - conditions:
                 - condition: template
@@ -1228,7 +1232,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ heatbed_heating_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Color Temp
     alias: Handle Heatbed Preheating or Heating hotend
 
@@ -1250,7 +1254,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ replicate_state_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Replicate State RGB
             - conditions:
                 - condition: template
@@ -1262,7 +1266,7 @@ action:
                     brightness_pct: "{{ bright_pct }}"
                     effect: "{{ replicate_state_light_effect }}"
                   target:
-                    device_id: !input esphome_lights
+                    entity_id: !input esphome_lights
                   alias: Turn ESPhome light to Replicate State Color Temp
     alias: Handle Door Open to Replicate Color
 
@@ -1317,7 +1321,7 @@ action:
   - service: light.turn_off
     data: {}
     target:
-      device_id: !input esphome_lights
+      entity_id: !input esphome_lights
     alias: Turn ESPhome light off
 
 - if:
@@ -1339,7 +1343,7 @@ action:
                 brightness_pct: "{{ bright_pct }}"
                 effect: "{{ replicate_state_light_effect }}"
               target:
-                device_id: !input esphome_lights
+                entity_id: !input esphome_lights
               alias: Turn ESPhome light to RGB
         - conditions:
             - condition: template
@@ -1351,7 +1355,7 @@ action:
                 brightness_pct: "{{ bright_pct }}"
                 effect: "{{ replicate_state_light_effect }}"
               target:
-                device_id: !input esphome_lights
+                entity_id: !input esphome_lights
               alias: Turn ESPhome light to Color Temp
   alias: Turn ESPhome light on when chamber door open and chamber light off
 
@@ -1406,7 +1410,7 @@ action:
                       brightness_pct: "{{ bright_pct }}"
                       effect: "{{ replicate_state_light_effect }}"
                     target:
-                      device_id: !input esphome_lights
+                      entity_id: !input esphome_lights
                     alias: Turn ESPhome light to RGB
               - conditions:
                   - condition: template
@@ -1418,7 +1422,7 @@ action:
                       brightness_pct: "{{ bright_pct }}"
                       effect: "{{ replicate_state_light_effect }}"
                     target:
-                      device_id: !input esphome_lights
+                      entity_id: !input esphome_lights
                     alias: Turn ESPhome light to Color Temp
   alias: Turn ESPhome light back to replicate color after timeout
 
