@@ -46,7 +46,7 @@ variables:
   serious_use_rgb: !input hms_serious_use_rgb
   serious_rgb_color: !input hms_serious_rgb_color
   serious_color_temp: !input hms_serious_color_temp
-  serious_light_: !input hms_serious_light_
+  serious_light_effect: !input hms_serious_light_effect
   fatal_use_rgb: !input hms_fatal_use_rgb
   fatal_rgb_color: !input hms_fatal_rgb_color
   fatal_color_temp: !input hms_fatal_color_temp
