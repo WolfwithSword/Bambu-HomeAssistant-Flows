@@ -32,17 +32,17 @@ variables:
   bed_leveling_use_rgb: !input auto_bed_leveling_use_rgb
   bed_leveling_rgb_color: !input auto_bed_leveling_rgb_color
   bed_leveling_color_temp: !input auto_bed_leveling_color_temp
-  bed_leveling_preheating_light_: !input auto_bed_leveling_preheating_light_
+  bed_leveling_preheating_light_effect: !input auto_bed_leveling_preheating_light_effect
   cleaning_nozzle_use_rgb: !input cleaning_nozzle_tip_use_rgb
   cleaning_nozzle_rgb_color: !input cleaning_nozzle_tip_rgb_color
   cleaning_nozzle_color_temp: !input cleaning_nozzle_tip_color_temp
-  cleaning_nozzle_light_: !input cleaning_nozzle_tip_light_
+  cleaning_nozzle_light_effect: !input cleaning_nozzle_tip_light_effect
   chamber_light_door_open: !input chamber_light_off_door_open
   chamber_light_off_print_start: !input chamber_lights_on_print_start
   front_cover_falling_use_rgb: !input pause_of_front_cover_falling_use_rgb
   front_cover_falling_rgb_color: !input pause_of_front_cover_falling_rgb_color
   front_cover_falling_color_temp: !input pause_of_front_cover_falling_color_temp
-  front_cover_falling_light_: !input pause_of_front_cover_falling_light_
+  front_cover_falling_light_effect: !input pause_of_front_cover_falling_light_effect
   serious_use_rgb: !input hms_serious_use_rgb
   serious_rgb_color: !input hms_serious_rgb_color
   serious_color_temp: !input hms_serious_color_temp
@@ -50,22 +50,22 @@ variables:
   fatal_use_rgb: !input hms_fatal_use_rgb
   fatal_rgb_color: !input hms_fatal_rgb_color
   fatal_color_temp: !input hms_fatal_color_temp
-  fatal_light_: !input hms_fatal_light_
+  fatal_light_effect: !input hms_fatal_light_effect
   tool_head_logo_light_off: !input toolhead_logo_light_off
   toolhead_logo_light_off_failed_finish: !input logo_light_off_failed_finish
   filament_runout_use_rgb: !input paused_filament_runout_use_rgb
   filament_runout_rgb_color: !input paused_filament_runout_rgb_color
   filament_runout_color_temp: !input paused_filament_runout_color_temp
-  filament_runout_light_: !input paused_filament_runout_light_
+  filament_runout_light_effect: !input paused_filament_runout_light_effect
   filament_runout_codes: ['700700000020007', '701700000020007', '703700000020007', '702700000020007', '7FF8011', '3008004', '7008006', '7008011', '7018011', '7028011', '7038011', '12008011']
   nozzle_temp_fail_use_rgb: !input paused_nozzle_temp_fail_use_rgb
   nozzle_temp_fail_rgb_color: !input paused_nozzle_temp_fail_rgb_color
   nozzle_temp_fail_color_temp: !input paused_nozzle_temp_fail_color_temp
-  nozzle_temp_fail_light_: !input paused_nozzle_temp_fail_light_
+  nozzle_temp_fail_light_effect: !input paused_nozzle_temp_fail_light_effect
   bed_temp_fail_use_rgb: !input paused_bed_temp_fail_use_rgb
   bed_temp_fail_rgb_color: !input paused_bed_temp_fail_rgb_color
   bed_temp_fail_color_temp: !input paused_bed_temp_fail_color_temp
-  bed_temp_fail_light_: !input paused_bed_temp_fail_light_
+  bed_temp_fail_light_effect: !input paused_bed_temp_fail_light_effect
   toggle_exit_finish_after: !input toggle_exit_finish_after_duration
   toggle_light_idle_timeout_duration: !input toggle_printer_timeout_duration
   toggle_hms_error_notification: !input toggle_hms_error_notifications
@@ -137,8 +137,8 @@ blueprint:
           max: 6000
           unit_of_measurement: "K"
           mode: slider
-    replicate_led_state_light_:
-      name: Replicate Led State Light 
+    replicate_led_state_light_effect:
+      name: Replicate Led State Light Effect
       description: "Select the light effect to used for Replicate Led State."
       default: Solid
       selector:
