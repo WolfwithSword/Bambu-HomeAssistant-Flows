@@ -71,4 +71,4 @@ Additionally, there is a few extra automations that can be enabled.
   - Turn LED strip on when Door is open
   - Turn Chamber light on when print is started
   - Turn Tool Head Logo Light off when print is Finished or Failed
-  - Turn Chamber light off after X minutes after print has completed
+  - Turn Chamber light off after X minutes when printer is idle
