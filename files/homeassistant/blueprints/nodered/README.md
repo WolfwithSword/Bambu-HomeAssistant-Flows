@@ -47,7 +47,9 @@ The notifications can be sent to any number of the following:
 Additionally, you can setup multiple custom actions with your own configuration if desired.
 
 ## Printer Status/Extra Light via LED Strip
+
 Author: [SevenZero0ne](https://github.com/SevenZero0ne)
+
 [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWolfwithSword%2FBambu-HomeAssistant-Flows%2Fblob%2Fmain%2Ffiles%2Fhomeassistant%2Fblueprints%2Fnodered%2Fbambu_nr_esphome_wled_controller.yaml)
 
 Mimic's printers built in led bar ON/OFF will also change color based on printer status
