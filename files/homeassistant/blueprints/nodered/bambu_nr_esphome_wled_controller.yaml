@@ -75,9 +75,9 @@ variables:
 
 blueprint:
   name: "[Bambu Lab] ESPhome & WLED Controller"
-  source_url: "https://github.com/SevenZero0ne/ha-nodered-bambulab/blob/main/esphome_controller.yaml"
+  source_url: "https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/nodered/bambu_nr_esphome_wled_controller.yaml"
   author: "SevenZero0ne"
-  description: 'Control one or more ESPhome or wled lights with Bambu 3D printer.
+  description: 'Control one or more ESPhome or wled lights based on BambuLab 3D printers status.
   
   
     **Version: v1.0.0**
@@ -511,7 +511,7 @@ blueprint:
       selector:
         boolean: {}
     paused_bed_temp_fail_rgb_color:
-      name: Paused due to heat bed temperature malfunction malfunction State RGB Color
+      name: Paused due to heat bed temperature malfunction State RGB Color
       description: "Set the RGB color to be used for the heat bed temperature malfunction state."
       default: [255, 0, 0] 
       selector:
