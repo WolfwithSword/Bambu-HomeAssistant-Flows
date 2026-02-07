@@ -31,11 +31,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_1
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state.toLowerCase() != 'empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 27%
       left: 45%
       '--paper-item-icon-color': var(--tray_1_color)
+      '--icon-primary-color': var(--tray_1_color)
+      '--state-icon-color': var(--tray_1_color)
       background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
@@ -67,11 +69,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_2
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state.toLowerCase() != 'empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 62%
       left: 12%
       '--paper-item-icon-color': var(--tray_2_color)
+      '--icon-primary-color': var(--tray_2_color)
+      '--state-icon-color': var(--tray_2_color)
       background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
@@ -103,11 +107,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_3
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state.toLowerCase() != 'empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 63%
       left: 63%
       '--paper-item-icon-color': var(--tray_3_color)
+      '--icon-primary-color': var(--tray_3_color)
+      '--state-icon-color': var(--tray_3_color)
       background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)
@@ -139,11 +145,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_4
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_4'].state.toLowerCase() != 'empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 27%
       left: 88%
       '--paper-item-icon-color': var(--tray_4_color)
+      '--icon-primary-color': var(--tray_4_color)
+      '--state-icon-color': var(--tray_4_color)
       background-color: rgba(0,0,0,0.5)
       padding: 7px
       border: 2px solid rgba(255,255,255,0.6)

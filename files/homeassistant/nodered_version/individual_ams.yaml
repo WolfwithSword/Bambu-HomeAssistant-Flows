@@ -31,11 +31,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_0
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_0'].state.toLowerCase() != 'empty'?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 28%
       left: 21.4%
       '--paper-item-icon-color': var(--tray_0_color)
+      '--icon-primary-color': var(--tray_0_color)
+      '--state-icon-color': var(--tray_0_color)
       background-color: rgba(0,0,0,0.5)
       box-shadow: 0 0 5px 5px var(--tray_0_bg)
       border-radius: 50px
@@ -63,11 +65,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_1
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_1'].state.toLowerCase() != 'empty'?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 28%
       left: 39.7%
       '--paper-item-icon-color': var(--tray_1_color)
+      '--icon-primary-color': var(--tray_1_color)
+      '--state-icon-color': var(--tray_1_color)
       background-color: rgba(0,0,0,0.5)
       box-shadow: 0 0 5px 5px  var(--tray_1_bg)
       border-radius: 50px
@@ -95,11 +99,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_2
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_2'].state.toLowerCase() != 'empty'?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 28%
       left: 59.7%
       '--paper-item-icon-color': var(--tray_2_color)
+      '--icon-primary-color': var(--tray_2_color)
+      '--state-icon-color': var(--tray_2_color)
       background-color: rgba(0,0,0,0.5)
       box-shadow: 0 0 5px 5px  var(--tray_2_bg)
       border-radius: 50px
@@ -127,11 +133,13 @@ elements:
       entity: sensor.{HA_AMS_DEVICE_NAME}_tray_3
       icon: >-
         ${states['sensor.{HA_AMS_DEVICE_NAME}_tray_3'].state.toLowerCase() != 'empty'?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 28%
       left: 79.6%
       '--paper-item-icon-color': var(--tray_3_color)
+      '--icon-primary-color': var(--tray_3_color)
+      '--state-icon-color': var(--tray_3_color)
       background-color: rgba(0,0,0,0.5)
       box-shadow: 0 0 5px 5px var(--tray_3_bg)
       border-radius: 50px
@@ -177,7 +185,7 @@ elements:
           type: state-icon
           entity: sensor.{HA_AMS_DEVICE_NAME}_humidity_level
           icon: >-
-            ${'fapro:humidity-level-dark-' +
+            ${'local:humidity-level-dark-' +
             states['sensor.{HA_AMS_DEVICE_NAME}_humidity_level'].state +
             '#fullcolor'}
         style:
@@ -194,7 +202,7 @@ card_mod:
       background: none !important;
       border: none !important;
       box-shadow: none !important;
-      --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 3 %} rgba(255, 255, 126, 0.5); {% elif  states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 1 %} rgba(228,127,97,1.0); {% else %} rgba(194,74,72,1.0); {% endif %}
+      --humidity-border-color: {% if states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 3 %} rgba(194,74,72,1.0); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 2 %} rgba(228,127,97,1.0); {% elif states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level')  != 'unavailable' and states('sensor.{HA_AMS_DEVICE_NAME}_humidity_level') | int > 1 %} rgba(255, 255, 126, 0.5); {% else %} rgba(0,255,17,0.75); {% endif %}
       --tray_0_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_0', 'color') }};
       --tray_1_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_1', 'color') }};
       --tray_2_color: {{state_attr('sensor.{HA_AMS_DEVICE_NAME}_tray_2', 'color') }};

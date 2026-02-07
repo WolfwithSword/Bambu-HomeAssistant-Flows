@@ -34,6 +34,24 @@ elements:
             'orange' :
               states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -70 ?
             'red' : 'red'}
+          "--icon-primary-color": >-
+            ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -50 ?
+            'green' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -60 ?
+            'yellow' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -67 ?
+            'orange' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -70 ?
+            'red' : 'red'}
+          "--state-icon-color": >-
+            ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -50 ?
+            'green' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -60 ?
+            'yellow' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -67 ?
+            'orange' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -70 ?
+            'red' : 'red'}
       - entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
         type: state-icon
         style:

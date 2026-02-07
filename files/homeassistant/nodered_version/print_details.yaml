@@ -83,6 +83,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_recovery
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_recovery
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_recovery
@@ -97,6 +100,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_first_layer_inspection
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_first_layer_inspection
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_first_layer_inspection
@@ -111,6 +117,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_buildplate_detection
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_buildplate_detection
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_buildplate_detection
@@ -125,6 +134,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_nozzle_blob_detection
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_nozzle_blob_detection
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_nozzle_blob_detection
@@ -139,6 +151,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_air_print_detection
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_air_print_detection
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_air_print_detection
@@ -153,6 +168,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_prompt_sound
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_prompt_sound
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_prompt_sound
@@ -167,6 +185,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_switch
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_switch
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_auto_switch
@@ -181,6 +202,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_filament_tangle
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_filament_tangle
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_filament_tangle
@@ -195,6 +219,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_recording
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_recording
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_recording
@@ -209,6 +236,9 @@ cards:
                 - condition: state
                   entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_timelapse
                   state_not: unavailable
+                - condition: state
+                  entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_timelapse
+                  state_not: unknown
               card:
                 type: custom:mushroom-entity-card
                 entity: switch.{HA_PRINTER_DEVICE_NAME}_toggle_timelapse
@@ -223,6 +253,9 @@ cards:
                 - condition: state
                   entity: select.{HA_PRINTER_DEVICE_NAME}_camera_resolution
                   state_not: unavailable
+                - condition: state
+                  entity: select.{HA_PRINTER_DEVICE_NAME}_camera_resolution
+                  state_not: unknown
               card:
                 type: custom:mushroom-select-card
                 entity: select.{HA_PRINTER_DEVICE_NAME}_camera_resolution

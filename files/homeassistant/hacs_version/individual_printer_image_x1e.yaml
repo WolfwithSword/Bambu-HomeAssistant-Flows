@@ -34,6 +34,24 @@ elements:
             'orange' :
               states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -70 ?
             'red' : 'red'}
+          "--icon-primary-color": >-
+            ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -50 ?
+            'green' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -60 ?
+            'yellow' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -67 ?
+            'orange' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -70 ?
+            'red' : 'red'}
+          "--state-icon-color": >-
+            ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -50 ?
+            'green' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -60 ?
+            'yellow' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -67 ?
+            'orange' :
+              states['sensor.{HA_PRINTER_DEVICE_NAME}_wi_fi_signal'].state > -70 ?
+            'red' : 'red'}
       - entity: light.{HA_PRINTER_DEVICE_NAME}_chamber_light
         type: state-icon
         style:
@@ -59,7 +77,9 @@ elements:
           - type: conditional
             conditions:
               - entity: image.{HA_PRINTER_DEVICE_NAME}_cover_image
-                state_not: unavailable
+                state_not: 
+                - "unavailable"
+                - "unknown"  
             elements:
               - type: custom:hui-element
                 card_type: picture-entity
@@ -99,7 +119,9 @@ elements:
       - type: conditional
         conditions:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
-            state_not: unavailable
+            state_not: 
+                - "unavailable"
+                - "unknown"  
         elements:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_chamber_temperature
             type: state-badge

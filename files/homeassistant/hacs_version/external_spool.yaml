@@ -8,12 +8,14 @@ elements:
       entity: sensor.{HA_PRINTER_DEVICE_NAME}_externalspool_external_spool
       icon: >-
         ${states['sensor.{HA_PRINTER_DEVICE_NAME}_externalspool_external_spool'].state.toLowerCase() != 'empty' ?
-        'fapro:filament-1' : 'mdi:tray' }
+        'local:filament-1' : 'mdi:tray' }
     style:
       top: 50%
       left: 50%
       transform: translate(-50%, -50%) scale(200%)
       '--paper-item-icon-color': var(--tray_vt_color)
+      '--icon-primary-color': var(--tray_vt_color)
+      '--state-icon-color': var(--tray_vt_color)
       background-color: rgba(0,0,0,0.5)
       box-shadow: 0 0 5px 5px var(--tray_vt_bg)
       border-radius: 50px

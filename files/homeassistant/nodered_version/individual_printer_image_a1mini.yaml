@@ -31,6 +31,24 @@ elements:
                 'orange' :
                   states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
                 'red' : 'red'}
+              "--icon-primary-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
+              "--state-icon-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
       - type: conditional
         conditions:
           - entity: sensor.{HA_PRINTER_DEVICE_NAME}_network_connection
@@ -57,6 +75,24 @@ elements:
               font-size: 0.8em
               color: rgba(0,0,0,0)
               "--paper-item-icon-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
+              "--icon-primary-color": >-
+                ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
+                'green' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?
+                'yellow' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -67 ?
+                'orange' :
+                  states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -70 ?
+                'red' : 'red'}
+              "--state-icon-color": >-
                 ${states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -50 ?
                 'green' :
                   states['sensor.{HA_PRINTER_DEVICE_NAME}_wifi_signal'].state > -60 ?

@@ -3,76 +3,76 @@
   <defs>
     <style>
       .cls-1 {
-        fill: #ed7950;
+        fill: currentColor;
       }
 
       .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11, .cls-12, .cls-13, .cls-14, .cls-15, .cls-16, .cls-17, .cls-18, .cls-19, .cls-20, .cls-21, .cls-22, .cls-23 {
-        stroke: #f21c1c;
+        stroke: rgba(0%,0%,0%,20%);
         stroke-miterlimit: 10;
       }
 
       .cls-2 {
-        fill: #f86730;
+        fill: currentColor;
       }
 
       .cls-3 {
-        fill: #e05d2d;
+        fill: currentColor;
       }
 
       .cls-4 {
-        fill: #9c4c2f;
+        fill: #currentColor;
       }
 
       .cls-5 {
-        fill: #fefdfd;
+        fill: rgba(0%, 0%, 0%, 0%);
       }
 
       .cls-6 {
-        fill: #d9d9da;
+        fill: rgba(0%, 0%, 0%, 0%);
       }
 
       .cls-7 {
-        fill: #a2a1a1;
+        fill: rgba(0%, 0%, 0%, 0%);
       }
 
       .cls-8 {
-        fill: #f76730;
+        fill: currentColor;
       }
 
       .cls-9 {
-        fill: #fdfdfe;
+        fill: rgba(0%, 0%, 0%, 0%);
       }
 
       .cls-10 {
-        fill: #df5d2d;
+        fill: currentColor;
       }
 
       .cls-11 {
-        fill: #d7582b;
+        fill: currentColor;
       }
 
       .cls-12 {
-        fill: #e15d2d;
+        fill: currentColor;
       }
 
       .cls-13 {
-        fill: #e16031;
+        fill: currentColor;
       }
 
       .cls-14 {
-        fill: #fbfafa;
+        fill: rgba(0%, 0%, 0%, 0%);
       }
 
       .cls-15 {
-        fill: #f46630;
+        fill: currentColor;
       }
 
       .cls-16 {
-        fill: #db5b2c;
+        fill: #currentColor;
       }
 
       .cls-17 {
-        fill: #613a2b;
+        fill: rgba(0%,0%,0%,10%);
       }
 
       .cls-18 {
@@ -80,7 +80,7 @@
       }
 
       .cls-19 {
-        fill: #f96730;
+        fill: currentColor;
       }
 
       .cls-20 {
@@ -88,15 +88,15 @@
       }
 
       .cls-21 {
-        fill: #f77542;
+        fill: currentColor;
       }
 
       .cls-22 {
-        fill: #fefefe;
+        fill: rgba(0%, 0%, 0%, 0%);
       }
 
       .cls-23 {
-        fill: #ef642f;
+        fill: currentColor;
       }
     </style>
   </defs>

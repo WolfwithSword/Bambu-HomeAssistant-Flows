@@ -59,6 +59,9 @@ cards:
       - condition: state
         entity: number.{HA_PRINTER_DEVICE_NAME}_set_nozzle_temp
         state_not: unavailable
+      - condition: state
+        entity: number.{HA_PRINTER_DEVICE_NAME}_set_nozzle_temp
+        state_not: unknown
   - type: conditional
     card:
       type: custom:mushroom-number-card
@@ -70,6 +73,9 @@ cards:
       - condition: state
         entity: number.{HA_PRINTER_DEVICE_NAME}_set_bed_temp
         state_not: unavailable
+      - condition: state
+        entity: number.{HA_PRINTER_DEVICE_NAME}_set_bed_temp
+        state_not: unknown
   - type: conditional
     card:
       type: custom:mushroom-number-card
@@ -81,3 +87,6 @@ cards:
       - condition: state
         entity: number.{HA_PRINTER_DEVICE_NAME}_set_chamber_temp
         state_not: unavailable
+      - condition: state
+        entity: number.{HA_PRINTER_DEVICE_NAME}_set_chamber_temp
+        state_not: unknown
