@@ -45,6 +45,10 @@ trigger:
       hours: 0
       minutes: 0
       seconds: 5
+  - platform: state
+    entity_id: !input bento_entity
+    from: unavailable
+    id: bento_recovered
 condition: []
 action:
   - choose:
@@ -86,6 +90,10 @@ action:
                 value_template: "{{state_attr(filament_s, 'type') == 'empty'}}"
               - condition: template
                 value_template: "{{state_attr(filament_s, 'type') == 'none'}}"
+          - condition: not
+            conditions:
+              - condition: trigger
+                id: bento_recovered
         sequence:
           - service: homeassistant.turn_off
             target:
@@ -153,7 +161,7 @@ blueprint:
   description: |
               Automate turning on or off your bentobox VOC filtration depending on the currently used filament. HACS Version.
 
-              **Version: v1.0.3-HACS**
+              **Version: v1.0.4-HACS**
               [Source](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/blob/main/files/homeassistant/blueprints/hacs/bambu_nr_auto_bentobox_fans_hacs.yaml)
               [More Blueprints](https://github.com/WolfwithSword/Bambu-HomeAssistant-Flows/tree/main/files/homeassistant/blueprints)
               [More Information](https://www.wolfwithsword.com/bambulab-homeassistant-blueprints/)
@@ -162,6 +170,8 @@ blueprint:
               This automation will automatically turn on your bentobox air filtration while a print is active if the current filament is one of any from the configured list.
               
               It will then turn off the bentobox after the current filament is either emptied, if the print has ended for 30 seconds, or the printer goes offline.
+              
+              If the bentobox drops off the network mid-print and comes back (e.g. a Wi-Fi blip), it gets turned back on, since a smart plug usually comes back from `unavailable` as off.
               
               ## Notes
               This may only work for English setups, I am unsure how HA handles state values within blueprints for translated instances.
